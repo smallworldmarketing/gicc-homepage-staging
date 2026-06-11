@@ -6,6 +6,8 @@ React Native Web implementation of the approved Guildford Islamic Cultural Cente
 
 - Staging: https://smallworldmarketing.github.io/gicc-homepage-staging/
 - Repository: https://github.com/smallworldmarketing/gicc-homepage-staging
+- Events calendar: Google Calendar `ammar@giccmasjid.org`
+- Prayer times: https://www.awqat.net/masjid/masjid-guildford
 
 ## Local Development
 
@@ -34,9 +36,6 @@ When the client approves staging, connect this GitHub repository to Cloudflare P
 - Build output directory: `dist`
 - Node version: `22`
 
-The calendar feed file is copied to `/events.ics` during build, so a production Cloudflare deployment can expose:
+Community events are embedded from the Google Calendar shared by `ammar@giccmasjid.org`.
 
-```txt
-https://giccmasjid.org/events.ics
-webcal://giccmasjid.org/events.ics
-```
+Prayer times are fetched from Awqat's public data source for Masjid Guildford.

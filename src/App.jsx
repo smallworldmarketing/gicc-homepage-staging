@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Image,
   ImageBackground,
@@ -51,67 +51,15 @@ const COLORS = {
   white: "#ffffff",
 };
 
-const weeklyEvents = [
-  {
-    day: "Mon",
-    title: "Ibn Masood Madrasah",
-    time: "4:30 PM - 7:00 PM",
-    location: "GICC classrooms",
-    category: "learning",
-  },
-  {
-    day: "Tue",
-    title: "Ibn Masood Madrasah",
-    time: "4:30 PM - 7:00 PM",
-    location: "GICC classrooms",
-    category: "learning",
-  },
-  {
-    day: "Wed",
-    title: "New Masjid Project Update",
-    time: "8:00 PM - 8:45 PM",
-    location: "Main prayer hall",
-    category: "project",
-  },
-  {
-    day: "Thu",
-    title: "Quran Reflection Circle",
-    time: "7:30 PM - 8:30 PM",
-    location: "Main prayer hall",
-    category: "learning",
-  },
-  {
-    day: "Fri",
-    title: "Jumuah Khutbah and Prayer",
-    time: "1:15 PM - 2:30 PM",
-    location: "GICC musalla",
-    category: "prayer",
-  },
-  {
-    day: "Fri",
-    title: "Youth Night",
-    time: "7:30 PM - 9:00 PM",
-    location: "Community room",
-    category: "family",
-  },
-  {
-    day: "Sat",
-    title: "Sisters Quran Circle",
-    time: "11:00 AM - 12:15 PM",
-    location: "Sisters area",
-    category: "learning",
-  },
-  {
-    day: "Sun",
-    title: "Community Breakfast and Halaqa",
-    time: "9:30 AM - 11:00 AM",
-    location: "GICC community room",
-    category: "family",
-  },
-];
-
-const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const categories = ["prayer", "learning", "family", "project"];
+const GOOGLE_CALENDAR_ID = "ammar@giccmasjid.org";
+const GOOGLE_CALENDAR_EMBED_URL =
+  "https://calendar.google.com/calendar/embed?src=ammar%40giccmasjid.org&ctz=America%2FVancouver&mode=AGENDA&showTitle=0&showPrint=0&showCalendars=0&showTabs=1";
+const GOOGLE_CALENDAR_OPEN_URL = "https://calendar.google.com/calendar/u/0/r?cid=ammar%40giccmasjid.org";
+const AWQAT_PAGE_URL = "https://www.awqat.net/masjid/masjid-guildford";
+const AWQAT_SUPABASE_URL = "https://kjbutgbpddsadvnbgblg.supabase.co";
+const AWQAT_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtqYnV0Z2JwZGRzYWR2bmJnYmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc3NjQ1NjMsImV4cCI6MjA1MzM0MDU2M30.giaKfNM-hUj2UCrC_ZBUjamv9vFkhP7TORF5xkzyL4Y";
+const MASJID_GUILDFORD_ID = "96ac3382-aef7-4710-a187-7002ba7f4323";
 
 function openUrl(url, target = "_self") {
   if (typeof window !== "undefined") {
@@ -130,48 +78,40 @@ function scrollToSection(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
 }
 
-function vancouverDate() {
+function vancouverDateString(date = new Date()) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Vancouver",
     year: "numeric",
-    month: "numeric",
-    day: "numeric",
-  }).formatToParts(new Date());
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
   const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-  return new Date(Number(values.year), Number(values.month) - 1, Number(values.day));
+  return `${values.year}-${values.month}-${values.day}`;
 }
 
-function weekStart(date) {
-  const start = new Date(date);
-  const day = start.getDay();
-  const diff = day === 0 ? -6 : 1 - day;
-  start.setDate(start.getDate() + diff);
-  start.setHours(0, 0, 0, 0);
-  return start;
+function formatPrayerTime(value) {
+  const parsed = parsePrayerTime(value);
+  if (!parsed) return "-";
+  const period = parsed.hours >= 12 ? "PM" : "AM";
+  const hour = parsed.hours % 12 || 12;
+  return `${hour}:${String(parsed.minutes).padStart(2, "0")} ${period}`;
 }
 
-function addDays(date, daysToAdd) {
-  const next = new Date(date);
-  next.setDate(next.getDate() + daysToAdd);
-  return next;
+function parsePrayerTime(value) {
+  const match = String(value || "").match(/(\d{1,2}):(\d{2})/);
+  if (!match) return null;
+  return {
+    hours: Number(match[1]),
+    minutes: Number(match[2]),
+  };
 }
 
-function sameDate(a, b) {
-  return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+function prayerMinutes(value) {
+  const parsed = parsePrayerTime(value);
+  return parsed ? parsed.hours * 60 + parsed.minutes : null;
 }
 
-function dateLabel(date) {
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
-
-function getNextIqama() {
-  const prayers = [
-    { name: "Fajr", time: "04:30" },
-    { name: "Dhuhr", time: "13:30" },
-    { name: "Asr", time: "18:15" },
-    { name: "Maghrib", time: "21:18" },
-    { name: "Isha", time: "22:45" },
-  ];
+function currentVancouverMinutes() {
   const parts = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Vancouver",
     hour: "2-digit",
@@ -179,15 +119,45 @@ function getNextIqama() {
     hour12: false,
   }).formatToParts(new Date());
   const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
-  const currentMinutes = Number(values.hour) * 60 + Number(values.minute);
-  const next = prayers.find((prayer) => {
-    const [hours, minutes] = prayer.time.split(":").map(Number);
-    return hours * 60 + minutes >= currentMinutes;
-  }) ?? prayers[0];
-  const [hours, minutes] = next.time.split(":").map(Number);
-  const period = hours >= 12 ? "PM" : "AM";
-  const displayHour = hours % 12 || 12;
-  return `${next.name} ${displayHour}:${String(minutes).padStart(2, "0")} ${period}`;
+  return Number(values.hour) * 60 + Number(values.minute);
+}
+
+function getNextIqama(prayerTimes) {
+  if (!prayerTimes) return "Loading...";
+  const prayers = [
+    { name: "Fajr", time: prayerTimes.fajr_iqamah },
+    { name: "Dhuhr", time: prayerTimes.dhuhr_iqamah },
+    { name: "Asr", time: prayerTimes.asr_iqamah },
+    { name: "Maghrib", time: prayerTimes.maghrib_iqamah },
+    { name: "Isha", time: prayerTimes.isha_iqamah },
+  ].filter((prayer) => prayerMinutes(prayer.time) !== null);
+
+  const currentMinutes = currentVancouverMinutes();
+  const next = prayers.find((prayer) => prayerMinutes(prayer.time) >= currentMinutes) ?? prayers[0];
+  return next ? `${next.name} ${formatPrayerTime(next.time)}` : "Awqat";
+}
+
+async function fetchAwqatPrayerTimes() {
+  const date = vancouverDateString();
+  const params = new URLSearchParams({
+    select:
+      "prayer_date,fajr_azan,sunrise,dhuhr_azan,asr_azan,maghrib_azan,isha_azan,fajr_iqamah,dhuhr_iqamah,asr_iqamah,maghrib_iqamah,isha_iqamah,jumah_time_1,jumah_time_2,jumah_time_3",
+    organization_id: `eq.${MASJID_GUILDFORD_ID}`,
+    prayer_date: `eq.${date}`,
+  });
+  const response = await fetch(`${AWQAT_SUPABASE_URL}/rest/v1/daily_prayer_times?${params.toString()}`, {
+    headers: {
+      apikey: AWQAT_ANON_KEY,
+      Authorization: `Bearer ${AWQAT_ANON_KEY}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Awqat request failed: ${response.status}`);
+  }
+
+  const records = await response.json();
+  return Array.isArray(records) ? records[0] || null : null;
 }
 
 function IconText({ icon: Icon, children, color = COLORS.white, size = 14, style, textStyle }) {
@@ -272,7 +242,7 @@ function Header({ isMobile }) {
   );
 }
 
-function Hero({ isMobile, isTablet }) {
+function Hero({ isMobile, isTablet, prayerTimes }) {
   return (
     <View style={[styles.hero, isMobile && styles.heroMobile]}>
       <ImageBackground source={{ uri: buildingImage }} style={styles.heroImage} resizeMode="cover">
@@ -299,9 +269,9 @@ function Hero({ isMobile, isTablet }) {
         </View>
         <View style={[styles.heroStatus, (isTablet || isMobile) && styles.heroStatusTablet, isMobile && styles.heroStatusMobile]}>
           {[
-            ["Next Iqama", getNextIqama()],
-            ["Jumuah", "1:15 PM"],
-            ["This Week", "8 Programs"],
+            ["Next Iqama", getNextIqama(prayerTimes)],
+            ["Jumuah", formatPrayerTime(prayerTimes?.jumah_time_1)],
+            ["Calendar", "Live"],
           ].map(([label, value], index) => (
             <View key={label} style={[styles.statusCell, index === 2 && styles.statusCellLast, isMobile && styles.statusCellMobile]}>
               <Text style={styles.statusLabel}>{label}</Text>
@@ -314,13 +284,13 @@ function Hero({ isMobile, isTablet }) {
   );
 }
 
-function PrayerStrip({ isTablet }) {
+function PrayerStrip({ isTablet, prayerTimes, prayerStatus }) {
   const times = [
-    ["Fajr", "4:30"],
-    ["Dhuhr", "1:30"],
-    ["Asr", "6:15"],
-    ["Maghrib", "Sunset"],
-    ["Isha", "10:45"],
+    ["Fajr", formatPrayerTime(prayerTimes?.fajr_iqamah)],
+    ["Dhuhr", formatPrayerTime(prayerTimes?.dhuhr_iqamah)],
+    ["Asr", formatPrayerTime(prayerTimes?.asr_iqamah)],
+    ["Maghrib", formatPrayerTime(prayerTimes?.maghrib_iqamah)],
+    ["Isha", formatPrayerTime(prayerTimes?.isha_iqamah)],
   ];
 
   return (
@@ -338,8 +308,8 @@ function PrayerStrip({ isTablet }) {
             </View>
           ))}
         </View>
-        <Pressable onPress={() => openUrl("https://giccmasjid.org/iqama-times/", "_blank")} style={styles.textLinkRow}>
-          <Text style={styles.textLink}>Current schedule</Text>
+        <Pressable onPress={() => openUrl(AWQAT_PAGE_URL, "_blank")} style={styles.textLinkRow}>
+          <Text style={styles.textLink}>{prayerStatus === "error" ? "Open Awqat" : "Synced from Awqat"}</Text>
           <ArrowUpRight size={14} color={COLORS.gold} />
         </Pressable>
       </View>
@@ -420,27 +390,9 @@ function Programs({ isTablet, isMobile }) {
 }
 
 function CalendarSection({ isMobile, isTablet }) {
-  const [view, setView] = useState("week");
-  const [active, setActive] = useState(categories);
-  const today = useMemo(() => vancouverDate(), []);
-  const dateByDay = useMemo(() => {
-    const start = weekStart(today);
-    return Object.fromEntries(days.map((day, index) => [day, addDays(start, index)]));
-  }, [today]);
-  const visibleEvents = weeklyEvents.filter((event) => active.includes(event.category));
-
-  function toggleCategory(category) {
-    setActive((current) => (
-      current.includes(category)
-        ? current.filter((item) => item !== category)
-        : [...current, category]
-    ));
-  }
-
-  async function copyFeed() {
-    const feedUrl = "webcal://giccmasjid.org/events.ics";
+  async function copyCalendarId() {
     try {
-      await navigator.clipboard.writeText(feedUrl);
+      await navigator.clipboard.writeText(GOOGLE_CALENDAR_ID);
     } catch {
       return;
     }
@@ -451,84 +403,55 @@ function CalendarSection({ isMobile, isTablet }) {
       <View style={styles.sectionInner}>
         <View style={[styles.sectionHeading, isTablet && styles.stack]}>
           <View>
-            <Text style={styles.eyebrowDark}>Sync Weekly Events</Text>
+            <Text style={styles.eyebrowDark}>Live Community Calendar</Text>
             <Text style={[styles.sectionTitle, isMobile && styles.sectionTitleMobile]}>GICC community calendar</Text>
-            <Text style={styles.bodyText}>Subscribe once and weekly programs stay on your phone, desktop, or family calendar.</Text>
+            <Text style={styles.bodyText}>Weekly programs and community events now load from the shared GICC Google Calendar.</Text>
           </View>
           <View style={[styles.calendarActions, isMobile && styles.stack]}>
-            <Button icon={RefreshCw} onPress={() => openUrl("webcal://giccmasjid.org/events.ics")} style={isMobile && styles.fullWidthButton}>
-              Subscribe
+            <Button icon={RefreshCw} onPress={() => openUrl(GOOGLE_CALENDAR_OPEN_URL, "_blank")} style={isMobile && styles.fullWidthButton}>
+              Open Calendar
             </Button>
-            <Button icon={Download} variant="light" onPress={() => openUrl("./events.ics")} style={isMobile && styles.fullWidthButton}>
-              Download ICS
+            <Button icon={Download} variant="light" onPress={() => openUrl(GOOGLE_CALENDAR_EMBED_URL, "_blank")} style={isMobile && styles.fullWidthButton}>
+              Full View
             </Button>
-            <Button icon={Copy} variant="light" onPress={copyFeed} style={isMobile && styles.fullWidthButton}>Copy Feed</Button>
+            <Button icon={Copy} variant="light" onPress={copyCalendarId} style={isMobile && styles.fullWidthButton}>Copy Calendar ID</Button>
           </View>
         </View>
         <View style={styles.calendarTool}>
           <View style={[styles.calendarToolbar, isTablet && styles.stack]}>
-            <View style={styles.segmented}>
-              {["week", "list"].map((item) => (
-                <Pressable key={item} onPress={() => setView(item)} style={[styles.segmentButton, view === item && styles.segmentButtonActive]}>
-                  <Text style={[styles.segmentText, view === item && styles.segmentTextActive]}>{item === "week" ? "Week" : "List"}</Text>
-                </Pressable>
-              ))}
+            <View>
+              <Text style={styles.calendarEmbedTitle}>Google Calendar Embed</Text>
+              <Text style={styles.calendarEmbedMeta}>Source: {GOOGLE_CALENDAR_ID}</Text>
             </View>
-            <View style={styles.filters}>
-              {categories.map((category) => (
-                <Pressable key={category} onPress={() => toggleCategory(category)} style={styles.filterChip}>
-                  <Text style={styles.filterCheck}>{active.includes(category) ? "✓" : ""}</Text>
-                  <Text style={styles.filterText}>{category[0].toUpperCase() + category.slice(1)}</Text>
-                </Pressable>
-              ))}
-            </View>
+            <Pressable onPress={() => openUrl(GOOGLE_CALENDAR_OPEN_URL, "_blank")} style={styles.textLinkRow}>
+              <Text style={styles.textLink}>Manage in Google Calendar</Text>
+              <ArrowUpRight size={14} color={COLORS.gold} />
+            </Pressable>
           </View>
-
-          {view === "week" ? (
-            <View style={[styles.weekGrid, isTablet && styles.weekGridTablet, isMobile && styles.stack]}>
-              {days.map((day) => {
-                const events = visibleEvents.filter((event) => event.day === day);
-                const isToday = sameDate(dateByDay[day], today);
-                return (
-                  <View key={day} style={[styles.dayColumn, isToday && styles.todayColumn, isMobile && styles.dayColumnMobile]}>
-                    <View style={styles.dayHeading}>
-                      <Text style={styles.dayName}>{day}</Text>
-                      <Text style={styles.dayDate}>{dateLabel(dateByDay[day])}</Text>
-                    </View>
-                    {events.length ? events.map((event) => <EventChip key={`${day}-${event.title}`} event={event} />) : (
-                      <Text style={styles.emptyDay}>No recurring program listed.</Text>
-                    )}
-                  </View>
-                );
-              })}
-            </View>
-          ) : (
-            <View style={styles.eventList}>
-              {visibleEvents.map((event) => (
-                <View key={`${event.day}-${event.title}`} style={styles.eventRow}>
-                  <Text style={styles.eventRowDate}>{event.day}, {dateLabel(dateByDay[event.day])}</Text>
-                  <View style={styles.eventRowBody}>
-                    <Text style={styles.eventTitle}>{event.title}</Text>
-                    <Text style={styles.eventMeta}>{event.location}</Text>
-                  </View>
-                  <Text style={styles.eventRowTime}>{event.time}</Text>
-                </View>
-              ))}
-            </View>
-          )}
+          <View style={styles.calendarAccessNotice}>
+            <Text style={styles.calendarAccessTitle}>Calendar access note</Text>
+            <Text style={styles.calendarAccessCopy}>
+              If the embedded calendar appears blank, Google Calendar sharing needs to be changed to public for website embedding.
+            </Text>
+          </View>
+          <View style={[styles.calendarEmbedShell, isMobile && styles.calendarEmbedShellMobile]}>
+            {React.createElement("iframe", {
+              title: "GICC Google Calendar",
+              src: GOOGLE_CALENDAR_EMBED_URL,
+              loading: "lazy",
+              frameBorder: "0",
+              style: {
+                border: 0,
+                width: "100%",
+                height: "100%",
+                minHeight: isMobile ? 420 : 560,
+                display: "block",
+              },
+            })}
+          </View>
         </View>
-        <Text style={styles.syncNote}>Feed URL: webcal://giccmasjid.org/events.ics</Text>
+        <Text style={styles.syncNote}>Calendar source: {GOOGLE_CALENDAR_ID}</Text>
       </View>
-    </View>
-  );
-}
-
-function EventChip({ event }) {
-  return (
-    <View style={[styles.eventChip, styles[`eventBorder_${event.category}`]]}>
-      <Text style={styles.eventTitle}>{event.title}</Text>
-      <Text style={styles.eventMeta}>{event.time}</Text>
-      <Text style={styles.eventMeta}>{event.location}</Text>
     </View>
   );
 }
@@ -590,12 +513,41 @@ export default function App() {
   const { width } = useWindowDimensions();
   const isMobile = width < 640;
   const isTablet = width < 1040;
+  const [prayerState, setPrayerState] = useState({
+    data: null,
+    status: "loading",
+    error: null,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadPrayerTimes() {
+      try {
+        const data = await fetchAwqatPrayerTimes();
+        if (!cancelled) {
+          setPrayerState({ data, status: data ? "ready" : "empty", error: null });
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setPrayerState((current) => ({ ...current, status: "error", error }));
+        }
+      }
+    }
+
+    loadPrayerTimes();
+    const interval = setInterval(loadPrayerTimes, 15 * 60 * 1000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <ScrollView style={styles.app} contentContainerStyle={styles.page}>
       <Header isMobile={isMobile} />
-      <Hero isMobile={isMobile} isTablet={isTablet} />
-      <PrayerStrip isTablet={isTablet} />
+      <Hero isMobile={isMobile} isTablet={isTablet} prayerTimes={prayerState.data} />
+      <PrayerStrip isTablet={isTablet} prayerTimes={prayerState.data} prayerStatus={prayerState.status} />
       <Welcome isTablet={isTablet} isMobile={isMobile} />
       <Programs isTablet={isTablet} isMobile={isMobile} />
       <CalendarSection isMobile={isMobile} isTablet={isTablet} />
@@ -1116,167 +1068,43 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 16,
   },
-  segmented: {
-    width: 162,
-    padding: 4,
-    borderWidth: 1,
-    borderColor: COLORS.line,
-    borderRadius: 8,
-    backgroundColor: COLORS.white,
-    flexDirection: "row",
-  },
-  segmentButton: {
-    flex: 1,
-    minHeight: 36,
-    borderRadius: 6,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  segmentButtonActive: {
-    backgroundColor: COLORS.navy,
-  },
-  segmentText: {
-    color: COLORS.muted,
-    fontWeight: "900",
-  },
-  segmentTextActive: {
-    color: COLORS.white,
-  },
-  filters: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "flex-end",
-    gap: 9,
-  },
-  filterChip: {
-    minHeight: 36,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: COLORS.line,
-    borderRadius: 8,
-    backgroundColor: COLORS.white,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  filterCheck: {
-    width: 12,
-    color: COLORS.green,
-    fontSize: 12,
-    fontWeight: "900",
-  },
-  filterText: {
-    color: COLORS.ink,
-    fontSize: 13,
-    fontWeight: "800",
-  },
-  weekGrid: {
-    minHeight: 510,
-    flexDirection: "row",
-  },
-  weekGridTablet: {
-    flexWrap: "wrap",
-  },
-  dayColumn: {
-    flex: 1,
-    minWidth: 0,
-    padding: 14,
-    borderRightWidth: 1,
-    borderRightColor: COLORS.line,
-  },
-  dayColumnMobile: {
-    width: "100%",
-    borderRightWidth: 0,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.line,
-  },
-  todayColumn: {
-    backgroundColor: COLORS.rose,
-  },
-  dayHeading: {
-    minHeight: 42,
-    marginBottom: 12,
-    flexDirection: "row",
-    alignItems: "baseline",
-    justifyContent: "space-between",
-    gap: 8,
-  },
-  dayName: {
+  calendarEmbedTitle: {
     color: COLORS.navy,
-    fontSize: 13,
+    fontSize: 15,
     fontWeight: "900",
-    textTransform: "uppercase",
   },
-  dayDate: {
+  calendarEmbedMeta: {
+    marginTop: 3,
     color: COLORS.muted,
-    fontSize: 12,
-    fontWeight: "900",
+    fontSize: 13,
+    fontWeight: "700",
   },
-  eventChip: {
-    minHeight: 112,
-    marginBottom: 10,
-    padding: 12,
-    borderLeftWidth: 4,
+  calendarAccessNotice: {
+    margin: 16,
+    marginBottom: 0,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: "rgba(162,125,44,0.28)",
     borderRadius: 8,
-    backgroundColor: COLORS.soft,
+    backgroundColor: "#fffaf0",
   },
-  eventBorder_prayer: {
-    borderLeftColor: COLORS.royal,
-  },
-  eventBorder_learning: {
-    borderLeftColor: COLORS.green,
-  },
-  eventBorder_family: {
-    borderLeftColor: COLORS.gold,
-  },
-  eventBorder_project: {
-    borderLeftColor: COLORS.blush,
-  },
-  eventTitle: {
+  calendarAccessTitle: {
     color: COLORS.navy,
     fontSize: 14,
     fontWeight: "900",
-    lineHeight: 17,
   },
-  eventMeta: {
-    marginTop: 4,
+  calendarAccessCopy: {
+    marginTop: 3,
     color: COLORS.muted,
-    fontSize: 12,
-    fontWeight: "700",
-    lineHeight: 15,
-  },
-  emptyDay: {
-    color: "#8592a5",
     fontSize: 13,
+    lineHeight: 18,
   },
-  eventList: {
-    padding: 16,
-    gap: 12,
+  calendarEmbedShell: {
+    height: 560,
+    backgroundColor: COLORS.white,
   },
-  eventRow: {
-    minHeight: 84,
-    padding: 14,
-    borderLeftWidth: 4,
-    borderLeftColor: COLORS.green,
-    borderRadius: 8,
-    backgroundColor: COLORS.soft,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 18,
-  },
-  eventRowDate: {
-    width: 130,
-    color: COLORS.muted,
-    fontWeight: "800",
-  },
-  eventRowBody: {
-    flex: 1,
-  },
-  eventRowTime: {
-    minWidth: 150,
-    color: COLORS.muted,
-    fontWeight: "800",
-    textAlign: "right",
+  calendarEmbedShellMobile: {
+    height: 420,
   },
   syncNote: {
     minHeight: 28,

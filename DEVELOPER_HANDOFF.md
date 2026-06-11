@@ -12,7 +12,8 @@ The production plan is to host on Cloudflare Pages after client approval.
 
 - Staging URL: https://smallworldmarketing.github.io/gicc-homepage-staging/
 - GitHub repository: https://github.com/smallworldmarketing/gicc-homepage-staging
-- Calendar feed on staging: https://smallworldmarketing.github.io/gicc-homepage-staging/events.ics
+- Events calendar source: Google Calendar `ammar@giccmasjid.org`
+- Prayer times source: https://www.awqat.net/masjid/masjid-guildford
 
 ## Current Local Workspace
 
@@ -59,7 +60,7 @@ The app imports React Native primitives from `react-native`, with Vite aliasing 
 - `src/main.jsx`: App entrypoint.
 - `src/web.css`: Minimal global web reset.
 - `vite.config.js`: Vite config and React Native Web alias.
-- `public/events.ics`: Static recurring calendar feed included in builds.
+- Events calendar: Google Calendar iframe embed for `ammar@giccmasjid.org`.
 - `assets/gicc-logo-white.png`: GICC logo asset.
 - `assets/new-masjid-building.jpg`: Hero background asset from existing GICC site.
 - `.github/workflows/pages.yml`: GitHub Pages staging deployment workflow.
@@ -139,18 +140,24 @@ Node version: 22
 Production calendar target:
 
 ```txt
-https://giccmasjid.org/events.ics
-webcal://giccmasjid.org/events.ics
+Google Calendar ID: ammar@giccmasjid.org
+Embed URL: https://calendar.google.com/calendar/embed?src=ammar%40giccmasjid.org&ctz=America%2FVancouver
 ```
 
-The app currently displays/copies the production `webcal://giccmasjid.org/events.ics` subscription URL, while the staging download button serves `./events.ics`.
+The app currently embeds the shared Google Calendar and provides actions to open the calendar, open the full embed view, and copy the calendar id.
+
+Prayer times are fetched client-side from Awqat's public Supabase-backed data for Masjid Guildford. The current Awqat organization id is:
+
+```txt
+96ac3382-aef7-4710-a187-7002ba7f4323
+```
 
 ## Current Features
 
 - Responsive homepage for desktop and mobile.
 - Fixed header with navigation.
 - Hero section using GICC imagery and brand colors.
-- Iqama time strip.
+- Iqama time strip synced from Awqat.
 - Welcome/mission section.
 - Weekly programs section.
 - Calendar section with:
@@ -165,8 +172,8 @@ The app currently displays/copies the production `webcal://giccmasjid.org/events
 ## Known Caveats / Follow-Up Items
 
 - Weekly event data is representative/sample content and should be replaced with the client's final checklist/content.
-- Iqama times are static placeholders and should be connected to the client's actual prayer-time source if required.
-- The calendar feed is a static `public/events.ics` file. If the client wants CMS-managed events later, replace this with a generated feed or external calendar integration.
+- Awqat sync depends on the public Awqat data source remaining available with the current Supabase API shape.
+- Google Calendar visibility depends on the calendar sharing settings for `ammar@giccmasjid.org`; if the iframe shows a permissions prompt, the calendar owner needs to make the calendar public or explicitly share it with the intended viewer account.
 - Cloudflare has not been connected yet because no Cloudflare credentials/tools were available in this session.
 - The design is a single-page staging build, not yet integrated into the existing WordPress site.
 - The repo is public for easy GitHub Pages staging. Reassess visibility if the client wants it private before production.
@@ -182,7 +189,7 @@ npm run build
 Live staging:
 
 - HTTP 200 check passed for the staging page.
-- HTTP 200 check passed for `/events.ics`.
+- HTTP 200 check passed for the staging page.
 - Desktop render verified with Playwright screenshot.
 - Mobile render verified with Playwright screenshot.
 - GitHub Actions deployment workflow passed.
