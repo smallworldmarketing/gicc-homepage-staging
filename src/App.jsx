@@ -190,11 +190,11 @@ function getNextIqama() {
   return `${next.name} ${displayHour}:${String(minutes).padStart(2, "0")} ${period}`;
 }
 
-function IconText({ icon: Icon, children, color = COLORS.white, size = 14, style }) {
+function IconText({ icon: Icon, children, color = COLORS.white, size = 14, style, textStyle }) {
   return (
     <View style={[styles.iconText, style]}>
       <Icon size={size} color={color} strokeWidth={2} />
-      <Text style={[styles.iconTextLabel, { color }]}>{children}</Text>
+      <Text style={[styles.iconTextLabel, { color }, textStyle]} numberOfLines={1}>{children}</Text>
     </View>
   );
 }
@@ -220,13 +220,25 @@ function Header({ isMobile }) {
     ["New Masjid", "new-center"],
     ["Contact", "contact"],
   ];
+  const topbarItems = isMobile
+    ? [
+        [MapPin, "Surrey, BC"],
+        [Phone, "+1 (604) 670-6732"],
+      ]
+    : [
+        [MapPin, "15290 103A Ave #101, Surrey, BC"],
+        [Phone, "+1 (604) 670-6732"],
+        [Mail, "info@giccmasjid.org"],
+      ];
 
   return (
     <View style={styles.header}>
-      <View style={styles.topbar}>
-        <IconText icon={MapPin} size={12}>15290 103A Ave #101, Surrey, BC</IconText>
-        <IconText icon={Phone} size={12}>+1 (604) 670-6732</IconText>
-        <IconText icon={Mail} size={12}>info@giccmasjid.org</IconText>
+      <View style={[styles.topbar, isMobile && styles.topbarMobile]}>
+        {topbarItems.map(([Icon, label]) => (
+          <IconText key={label} icon={Icon} size={12} style={isMobile && styles.iconTextMobile} textStyle={isMobile && styles.iconTextLabelMobile}>
+            {label}
+          </IconText>
+        ))}
       </View>
       <View style={[styles.nav, isMobile && styles.navMobile]}>
         <Image source={{ uri: logoImage }} style={[styles.logo, isMobile && styles.logoMobile]} resizeMode="contain" />
@@ -247,7 +259,7 @@ function Header({ isMobile }) {
             ))}
             <Pressable
               onPress={() => openUrl("https://surreyislamiccenter.com/", "_blank")}
-              style={styles.donateLink}
+              style={[styles.donateLink, isMobile && styles.donateLinkMobile]}
               accessibilityRole="link"
             >
               <HeartHandshake size={16} color={COLORS.navy} />
@@ -271,7 +283,7 @@ function Hero({ isMobile, isTablet }) {
           <Text style={[styles.heroCopy, isMobile && styles.heroCopyMobile]}>
             A spiritual home for daily prayer, Islamic learning, family programs, and community service in Guildford.
           </Text>
-          <View style={[styles.heroActions, isMobile && styles.stack]}>
+          <View style={[styles.heroActions, isMobile && styles.heroActionsMobile]}>
             <Button icon={CalendarDays} onPress={() => scrollToSection("calendar")} style={isMobile && styles.fullWidthButton}>
               View Weekly Events
             </Button>
@@ -344,7 +356,7 @@ function Welcome({ isTablet, isMobile }) {
   ];
 
   return (
-    <View nativeID="welcome" style={styles.whiteSection}>
+    <View nativeID="welcome" style={[styles.whiteSection, isMobile && styles.mobileSection]}>
       <View style={[styles.sectionInner, styles.splitLayout, isTablet && styles.stack]}>
         <View style={styles.introCopy}>
           <Text style={styles.eyebrowDark}>Welcome to GICC</Text>
@@ -378,7 +390,7 @@ function Programs({ isTablet, isMobile }) {
   ];
 
   return (
-    <View nativeID="programs" style={styles.softSection}>
+    <View nativeID="programs" style={[styles.softSection, isMobile && styles.mobileSection]}>
       <View style={styles.sectionInner}>
         <View style={[styles.sectionHeading, isMobile && styles.stack]}>
           <View>
@@ -394,7 +406,7 @@ function Programs({ isTablet, isMobile }) {
         </View>
         <View style={[styles.programGrid, isTablet && styles.programGridTablet, isMobile && styles.stack]}>
           {programs.map(([Icon, title, copy, time]) => (
-            <View key={title} style={[styles.programCard, isTablet && styles.programCardTablet]}>
+            <View key={title} style={[styles.programCard, isTablet && styles.programCardTablet, isMobile && styles.programCardMobile]}>
               <Icon size={28} color={COLORS.gold} strokeWidth={1.9} />
               <Text style={styles.cardTitle}>{title}</Text>
               <Text style={styles.cardCopy}>{copy}</Text>
@@ -435,7 +447,7 @@ function CalendarSection({ isMobile, isTablet }) {
   }
 
   return (
-    <View nativeID="calendar" style={styles.calendarSection}>
+    <View nativeID="calendar" style={[styles.calendarSection, isMobile && styles.mobileSection]}>
       <View style={styles.sectionInner}>
         <View style={[styles.sectionHeading, isTablet && styles.stack]}>
           <View>
@@ -620,14 +632,31 @@ const styles = StyleSheet.create({
     paddingVertical: 7,
     backgroundColor: "rgba(1,22,64,0.92)",
   },
+  topbarMobile: {
+    minHeight: 34,
+    justifyContent: "space-between",
+    gap: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    overflow: "hidden",
+  },
   iconText: {
     flexDirection: "row",
     alignItems: "center",
     gap: 7,
   },
+  iconTextMobile: {
+    flexShrink: 1,
+    minWidth: 0,
+  },
   iconTextLabel: {
     fontSize: 12,
     fontWeight: "700",
+  },
+  iconTextLabelMobile: {
+    flexShrink: 1,
+    minWidth: 0,
+    fontSize: 11,
   },
   nav: {
     width: "calc(100% - 32px)",
@@ -646,21 +675,23 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   navMobile: {
-    minHeight: 66,
+    minHeight: 62,
     width: "calc(100% - 20px)",
-    marginTop: 8,
+    marginTop: 6,
+    paddingLeft: 10,
+    backgroundColor: "rgba(1,22,64,0.84)",
   },
   logo: {
     width: 150,
     height: 68,
   },
   logoMobile: {
-    width: 124,
-    height: 58,
+    width: 112,
+    height: 54,
   },
   menuButton: {
-    width: 44,
-    height: 44,
+    width: 42,
+    height: 42,
     marginRight: 8,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.28)",
@@ -675,7 +706,7 @@ const styles = StyleSheet.create({
   },
   navLinksMobile: {
     position: "fixed",
-    top: 108,
+    top: 104,
     left: 16,
     right: 16,
     flexDirection: "column",
@@ -710,14 +741,18 @@ const styles = StyleSheet.create({
     color: COLORS.navy,
     fontWeight: "900",
   },
+  donateLinkMobile: {
+    minHeight: 46,
+    borderRadius: 8,
+  },
   hero: {
     minHeight: "78vh",
     height: 780,
     maxHeight: 780,
   },
   heroMobile: {
-    minHeight: 720,
-    height: 720,
+    minHeight: 760,
+    height: 760,
   },
   heroImage: {
     flex: 1,
@@ -739,8 +774,8 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   heroContentMobile: {
-    paddingHorizontal: 16,
-    paddingBottom: 250,
+    paddingHorizontal: 20,
+    paddingBottom: 245,
   },
   eyebrow: {
     marginBottom: 12,
@@ -765,8 +800,8 @@ const styles = StyleSheet.create({
     lineHeight: 92,
   },
   heroTitleMobile: {
-    fontSize: 52,
-    lineHeight: 52,
+    fontSize: 48,
+    lineHeight: 49,
   },
   heroCopy: {
     width: "100%",
@@ -777,14 +812,21 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
   heroCopyMobile: {
-    fontSize: 15,
-    lineHeight: 22,
+    maxWidth: 340,
+    fontSize: 16,
+    lineHeight: 24,
   },
   heroActions: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 12,
     marginTop: 28,
+  },
+  heroActionsMobile: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    gap: 12,
+    marginTop: 24,
   },
   heroStatus: {
     position: "absolute",
@@ -806,6 +848,9 @@ const styles = StyleSheet.create({
   },
   heroStatusMobile: {
     flexDirection: "column",
+    left: 20,
+    right: 20,
+    bottom: 22,
   },
   statusCell: {
     flex: 1,
@@ -820,7 +865,8 @@ const styles = StyleSheet.create({
     borderRightWidth: 0,
     borderBottomWidth: 1,
     borderBottomColor: "rgba(255,255,255,0.18)",
-    paddingVertical: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 9,
   },
   statusLabel: {
     color: "rgba(255,255,255,0.64)",
@@ -835,7 +881,7 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
   button: {
-    minHeight: 46,
+    minHeight: 48,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderWidth: 1,
@@ -861,7 +907,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontWeight: "900",
-    fontSize: 14,
+    fontSize: 15,
   },
   fullWidthButton: {
     width: "100%",
@@ -884,7 +930,7 @@ const styles = StyleSheet.create({
     minHeight: 0,
     flexDirection: "column",
     alignItems: "stretch",
-    paddingVertical: 24,
+    paddingVertical: 28,
   },
   stripHeading: {
     width: 170,
@@ -936,6 +982,9 @@ const styles = StyleSheet.create({
   calendarSection: {
     paddingVertical: 105,
     backgroundColor: "#f3f6fb",
+  },
+  mobileSection: {
+    paddingVertical: 64,
   },
   splitLayout: {
     flexDirection: "row",
@@ -1018,6 +1067,10 @@ const styles = StyleSheet.create({
   },
   programCardTablet: {
     minWidth: "calc(50% - 8px)",
+  },
+  programCardMobile: {
+    minHeight: 220,
+    padding: 18,
   },
   cardTitle: {
     marginTop: 22,
