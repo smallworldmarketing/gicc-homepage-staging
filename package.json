@@ -1,0 +1,30 @@
+{
+  "name": "gicc-homepage-staging",
+  "version": "1.0.0",
+  "private": true,
+  "description": "React Native Web staging build for the GICC homepage mockup.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "check": "npm run build"
+  },
+  "keywords": [
+    "react-native-web",
+    "cloudflare-pages",
+    "staging"
+  ],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "lucide-react": "^1.17.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-native-web": "^0.21.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.2",
+    "vite": "^8.0.16"
+  }
+}

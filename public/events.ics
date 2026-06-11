@@ -1,0 +1,89 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//GICC Website Mockup//Weekly Events//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:GICC Weekly Programs
+X-WR-CALDESC:Recurring weekly programs for Guildford Islamic Cultural Center.
+X-WR-TIMEZONE:America/Vancouver
+BEGIN:VEVENT
+UID:gicc-madrasah-monday-20260615@giccmasjid.org
+DTSTAMP:20260610T000000Z
+DTSTART;TZID=America/Vancouver:20260615T163000
+DTEND;TZID=America/Vancouver:20260615T190000
+RRULE:FREQ=WEEKLY;BYDAY=MO
+SUMMARY:Ibn Masood Madrasah
+LOCATION:Guildford Islamic Cultural Center, 15290 103A Ave #101, Surrey, BC
+DESCRIPTION:Weekday Islamic education program at GICC.
+END:VEVENT
+BEGIN:VEVENT
+UID:gicc-madrasah-tuesday-20260616@giccmasjid.org
+DTSTAMP:20260610T000000Z
+DTSTART;TZID=America/Vancouver:20260616T163000
+DTEND;TZID=America/Vancouver:20260616T190000
+RRULE:FREQ=WEEKLY;BYDAY=TU
+SUMMARY:Ibn Masood Madrasah
+LOCATION:Guildford Islamic Cultural Center, 15290 103A Ave #101, Surrey, BC
+DESCRIPTION:Weekday Islamic education program at GICC.
+END:VEVENT
+BEGIN:VEVENT
+UID:gicc-project-update-20260610@giccmasjid.org
+DTSTAMP:20260610T000000Z
+DTSTART;TZID=America/Vancouver:20260610T200000
+DTEND;TZID=America/Vancouver:20260610T204500
+RRULE:FREQ=WEEKLY;BYDAY=WE
+SUMMARY:New Masjid Project Update
+LOCATION:Guildford Islamic Cultural Center, 15290 103A Ave #101, Surrey, BC
+DESCRIPTION:Weekly community update for the New Islamic Center project.
+END:VEVENT
+BEGIN:VEVENT
+UID:gicc-quran-reflection-20260611@giccmasjid.org
+DTSTAMP:20260610T000000Z
+DTSTART;TZID=America/Vancouver:20260611T193000
+DTEND;TZID=America/Vancouver:20260611T203000
+RRULE:FREQ=WEEKLY;BYDAY=TH
+SUMMARY:Quran Reflection Circle
+LOCATION:Guildford Islamic Cultural Center, 15290 103A Ave #101, Surrey, BC
+DESCRIPTION:Weekly Quran reflection circle at GICC.
+END:VEVENT
+BEGIN:VEVENT
+UID:gicc-jumuah-20260612@giccmasjid.org
+DTSTAMP:20260610T000000Z
+DTSTART;TZID=America/Vancouver:20260612T131500
+DTEND;TZID=America/Vancouver:20260612T143000
+RRULE:FREQ=WEEKLY;BYDAY=FR
+SUMMARY:Jumuah Khutbah and Prayer
+LOCATION:Guildford Islamic Cultural Center, 15290 103A Ave #101, Surrey, BC
+DESCRIPTION:Weekly Jumuah program at GICC.
+END:VEVENT
+BEGIN:VEVENT
+UID:gicc-youth-night-20260612@giccmasjid.org
+DTSTAMP:20260610T000000Z
+DTSTART;TZID=America/Vancouver:20260612T193000
+DTEND;TZID=America/Vancouver:20260612T210000
+RRULE:FREQ=WEEKLY;BYDAY=FR
+SUMMARY:Youth Night
+LOCATION:Guildford Islamic Cultural Center, 15290 103A Ave #101, Surrey, BC
+DESCRIPTION:Weekly youth program at GICC.
+END:VEVENT
+BEGIN:VEVENT
+UID:gicc-sisters-quran-20260613@giccmasjid.org
+DTSTAMP:20260610T000000Z
+DTSTART;TZID=America/Vancouver:20260613T110000
+DTEND;TZID=America/Vancouver:20260613T121500
+RRULE:FREQ=WEEKLY;BYDAY=SA
+SUMMARY:Sisters Quran Circle
+LOCATION:Guildford Islamic Cultural Center, 15290 103A Ave #101, Surrey, BC
+DESCRIPTION:Weekly sisters Quran circle at GICC.
+END:VEVENT
+BEGIN:VEVENT
+UID:gicc-community-breakfast-20260614@giccmasjid.org
+DTSTAMP:20260610T000000Z
+DTSTART;TZID=America/Vancouver:20260614T093000
+DTEND;TZID=America/Vancouver:20260614T110000
+RRULE:FREQ=WEEKLY;BYDAY=SU
+SUMMARY:Community Breakfast and Halaqa
+LOCATION:Guildford Islamic Cultural Center, 15290 103A Ave #101, Surrey, BC
+DESCRIPTION:Weekly family breakfast and halaqa at GICC.
+END:VEVENT
+END:VCALENDAR
