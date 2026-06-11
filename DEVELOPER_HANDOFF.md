@@ -14,6 +14,7 @@ The production plan is to host on Cloudflare Pages after client approval.
 - GitHub repository: https://github.com/smallworldmarketing/gicc-homepage-staging
 - Events calendar source: Google Calendar `ammar@giccmasjid.org`
 - Prayer times source: https://www.awqat.net/masjid/masjid-guildford
+- Community flyer source: current carousel images from https://giccmasjid.org/
 
 ## Current Local Workspace
 
@@ -63,6 +64,7 @@ The app imports React Native primitives from `react-native`, with Vite aliasing 
 - Events calendar: Google Calendar iframe embed for `ammar@giccmasjid.org`.
 - `assets/gicc-logo-white.png`: GICC logo asset.
 - `assets/new-masjid-building.jpg`: Hero background asset from existing GICC site.
+- `assets/community-flyers/`: Local copies of the flyer carousel images from the existing GICC homepage.
 - `.github/workflows/pages.yml`: GitHub Pages staging deployment workflow.
 - `README.md`: Project links and Cloudflare deployment notes.
 - `exports/gicc-homepage-mockup.png`: Original shareable PNG mockup export, ignored by git.
@@ -101,16 +103,10 @@ dist
 
 ## Deployment State
 
-GitHub Pages is live and verified:
+GitHub Pages is live and deploys from pushes to `main`:
 
 ```txt
 https://smallworldmarketing.github.io/gicc-homepage-staging/
-```
-
-The latest GitHub Actions Pages workflow completed successfully after commit:
-
-```txt
-b7e0c2c Opt GitHub Pages workflow into Node 24
 ```
 
 The workflow includes:
@@ -160,20 +156,21 @@ Prayer times are fetched client-side from Awqat's public Supabase-backed data fo
 - Iqama time strip synced from Awqat.
 - Welcome/mission section.
 - Weekly programs section.
+- Community Flyers section:
+  - Uses local flyer assets copied from the original `giccmasjid.org` homepage carousel.
+  - Includes a featured flyer viewer, previous/next controls, thumbnail rail, and original registration/detail links.
 - Calendar section with:
-  - Week/list view toggle.
-  - Category filters.
-  - Static recurring weekly events.
-  - ICS download.
-  - Calendar feed copy button.
+  - Google Calendar iframe embed for `ammar@giccmasjid.org`.
+  - Buttons to open the calendar, open the full embed view, and copy the calendar id.
+  - Access notice for Google Calendar sharing/permissions.
 - New Islamic Center project section.
 - Footer with contact details.
 
 ## Known Caveats / Follow-Up Items
 
-- Weekly event data is representative/sample content and should be replaced with the client's final checklist/content.
 - Awqat sync depends on the public Awqat data source remaining available with the current Supabase API shape.
 - Google Calendar visibility depends on the calendar sharing settings for `ammar@giccmasjid.org`; if the iframe shows a permissions prompt, the calendar owner needs to make the calendar public or explicitly share it with the intended viewer account.
+- Flyer assets are local copies from the existing GICC website. If the client updates flyers on WordPress, copy the new images into `assets/community-flyers/` and update `COMMUNITY_FLYERS` in `src/App.jsx`.
 - Cloudflare has not been connected yet because no Cloudflare credentials/tools were available in this session.
 - The design is a single-page staging build, not yet integrated into the existing WordPress site.
 - The repo is public for easy GitHub Pages staging. Reassess visibility if the client wants it private before production.
@@ -189,9 +186,8 @@ npm run build
 Live staging:
 
 - HTTP 200 check passed for the staging page.
-- HTTP 200 check passed for the staging page.
-- Desktop render verified with Playwright screenshot.
-- Mobile render verified with Playwright screenshot.
+- Desktop render verified with headless Chrome screenshot.
+- Mobile render verified with headless Chrome screenshot.
 - GitHub Actions deployment workflow passed.
 
 ## Suggested Prompt For Next Chat
