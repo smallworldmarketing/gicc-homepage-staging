@@ -2,6 +2,11 @@
 
 React Native Web implementation of the approved Guildford Islamic Cultural Center homepage mockup.
 
+## Links
+
+- Staging: https://smallworldmarketing.github.io/gicc-homepage-staging/
+- Repository: https://github.com/smallworldmarketing/gicc-homepage-staging
+
 ## Local Development
 
 ```sh
