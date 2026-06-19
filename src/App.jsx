@@ -19,6 +19,7 @@ import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
+  Clock,
   Coffee,
   Copy,
   Download,
@@ -35,16 +36,28 @@ import {
   Sparkles,
   UsersRound,
 } from "lucide-react";
-import buildingImage from "../assets/new-masjid-building.jpg";
-import flyerGiccUnited from "../assets/community-flyers/gicc-united-2026.jpeg";
-import flyerIbnMasoodNew from "../assets/community-flyers/gicc-united-flyer-1.jpeg";
-import flyerWeekendArabic from "../assets/community-flyers/gicc-united-flyer-2.jpeg";
-import flyerIlmEssentials from "../assets/community-flyers/gicc-united-flyer-3.jpeg";
-import flyerHighSchoolMadrasah from "../assets/community-flyers/gicc-united-flyer-4.jpeg";
-import flyerMadrasahGradesOneSeven from "../assets/community-flyers/madrasah-grades-1-7.jpeg";
-import flyerMadrasahGradesEightTwelve from "../assets/community-flyers/madrasah-grades-8-12.jpeg";
-import flyerHeartsHands from "../assets/community-flyers/poster2.jpeg";
-import flyerYoungChamps from "../assets/community-flyers/poster3.jpeg";
+// Build-time derivatives via vite-imagetools: a medium WebP for the feature
+// viewer and a small WebP for the thumbnail rail. Cuts the flyer payload from
+// ~3.5 MB of full-res JPEGs to a few hundred KB of right-sized WebP.
+import buildingImage from "../assets/new-masjid-building.jpg?w=1920&format=webp&quality=78";
+import flyerGiccUnitedFull from "../assets/community-flyers/gicc-united-2026.jpeg?w=1000&format=webp&quality=80";
+import flyerGiccUnitedThumb from "../assets/community-flyers/gicc-united-2026.jpeg?w=300&format=webp&quality=72";
+import flyerIbnMasoodNewFull from "../assets/community-flyers/gicc-united-flyer-1.jpeg?w=1000&format=webp&quality=80";
+import flyerIbnMasoodNewThumb from "../assets/community-flyers/gicc-united-flyer-1.jpeg?w=300&format=webp&quality=72";
+import flyerWeekendArabicFull from "../assets/community-flyers/gicc-united-flyer-2.jpeg?w=1000&format=webp&quality=80";
+import flyerWeekendArabicThumb from "../assets/community-flyers/gicc-united-flyer-2.jpeg?w=300&format=webp&quality=72";
+import flyerIlmEssentialsFull from "../assets/community-flyers/gicc-united-flyer-3.jpeg?w=1000&format=webp&quality=80";
+import flyerIlmEssentialsThumb from "../assets/community-flyers/gicc-united-flyer-3.jpeg?w=300&format=webp&quality=72";
+import flyerHighSchoolMadrasahFull from "../assets/community-flyers/gicc-united-flyer-4.jpeg?w=1000&format=webp&quality=80";
+import flyerHighSchoolMadrasahThumb from "../assets/community-flyers/gicc-united-flyer-4.jpeg?w=300&format=webp&quality=72";
+import flyerMadrasahGradesOneSevenFull from "../assets/community-flyers/madrasah-grades-1-7.jpeg?w=1000&format=webp&quality=80";
+import flyerMadrasahGradesOneSevenThumb from "../assets/community-flyers/madrasah-grades-1-7.jpeg?w=300&format=webp&quality=72";
+import flyerMadrasahGradesEightTwelveFull from "../assets/community-flyers/madrasah-grades-8-12.jpeg?w=1000&format=webp&quality=80";
+import flyerMadrasahGradesEightTwelveThumb from "../assets/community-flyers/madrasah-grades-8-12.jpeg?w=300&format=webp&quality=72";
+import flyerHeartsHandsFull from "../assets/community-flyers/poster2.jpeg?w=1000&format=webp&quality=80";
+import flyerHeartsHandsThumb from "../assets/community-flyers/poster2.jpeg?w=300&format=webp&quality=72";
+import flyerYoungChampsFull from "../assets/community-flyers/poster3.jpeg?w=1000&format=webp&quality=80";
+import flyerYoungChampsThumb from "../assets/community-flyers/poster3.jpeg?w=300&format=webp&quality=72";
 import logoImage from "../assets/gicc-logo-white.png";
 
 const COLORS = {
@@ -53,14 +66,23 @@ const COLORS = {
   royal: "#003399",
   blush: "#ffd6d6",
   rose: "#fff1f1",
-  gold: "#a27d2c",
+  gold: "#a27d2c", // decorative only: borders, thumb states, icons on dark
+  goldInk: "#846420", // gold as readable text on light bg (WCAG AA, 5.49:1 on white)
+  goldGlow: "#c9a24a", // brighter gold for accents on the navy strip
   green: "#0f7f68",
   ink: "#142033",
-  muted: "#617086",
+  muted: "#5a6878", // darker than the old #617086 for comfortable AA on tinted bg
   line: "#dfe5ee",
   soft: "#f6f8fb",
+  mist: "#f3f6fb", // calendar section bg
+  frost: "#fbfcff", // toolbar / thumbnail bg
+  cloud: "#f9fbff", // flyer feature card bg
+  amber: "#fffaf0", // notice / active-thumb bg
+  night: "#081020", // footer bg
   white: "#ffffff",
 };
+
+const FONT_DISPLAY = 'Spectral, Georgia, "Times New Roman", serif';
 
 const GOOGLE_CALENDAR_ID = "ammar@giccmasjid.org";
 const GOOGLE_CALENDAR_EMBED_URL =
@@ -75,58 +97,75 @@ const COMMUNITY_FLYERS = [
   {
     title: "Hearts & Hands",
     meta: "Girls program",
-    image: flyerHeartsHands,
+    image: flyerHeartsHandsFull,
+    thumb: flyerHeartsHandsThumb,
     href: "https://form.jotform.com/250506588302253",
   },
   {
     title: "GICC United Young Champs",
     meta: "Soccer registration",
-    image: flyerYoungChamps,
+    image: flyerYoungChampsFull,
+    thumb: flyerYoungChampsThumb,
     href: "https://form.jotform.com/241621402102234",
   },
   {
     title: "Madrasah Grades 8-12",
     meta: "Ibn Masood Madrasah",
-    image: flyerMadrasahGradesEightTwelve,
+    image: flyerMadrasahGradesEightTwelveFull,
+    thumb: flyerMadrasahGradesEightTwelveThumb,
     href: "https://giccmasjid.org/mfas/",
   },
   {
     title: "Madrasah Grades 1-7",
     meta: "Ibn Masood Madrasah",
-    image: flyerMadrasahGradesOneSeven,
+    image: flyerMadrasahGradesOneSevenFull,
+    thumb: flyerMadrasahGradesOneSevenThumb,
     href: "https://docs.google.com/forms/d/e/1FAIpQLScNVkR4Bhfh7dw_IIkpQpyNEkEododGvNDBDtOzytt4lbZpFw/viewform?vc=0&c=0&w=1&flr=0",
   },
   {
     title: "GICC United 2026",
     meta: "Soccer program",
-    image: flyerGiccUnited,
+    image: flyerGiccUnitedFull,
+    thumb: flyerGiccUnitedThumb,
     href: "https://bit.ly/giccsoccer",
   },
   {
     title: "Ibn Masood New Timings",
     meta: "Madrasah registration",
-    image: flyerIbnMasoodNew,
+    image: flyerIbnMasoodNewFull,
+    thumb: flyerIbnMasoodNewThumb,
     href: "https://bit.ly/IbnMasood",
   },
   {
     title: "Weekend Arabic Program",
     meta: "Weekend classes",
-    image: flyerWeekendArabic,
+    image: flyerWeekendArabicFull,
+    thumb: flyerWeekendArabicThumb,
     href: "https://bit.ly/gicc-weekend",
   },
   {
     title: "Ilm Essentials",
     meta: "Foundations course",
-    image: flyerIlmEssentials,
+    image: flyerIlmEssentialsFull,
+    thumb: flyerIlmEssentialsThumb,
     href: "https://sites.google.com/view/ilm-essential-course/home",
   },
   {
     title: "High School Madrasah",
     meta: "Teen program",
-    image: flyerHighSchoolMadrasah,
+    image: flyerHighSchoolMadrasahFull,
+    thumb: flyerHighSchoolMadrasahThumb,
     href: "https://bit.ly/HS-Madrasah",
   },
 ];
+
+function prefersReducedMotion() {
+  return (
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
 
 function openUrl(url, target = "_self") {
   if (typeof window !== "undefined") {
@@ -142,7 +181,9 @@ function openUrl(url, target = "_self") {
 
 function scrollToSection(id) {
   if (typeof document === "undefined") return;
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  document.getElementById(id)?.scrollIntoView({
+    behavior: prefersReducedMotion() ? "auto" : "smooth",
+  });
 }
 
 function vancouverDateString(date = new Date()) {
@@ -154,6 +195,15 @@ function vancouverDateString(date = new Date()) {
   }).formatToParts(date);
   const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
   return `${values.year}-${values.month}-${values.day}`;
+}
+
+function vancouverLongDate(date = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Vancouver",
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  }).format(date);
 }
 
 function formatPrayerTime(value) {
@@ -227,6 +277,14 @@ async function fetchAwqatPrayerTimes() {
   return Array.isArray(records) ? records[0] || null : null;
 }
 
+function Heading({ level, style, children, ...rest }) {
+  return (
+    <Text accessibilityRole="header" aria-level={level} style={style} {...rest}>
+      {children}
+    </Text>
+  );
+}
+
 function IconText({ icon: Icon, children, color = COLORS.white, size = 14, style, textStyle }) {
   return (
     <View style={[styles.iconText, style]}>
@@ -236,12 +294,17 @@ function IconText({ icon: Icon, children, color = COLORS.white, size = 14, style
   );
 }
 
-function Button({ children, icon: Icon, variant = "primary", onPress, style }) {
+function Button({ children, icon: Icon, variant = "primary", onPress, style, accessibilityLabel }) {
   const palette = variant === "secondary" ? styles.buttonSecondary : variant === "light" ? styles.buttonLight : styles.buttonPrimary;
   const textColor = variant === "primary" || variant === "light" ? COLORS.navy : COLORS.white;
 
   return (
-    <Pressable onPress={onPress} style={({ hovered }) => [styles.button, palette, hovered && styles.buttonHover, style]}>
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
+      style={({ hovered, pressed }) => [styles.button, palette, hovered && styles.buttonHover, pressed && styles.buttonPressed, style]}
+    >
       {Icon ? <Icon size={16} color={textColor} strokeWidth={2} /> : null}
       <Text style={[styles.buttonText, { color: textColor }]}>{children}</Text>
     </Pressable>
@@ -270,7 +333,7 @@ function Header({ isMobile }) {
       ];
 
   return (
-    <View style={styles.header}>
+    <View accessibilityRole="banner" style={styles.header}>
       <View style={[styles.topbar, isMobile && styles.topbarMobile]}>
         {topbarItems.map(([Icon, label]) => (
           <IconText key={label} icon={Icon} size={12} style={isMobile && styles.iconTextMobile} textStyle={isMobile && styles.iconTextLabelMobile}>
@@ -278,27 +341,39 @@ function Header({ isMobile }) {
           </IconText>
         ))}
       </View>
-      <View style={[styles.nav, isMobile && styles.navMobile]}>
-        <Image source={{ uri: logoImage }} style={[styles.logo, isMobile && styles.logoMobile]} resizeMode="contain" />
+      <View accessibilityRole="navigation" style={[styles.nav, isMobile && styles.navMobile]}>
+        <Image source={{ uri: logoImage }} accessibilityLabel="Guildford Islamic Cultural Center" style={[styles.logo, isMobile && styles.logoMobile]} resizeMode="contain" />
         {isMobile ? (
-          <Pressable onPress={() => setMenuOpen((value) => !value)} style={styles.menuButton} accessibilityRole="button">
+          <Pressable
+            onPress={() => setMenuOpen((value) => !value)}
+            style={styles.menuButton}
+            accessibilityRole="button"
+            accessibilityLabel={menuOpen ? "Close menu" : "Open menu"}
+            accessibilityState={{ expanded: menuOpen }}
+          >
             <Menu size={22} color={COLORS.white} />
           </Pressable>
         ) : null}
         {(!isMobile || menuOpen) ? (
           <View style={[styles.navLinks, isMobile && styles.navLinksMobile]}>
             {navItems.map(([label, id]) => (
-              <Pressable key={id} onPress={() => {
-                setMenuOpen(false);
-                scrollToSection(id);
-              }}>
+              <Pressable
+                key={id}
+                accessibilityRole="link"
+                style={({ hovered }) => [styles.navLinkWrap, hovered && styles.navLinkHover]}
+                onPress={() => {
+                  setMenuOpen(false);
+                  scrollToSection(id);
+                }}
+              >
                 <Text style={styles.navLink}>{label}</Text>
               </Pressable>
             ))}
             <Pressable
               onPress={() => openUrl("https://surreyislamiccenter.com/", "_blank")}
-              style={[styles.donateLink, isMobile && styles.donateLinkMobile]}
+              style={({ hovered }) => [styles.donateLink, isMobile && styles.donateLinkMobile, hovered && styles.donateLinkHover]}
               accessibilityRole="link"
+              accessibilityLabel="Donate to GICC"
             >
               <HeartHandshake size={16} color={COLORS.navy} />
               <Text style={styles.donateLinkText}>Donate</Text>
@@ -313,17 +388,24 @@ function Header({ isMobile }) {
 function Hero({ isMobile, isTablet, prayerTimes }) {
   return (
     <View style={[styles.hero, isMobile && styles.heroMobile]}>
-      <ImageBackground source={{ uri: buildingImage }} style={styles.heroImage} resizeMode="cover">
+      <ImageBackground
+        source={{ uri: buildingImage }}
+        accessibilityLabel="The Guildford neighbourhood that GICC serves in Surrey, BC"
+        style={styles.heroImage}
+        resizeMode="cover"
+      >
         <View style={styles.heroOverlay} />
         <View style={[styles.heroContent, isMobile && styles.heroContentMobile]}>
-          <Text style={styles.eyebrow}>Assalam u Alaikum</Text>
-          <Text style={[styles.heroTitle, isMobile && styles.heroTitleMobile]}>Guildford Islamic Cultural Center</Text>
+          <Text style={styles.eyebrow}>Assalamu alaikum, welcome.</Text>
+          <Heading level={1} style={[styles.heroTitle, isTablet && styles.heroTitleTablet, isMobile && styles.heroTitleMobile]}>
+            Guildford Islamic Cultural Center
+          </Heading>
           <Text style={[styles.heroCopy, isMobile && styles.heroCopyMobile]}>
             A spiritual home for daily prayer, Islamic learning, family programs, and community service in Guildford.
           </Text>
           <View style={[styles.heroActions, isMobile && styles.heroActionsMobile]}>
             <Button icon={CalendarDays} onPress={() => scrollToSection("calendar")} style={isMobile && styles.fullWidthButton}>
-              View Weekly Events
+              View weekly events
             </Button>
             <Button
               icon={Building2}
@@ -365,8 +447,8 @@ function PrayerStrip({ isTablet, prayerTimes, prayerStatus }) {
     <View style={styles.prayerStrip}>
       <View style={[styles.sectionInner, styles.prayerInner, isTablet && styles.prayerInnerTablet]}>
         <View style={styles.stripHeading}>
-          <Text style={styles.eyebrowDark}>Today</Text>
-          <Text style={styles.stripTitle}>Iqama Times</Text>
+          <Heading level={2} style={styles.stripTitle}>Iqama times</Heading>
+          <Text style={styles.stripDate}>{vancouverLongDate()}</Text>
         </View>
         <View style={[styles.prayerTimes, isTablet && styles.prayerTimesTablet]}>
           {times.map(([label, value]) => (
@@ -376,9 +458,9 @@ function PrayerStrip({ isTablet, prayerTimes, prayerStatus }) {
             </View>
           ))}
         </View>
-        <Pressable onPress={() => openUrl(AWQAT_PAGE_URL, "_blank")} style={styles.textLinkRow}>
-          <Text style={styles.textLink}>{prayerStatus === "error" ? "Open Awqat" : "Synced from Awqat"}</Text>
-          <ArrowUpRight size={14} color={COLORS.gold} />
+        <Pressable onPress={() => openUrl(AWQAT_PAGE_URL, "_blank")} accessibilityRole="link" style={styles.stripLinkRow}>
+          <Text style={styles.stripLink}>{prayerStatus === "error" ? "Open Awqat" : "Synced from Awqat"}</Text>
+          <ArrowUpRight size={14} color={COLORS.goldGlow} />
         </Pressable>
       </View>
     </View>
@@ -394,23 +476,24 @@ function Welcome({ isTablet, isMobile }) {
   ];
 
   return (
-    <View nativeID="welcome" style={[styles.whiteSection, isMobile && styles.mobileSection]}>
+    <View nativeID="welcome" accessibilityRole="region" aria-label="About GICC" style={[styles.whiteSection, isMobile && styles.mobileSection]}>
       <View style={[styles.sectionInner, styles.splitLayout, isTablet && styles.stack]}>
         <View style={styles.introCopy}>
-          <Text style={styles.eyebrowDark}>Welcome to GICC</Text>
-          <Text style={[styles.sectionTitle, isMobile && styles.sectionTitleMobile]}>
+          <Heading level={2} style={[styles.sectionTitle, isTablet && styles.sectionTitleTablet, isMobile && styles.sectionTitleMobile]}>
             Prayer, learning, and service for the Muslim community of Guildford.
-          </Text>
+          </Heading>
           <Text style={styles.bodyText}>
             GICC is a masjid and community center committed to preserving Islamic identity, supporting a viable
             Muslim community, and promoting a comprehensive way of life based on the Quran and Sunnah.
           </Text>
         </View>
-        <View style={styles.missionPoints}>
-          {points.map(([Icon, label]) => (
-            <View key={label} style={styles.missionPoint}>
-              <Icon size={22} color={COLORS.green} strokeWidth={2} />
-              <Text style={styles.missionPointText}>{label}</Text>
+        <View style={styles.missionList}>
+          {points.map(([Icon, label], index) => (
+            <View key={label} style={[styles.missionItem, index > 0 && styles.missionItemDivider]}>
+              <View style={styles.missionIcon}>
+                <Icon size={20} color={COLORS.green} strokeWidth={2} />
+              </View>
+              <Text style={styles.missionItemText}>{label}</Text>
             </View>
           ))}
         </View>
@@ -421,34 +504,43 @@ function Welcome({ isTablet, isMobile }) {
 
 function Programs({ isTablet, isMobile }) {
   const programs = [
-    [GraduationCap, "Ibn Masood Madrasah", "Weekday Islamic education for young students with Quran, Arabic, and foundational studies.", "Mon-Fri, 4:30 PM"],
-    [Sparkles, "Youth Night", "Guided discussions, brotherhood, sisterhood, and practical reminders for high-school students.", "Friday, 7:30 PM"],
-    [BookMarked, "Quran Circle", "Recitation, reflection, and steady learning in a welcoming community setting.", "Saturday, 11:00 AM"],
-    [Coffee, "Community Halaqa", "Sunday morning breakfast, reminders, and connection for families and newcomers.", "Sunday, 9:30 AM"],
+    [GraduationCap, "Ibn Masood Madrasah", "Weekday Islamic education with Quran, Arabic, and foundational studies for young students.", "Mon to Fri", "4:30 PM"],
+    [Sparkles, "Youth Night", "Guided discussions, brotherhood, sisterhood, and practical reminders for high-school students.", "Friday", "7:30 PM"],
+    [BookMarked, "Quran Circle", "Recitation, reflection, and steady learning in a welcoming community setting.", "Saturday", "11:00 AM"],
+    [Coffee, "Community Halaqa", "Sunday morning breakfast, reminders, and connection for families and newcomers.", "Sunday", "9:30 AM"],
   ];
 
   return (
-    <View nativeID="programs" style={[styles.softSection, isMobile && styles.mobileSection]}>
+    <View nativeID="programs" accessibilityRole="region" aria-label="Weekly programs" style={[styles.softSection, isMobile && styles.mobileSection]}>
       <View style={styles.sectionInner}>
-        <View style={[styles.sectionHeading, isMobile && styles.stack]}>
-          <View>
-            <Text style={styles.eyebrowDark}>Ongoing Programs</Text>
-            <Text style={[styles.sectionTitle, isMobile && styles.sectionTitleMobile]}>
+        <View style={[styles.sectionHeading, isTablet && styles.stack]}>
+          <View style={styles.headingTextWrap}>
+            <Heading level={2} style={[styles.sectionTitle, isTablet && styles.sectionTitleTablet, isMobile && styles.sectionTitleMobile]}>
               A weekly rhythm for every stage of family life.
-            </Text>
+            </Heading>
           </View>
-          <Pressable onPress={() => scrollToSection("calendar")} style={styles.textLinkRow}>
+          <Pressable onPress={() => scrollToSection("calendar")} accessibilityRole="link" style={styles.textLinkRow}>
             <Text style={styles.textLink}>See all events</Text>
-            <ArrowDown size={14} color={COLORS.gold} />
+            <ArrowDown size={14} color={COLORS.goldInk} />
           </Pressable>
         </View>
-        <View style={[styles.programGrid, isTablet && styles.programGridTablet, isMobile && styles.stack]}>
-          {programs.map(([Icon, title, copy, time]) => (
-            <View key={title} style={[styles.programCard, isTablet && styles.programCardTablet, isMobile && styles.programCardMobile]}>
-              <Icon size={28} color={COLORS.gold} strokeWidth={1.9} />
-              <Text style={styles.cardTitle}>{title}</Text>
-              <Text style={styles.cardCopy}>{copy}</Text>
-              <Text style={styles.cardMeta}>{time}</Text>
+        <View style={styles.scheduleList}>
+          {programs.map(([Icon, title, copy, day, time], index) => (
+            <View key={title} style={[styles.scheduleRow, index === 0 && styles.scheduleRowFirst, isMobile && styles.scheduleRowMobile]}>
+              <View style={styles.scheduleIcon}>
+                <Icon size={22} color={COLORS.green} strokeWidth={1.9} />
+              </View>
+              <View style={styles.scheduleBody}>
+                <Text style={styles.scheduleTitle}>{title}</Text>
+                <Text style={styles.scheduleCopy}>{copy}</Text>
+              </View>
+              <View style={[styles.scheduleWhen, isMobile && styles.scheduleWhenMobile]}>
+                <Text style={styles.scheduleDay}>{day}</Text>
+                <View style={styles.scheduleTimeRow}>
+                  <Clock size={13} color={COLORS.goldInk} strokeWidth={2.2} />
+                  <Text style={styles.scheduleTime}>{time}</Text>
+                </View>
+              </View>
             </View>
           ))}
         </View>
@@ -466,22 +558,21 @@ function CommunityFlyers({ isMobile, isTablet }) {
   }
 
   return (
-    <View nativeID="flyers" style={[styles.flyerSection, isMobile && styles.mobileSection]}>
+    <View nativeID="flyers" accessibilityRole="region" aria-label="Community flyers" style={[styles.flyerSection, isMobile && styles.mobileSection]}>
       <View style={[styles.sectionInner, styles.flyerLayout, isTablet && styles.stack]}>
         <View style={styles.flyerCopyPane}>
-          <Text style={styles.eyebrowDark}>Community Flyers</Text>
-          <Text style={[styles.sectionTitle, isMobile && styles.sectionTitleMobile]}>
-            Current programs and community flyers.
-          </Text>
+          <Heading level={2} style={[styles.sectionTitle, isTablet && styles.sectionTitleTablet, isMobile && styles.sectionTitleMobile]}>
+            Current programs and registrations.
+          </Heading>
           <Text style={styles.bodyText}>
-            Registration links, classes, youth sports, and learning opportunities for families in the GICC community.
+            Registration links, classes, youth sports, and learning opportunities for families across the GICC community.
           </Text>
           <View style={styles.flyerControls}>
-            <Pressable onPress={() => moveFlyer(-1)} style={styles.iconButton} accessibilityRole="button" accessibilityLabel="Previous flyer">
+            <Pressable onPress={() => moveFlyer(-1)} style={({ hovered }) => [styles.iconButton, hovered && styles.iconButtonHover]} accessibilityRole="button" accessibilityLabel="Previous flyer">
               <ChevronLeft size={22} color={COLORS.navy} />
             </Pressable>
             <Text style={styles.flyerCount}>{activeIndex + 1} / {COMMUNITY_FLYERS.length}</Text>
-            <Pressable onPress={() => moveFlyer(1)} style={styles.iconButton} accessibilityRole="button" accessibilityLabel="Next flyer">
+            <Pressable onPress={() => moveFlyer(1)} style={({ hovered }) => [styles.iconButton, hovered && styles.iconButtonHover]} accessibilityRole="button" accessibilityLabel="Next flyer">
               <ChevronRight size={22} color={COLORS.navy} />
             </Pressable>
           </View>
@@ -492,22 +583,32 @@ function CommunityFlyers({ isMobile, isTablet }) {
             onPress={() => openUrl(activeFlyer.href, "_blank")}
             style={({ hovered }) => [styles.flyerFeatureCard, isMobile && styles.flyerFeatureCardMobile, hovered && styles.flyerFeatureCardHover]}
             accessibilityRole="link"
+            accessibilityLabel={`${activeFlyer.title} flyer, opens registration`}
           >
-            <Image
-              source={{ uri: activeFlyer.image }}
-              style={styles.flyerFeatureImage}
-              resizeMode="contain"
-              accessibilityLabel={activeFlyer.title}
-            />
+            {React.createElement("img", {
+              src: activeFlyer.image,
+              alt: `${activeFlyer.title} flyer`,
+              loading: "eager",
+              decoding: "async",
+              style: {
+                width: "100%",
+                flex: "1 1 0%",
+                minHeight: 0,
+                objectFit: "contain",
+                borderRadius: 6,
+                backgroundColor: COLORS.white,
+                display: "block",
+              },
+            })}
           </Pressable>
           <View style={[styles.flyerMeta, isMobile && styles.stack]}>
             <View>
               <Text style={styles.flyerTitle}>{activeFlyer.title}</Text>
               <Text style={styles.flyerSubtitle}>{activeFlyer.meta}</Text>
             </View>
-            <Pressable onPress={() => openUrl(activeFlyer.href, "_blank")} style={styles.textLinkRow} accessibilityRole="link">
+            <Pressable onPress={() => openUrl(activeFlyer.href, "_blank")} style={styles.textLinkRow} accessibilityRole="link" accessibilityLabel={`Open details for ${activeFlyer.title}`}>
               <Text style={styles.textLink}>Open details</Text>
-              <ArrowUpRight size={14} color={COLORS.gold} />
+              <ArrowUpRight size={14} color={COLORS.goldInk} />
             </Pressable>
           </View>
         </View>
@@ -533,8 +634,24 @@ function CommunityFlyers({ isMobile, isTablet }) {
                 ]}
                 accessibilityRole="button"
                 accessibilityLabel={`Show ${flyer.title}`}
+                accessibilityState={{ selected: isActive }}
               >
-                <Image source={{ uri: flyer.image }} style={styles.flyerThumbImage} resizeMode="cover" />
+                {React.createElement("img", {
+                  src: flyer.thumb,
+                  alt: "",
+                  loading: "lazy",
+                  decoding: "async",
+                  width: 122,
+                  height: 132,
+                  style: {
+                    width: "100%",
+                    height: 132,
+                    objectFit: "cover",
+                    borderRadius: 6,
+                    backgroundColor: COLORS.soft,
+                    display: "block",
+                  },
+                })}
                 <Text style={styles.flyerThumbTitle} numberOfLines={2}>{flyer.title}</Text>
               </Pressable>
             );
@@ -546,22 +663,25 @@ function CommunityFlyers({ isMobile, isTablet }) {
 }
 
 function CalendarSection({ isMobile, isTablet }) {
+  const [copied, setCopied] = useState(false);
+
   async function copyCalendarId() {
     try {
       await navigator.clipboard.writeText(GOOGLE_CALENDAR_ID);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch {
-      return;
+      openUrl(GOOGLE_CALENDAR_OPEN_URL, "_blank");
     }
   }
 
   return (
-    <View nativeID="calendar" style={[styles.calendarSection, isMobile && styles.mobileSection]}>
+    <View nativeID="calendar" accessibilityRole="region" aria-label="Community calendar" style={[styles.calendarSection, isMobile && styles.mobileSection]}>
       <View style={styles.sectionInner}>
         <View style={[styles.sectionHeading, isTablet && styles.stack]}>
-          <View>
-            <Text style={styles.eyebrowDark}>Live Community Calendar</Text>
-            <Text style={[styles.sectionTitle, isMobile && styles.sectionTitleMobile]}>GICC community calendar</Text>
-            <Text style={styles.bodyText}>Weekly programs and community events now load from the shared GICC Google Calendar.</Text>
+          <View style={styles.headingTextWrap}>
+            <Heading level={2} style={[styles.sectionTitle, isTablet && styles.sectionTitleTablet, isMobile && styles.sectionTitleMobile]}>GICC community calendar</Heading>
+            <Text style={styles.bodyText}>Weekly programs and community events load from our shared GICC Google Calendar.</Text>
           </View>
           <View style={[styles.calendarActions, isMobile && styles.stack]}>
             <Button icon={RefreshCw} onPress={() => openUrl(GOOGLE_CALENDAR_OPEN_URL, "_blank")} style={isMobile && styles.fullWidthButton}>
@@ -570,33 +690,41 @@ function CalendarSection({ isMobile, isTablet }) {
             <Button icon={Download} variant="light" onPress={() => openUrl(GOOGLE_CALENDAR_EMBED_URL, "_blank")} style={isMobile && styles.fullWidthButton}>
               Full View
             </Button>
-            <Button icon={Copy} variant="light" onPress={copyCalendarId} style={isMobile && styles.fullWidthButton}>Copy Calendar ID</Button>
+            <Button icon={Copy} variant="light" onPress={copyCalendarId} style={isMobile && styles.fullWidthButton}>{copied ? "Copied" : "Copy Calendar ID"}</Button>
           </View>
         </View>
         <View style={styles.calendarTool}>
           <View style={[styles.calendarToolbar, isTablet && styles.stack]}>
             <View>
-              <Text style={styles.calendarEmbedTitle}>Google Calendar Embed</Text>
+              <Text style={styles.calendarEmbedTitle}>Live calendar</Text>
               <Text style={styles.calendarEmbedMeta}>Source: {GOOGLE_CALENDAR_ID}</Text>
             </View>
-            <Pressable onPress={() => openUrl(GOOGLE_CALENDAR_OPEN_URL, "_blank")} style={styles.textLinkRow}>
+            <Pressable onPress={() => openUrl(GOOGLE_CALENDAR_OPEN_URL, "_blank")} accessibilityRole="link" style={styles.textLinkRow}>
               <Text style={styles.textLink}>Manage in Google Calendar</Text>
-              <ArrowUpRight size={14} color={COLORS.gold} />
+              <ArrowUpRight size={14} color={COLORS.goldInk} />
             </Pressable>
           </View>
           <View style={styles.calendarAccessNotice}>
             <Text style={styles.calendarAccessTitle}>Calendar access note</Text>
             <Text style={styles.calendarAccessCopy}>
-              If the embedded calendar appears blank, Google Calendar sharing needs to be changed to public for website embedding.
+              If the embedded calendar looks empty, its Google sharing needs to be set to public. Until then, tap Open Calendar to see every event.
             </Text>
           </View>
           <View style={[styles.calendarEmbedShell, isMobile && styles.calendarEmbedShellMobile]}>
+            <View style={styles.calendarPlaceholder} aria-hidden>
+              <CalendarDays size={30} color={COLORS.gold} strokeWidth={1.7} />
+              <Text style={styles.placeholderTitle}>Loading the GICC calendar</Text>
+              <Text style={styles.placeholderCopy}>If events do not appear here, open the calendar directly.</Text>
+              <Button icon={ExternalLink} variant="light" onPress={() => openUrl(GOOGLE_CALENDAR_OPEN_URL, "_blank")}>Open Calendar</Button>
+            </View>
             {React.createElement("iframe", {
               title: "GICC Google Calendar",
               src: GOOGLE_CALENDAR_EMBED_URL,
               loading: "lazy",
               frameBorder: "0",
               style: {
+                position: "relative",
+                zIndex: 1,
                 border: 0,
                 width: "100%",
                 height: "100%",
@@ -614,25 +742,24 @@ function CalendarSection({ isMobile, isTablet }) {
 
 function NewCenter({ isTablet, isMobile }) {
   return (
-    <View nativeID="new-center" style={styles.newCenterSection}>
+    <View nativeID="new-center" accessibilityRole="region" aria-label="New Islamic Center project" style={styles.newCenterSection}>
       <View style={[styles.patternLayer]} />
       <View style={[styles.sectionInner, styles.newCenterLayout, isTablet && styles.stack]}>
         <View style={styles.newCenterCopy}>
-          <Text style={styles.eyebrow}>New Islamic Center Project</Text>
-          <Text style={[styles.sectionTitle, styles.whiteTitle, isMobile && styles.sectionTitleMobile]}>
+          <Heading level={2} style={[styles.sectionTitle, styles.whiteTitle, isTablet && styles.sectionTitleTablet, isMobile && styles.sectionTitleMobile]}>
             Building a permanent house of worship in Guildford.
-          </Text>
+          </Heading>
           <Text style={styles.whiteBody}>
             The new center project gives the community more space for prayer, education, youth programs, and service.
             This homepage keeps the project visible without crowding the weekly worship experience.
           </Text>
         </View>
         <View style={styles.pledgePanel}>
-          <Text style={styles.pledgeLabel}>Project Focus</Text>
+          <Text style={styles.pledgeLabel}>Project focus</Text>
           <Text style={styles.pledgeTitle}>14888 104 Ave</Text>
           <Text style={styles.whiteBody}>Future Islamic Center property in Surrey, BC.</Text>
           <Button icon={ExternalLink} variant="secondary" onPress={() => openUrl("https://surreyislamiccenter.com/", "_blank")}>
-            Visit Project Site
+            Visit project site
           </Button>
         </View>
       </View>
@@ -642,10 +769,10 @@ function NewCenter({ isTablet, isMobile }) {
 
 function Footer({ isTablet }) {
   return (
-    <View nativeID="contact" style={styles.footer}>
+    <View nativeID="contact" accessibilityRole="contentinfo" style={styles.footer}>
       <View style={[styles.sectionInner, styles.footerLayout, isTablet && styles.stack]}>
         <View>
-          <Image source={{ uri: logoImage }} style={styles.footerLogo} resizeMode="contain" />
+          <Image source={{ uri: logoImage }} accessibilityLabel="Guildford Islamic Cultural Center" style={styles.footerLogo} resizeMode="contain" />
           <Text style={styles.footerCopy}>Serving the Muslim community in Guildford, Surrey, British Columbia.</Text>
         </View>
         <View>
@@ -703,19 +830,22 @@ export default function App() {
   return (
     <ScrollView style={styles.app} contentContainerStyle={styles.page}>
       <Header isMobile={useCompactHeader} />
-      <Hero isMobile={isMobile} isTablet={isTablet} prayerTimes={prayerState.data} />
-      <PrayerStrip isTablet={isTablet} prayerTimes={prayerState.data} prayerStatus={prayerState.status} />
-      <Welcome isTablet={isTablet} isMobile={isMobile} />
-      <Programs isTablet={isTablet} isMobile={isMobile} />
-      <CommunityFlyers isMobile={isMobile} isTablet={isTablet} />
-      <CalendarSection isMobile={isMobile} isTablet={isTablet} />
-      <NewCenter isTablet={isTablet} isMobile={isMobile} />
+      <View accessibilityRole="main" style={styles.main}>
+        <Hero isMobile={isMobile} isTablet={isTablet} prayerTimes={prayerState.data} />
+        <PrayerStrip isTablet={isTablet} prayerTimes={prayerState.data} prayerStatus={prayerState.status} />
+        <Welcome isTablet={isTablet} isMobile={isMobile} />
+        <Programs isTablet={isTablet} isMobile={isMobile} />
+        <CommunityFlyers isMobile={isMobile} isTablet={isTablet} />
+        <CalendarSection isMobile={isMobile} isTablet={isTablet} />
+        <NewCenter isTablet={isTablet} isMobile={isMobile} />
+      </View>
       <Footer isTablet={isTablet} />
     </ScrollView>
   );
 }
 
 const baseShadow = "0 24px 60px rgba(1, 22, 64, 0.16)";
+const easeOut = "cubic-bezier(0.22, 1, 0.36, 1)";
 
 const styles = StyleSheet.create({
   app: {
@@ -724,6 +854,9 @@ const styles = StyleSheet.create({
   },
   page: {
     minHeight: "100vh",
+  },
+  main: {
+    width: "100%",
   },
   header: {
     position: "fixed",
@@ -780,6 +913,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "rgba(1,22,64,0.74)",
     boxShadow: "0 16px 40px rgba(0,0,0,0.18)",
+    backdropFilter: "blur(8px)",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -800,8 +934,8 @@ const styles = StyleSheet.create({
     height: 54,
   },
   menuButton: {
-    width: 42,
-    height: 42,
+    width: 44,
+    height: 44,
     marginRight: 8,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.28)",
@@ -812,7 +946,7 @@ const styles = StyleSheet.create({
   navLinks: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 24,
+    gap: 8,
   },
   navLinksMobile: {
     position: "fixed",
@@ -829,13 +963,22 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(1,22,64,0.97)",
     boxShadow: baseShadow,
   },
+  navLinkWrap: {
+    borderRadius: 6,
+    transitionProperty: "background-color",
+    transitionDuration: "160ms",
+    transitionTimingFunction: easeOut,
+  },
+  navLinkHover: {
+    backgroundColor: "rgba(255,255,255,0.08)",
+  },
   navLink: {
     minHeight: 44,
-    paddingHorizontal: 4,
+    paddingHorizontal: 12,
     paddingVertical: 13,
-    color: "rgba(255,255,255,0.88)",
+    color: "rgba(255,255,255,0.92)",
     fontSize: 14,
-    fontWeight: "800",
+    fontWeight: "700",
   },
   donateLink: {
     minHeight: 78,
@@ -846,6 +989,12 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 8,
     borderBottomRightRadius: 8,
     backgroundColor: COLORS.blush,
+    transitionProperty: "background-color",
+    transitionDuration: "160ms",
+    transitionTimingFunction: easeOut,
+  },
+  donateLinkHover: {
+    backgroundColor: "#ffc4c4",
   },
   donateLinkText: {
     color: COLORS.navy,
@@ -882,42 +1031,49 @@ const styles = StyleSheet.create({
     paddingHorizontal: 48,
     paddingBottom: 110,
     zIndex: 1,
+    animationKeyframes: {
+      "0%": { opacity: 0, transform: [{ translateY: 18 }] },
+      "100%": { opacity: 1, transform: [{ translateY: 0 }] },
+    },
+    animationDuration: "760ms",
+    animationTimingFunction: easeOut,
+    animationFillMode: "both",
   },
   heroContentMobile: {
     paddingHorizontal: 20,
     paddingBottom: 245,
   },
   eyebrow: {
-    marginBottom: 12,
+    marginBottom: 14,
     color: COLORS.blush,
-    fontSize: 12,
-    fontWeight: "900",
-    textTransform: "uppercase",
-  },
-  eyebrowDark: {
-    marginBottom: 12,
-    color: COLORS.gold,
-    fontSize: 12,
-    fontWeight: "900",
-    textTransform: "uppercase",
+    fontSize: 15,
+    fontWeight: "700",
+    letterSpacing: 0.2,
   },
   heroTitle: {
     maxWidth: 880,
     color: COLORS.white,
-    fontFamily: 'Georgia, "Times New Roman", serif',
+    fontFamily: FONT_DISPLAY,
     fontSize: 92,
     fontWeight: "700",
     lineHeight: 92,
+    letterSpacing: -1.2,
+  },
+  heroTitleTablet: {
+    fontSize: 62,
+    lineHeight: 64,
+    letterSpacing: -0.8,
   },
   heroTitleMobile: {
-    fontSize: 48,
+    fontSize: 46,
     lineHeight: 49,
+    letterSpacing: -0.5,
   },
   heroCopy: {
     width: "100%",
     maxWidth: 640,
     marginTop: 18,
-    color: "rgba(255,255,255,0.86)",
+    color: "rgba(255,255,255,0.88)",
     fontSize: 19,
     lineHeight: 28,
   },
@@ -948,7 +1104,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.22)",
     borderRadius: 8,
-    backgroundColor: "rgba(255,255,255,0.12)",
+    backgroundColor: "rgba(1,22,64,0.34)",
+    backdropFilter: "blur(6px)",
+    animationKeyframes: {
+      "0%": { opacity: 0, transform: [{ translateY: 12 }] },
+      "100%": { opacity: 1, transform: [{ translateY: 0 }] },
+    },
+    animationDuration: "760ms",
+    animationDelay: "140ms",
+    animationTimingFunction: easeOut,
+    animationFillMode: "both",
   },
   heroStatusTablet: {
     left: 16,
@@ -979,10 +1144,11 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
   },
   statusLabel: {
-    color: "rgba(255,255,255,0.64)",
+    color: "rgba(255,255,255,0.74)",
     fontSize: 11,
     fontWeight: "900",
     textTransform: "uppercase",
+    letterSpacing: 0.4,
   },
   statusValue: {
     marginTop: 3,
@@ -1001,9 +1167,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
+    transitionProperty: "transform, box-shadow, background-color",
+    transitionDuration: "160ms",
+    transitionTimingFunction: easeOut,
   },
   buttonHover: {
     transform: "translateY(-1px)",
+    boxShadow: "0 10px 22px rgba(1,22,64,0.18)",
+  },
+  buttonPressed: {
+    transform: "translateY(0px)",
   },
   buttonPrimary: {
     backgroundColor: COLORS.blush,
@@ -1027,6 +1200,11 @@ const styles = StyleSheet.create({
     maxWidth: 1180,
     alignSelf: "center",
   },
+  headingTextWrap: {
+    flexShrink: 1,
+    minWidth: 0,
+    maxWidth: 760,
+  },
   prayerStrip: {
     backgroundColor: COLORS.navy,
   },
@@ -1043,13 +1221,19 @@ const styles = StyleSheet.create({
     paddingVertical: 28,
   },
   stripHeading: {
-    width: 170,
+    width: 180,
   },
   stripTitle: {
     color: COLORS.white,
     fontSize: 26,
     fontWeight: "900",
-    lineHeight: 29,
+    lineHeight: 30,
+  },
+  stripDate: {
+    marginTop: 4,
+    color: "rgba(255,255,255,0.66)",
+    fontSize: 13,
+    fontWeight: "700",
   },
   prayerTimes: {
     flex: 1,
@@ -1070,16 +1254,27 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.07)",
   },
   prayerLabel: {
-    color: "rgba(255,255,255,0.6)",
+    color: "rgba(255,255,255,0.72)",
     fontSize: 11,
     fontWeight: "900",
     textTransform: "uppercase",
+    letterSpacing: 0.4,
   },
   prayerValue: {
     marginTop: 3,
     color: COLORS.white,
     fontSize: 18,
     fontWeight: "900",
+  },
+  stripLinkRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+  },
+  stripLink: {
+    color: COLORS.goldGlow,
+    fontWeight: "800",
+    fontSize: 14,
   },
   whiteSection: {
     paddingVertical: 105,
@@ -1091,7 +1286,7 @@ const styles = StyleSheet.create({
   },
   calendarSection: {
     paddingVertical: 105,
-    backgroundColor: "#f3f6fb",
+    backgroundColor: COLORS.mist,
   },
   mobileSection: {
     paddingVertical: 64,
@@ -1106,40 +1301,64 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: COLORS.navy,
-    fontFamily: 'Georgia, "Times New Roman", serif',
-    fontSize: 58,
+    fontFamily: FONT_DISPLAY,
+    fontSize: 56,
     fontWeight: "700",
     lineHeight: 60,
+    letterSpacing: -0.6,
+  },
+  sectionTitleTablet: {
+    fontSize: 40,
+    lineHeight: 44,
+    letterSpacing: -0.4,
   },
   sectionTitleMobile: {
-    fontSize: 34,
-    lineHeight: 38,
+    fontSize: 32,
+    lineHeight: 37,
+    letterSpacing: -0.2,
   },
   bodyText: {
-    maxWidth: 690,
+    maxWidth: 660,
     marginTop: 18,
     color: COLORS.muted,
     fontSize: 16,
     lineHeight: 25,
   },
-  missionPoints: {
+  missionList: {
     flex: 0.9,
-    gap: 12,
-  },
-  missionPoint: {
-    minHeight: 72,
-    padding: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 6,
     borderWidth: 1,
     borderColor: COLORS.line,
-    borderRadius: 8,
+    borderRadius: 10,
     backgroundColor: COLORS.soft,
+  },
+  missionItem: {
+    minHeight: 64,
+    paddingVertical: 16,
     flexDirection: "row",
     alignItems: "center",
     gap: 14,
   },
-  missionPointText: {
+  missionItemDivider: {
+    borderTopWidth: 1,
+    borderTopColor: COLORS.line,
+  },
+  missionIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: COLORS.line,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  missionItemText: {
+    flex: 1,
     color: COLORS.ink,
-    fontWeight: "900",
+    fontSize: 15,
+    fontWeight: "800",
   },
   sectionHeading: {
     marginBottom: 40,
@@ -1152,55 +1371,87 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 7,
+    paddingVertical: 4,
   },
   textLink: {
-    color: COLORS.gold,
-    fontWeight: "900",
+    color: COLORS.goldInk,
+    fontWeight: "800",
+    fontSize: 15,
   },
-  programGrid: {
-    flexDirection: "row",
-    gap: 16,
-  },
-  programGridTablet: {
-    flexWrap: "wrap",
-  },
-  programCard: {
-    flex: 1,
-    minHeight: 310,
-    minWidth: 0,
-    padding: 22,
+  scheduleList: {
     borderWidth: 1,
     borderColor: COLORS.line,
-    borderRadius: 8,
+    borderRadius: 12,
     backgroundColor: COLORS.white,
-    boxShadow: "0 12px 26px rgba(1,22,64,0.06)",
+    overflow: "hidden",
+    boxShadow: "0 12px 30px rgba(1,22,64,0.05)",
   },
-  programCardTablet: {
-    minWidth: "calc(50% - 8px)",
+  scheduleRow: {
+    paddingVertical: 22,
+    paddingHorizontal: 24,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.line,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 20,
   },
-  programCardMobile: {
-    minHeight: 220,
-    padding: 18,
+  scheduleRowFirst: {
+    borderTopWidth: 0,
   },
-  cardTitle: {
-    marginTop: 22,
-    marginBottom: 8,
+  scheduleRowMobile: {
+    paddingVertical: 18,
+    paddingHorizontal: 16,
+    gap: 14,
+  },
+  scheduleIcon: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: COLORS.soft,
+    borderWidth: 1,
+    borderColor: COLORS.line,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  scheduleBody: {
+    flex: 1,
+    minWidth: 0,
+  },
+  scheduleTitle: {
     color: COLORS.navy,
     fontSize: 18,
     fontWeight: "900",
     lineHeight: 22,
   },
-  cardCopy: {
+  scheduleCopy: {
+    marginTop: 4,
     color: COLORS.muted,
     fontSize: 14,
-    lineHeight: 21,
+    lineHeight: 20,
   },
-  cardMeta: {
-    marginTop: 20,
-    color: COLORS.green,
-    fontSize: 12,
+  scheduleWhen: {
+    width: 116,
+    alignItems: "flex-end",
+  },
+  scheduleWhenMobile: {
+    width: 92,
+  },
+  scheduleDay: {
+    color: COLORS.ink,
+    fontSize: 13,
     fontWeight: "900",
-    textTransform: "uppercase",
+    textAlign: "right",
+  },
+  scheduleTimeRow: {
+    marginTop: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+  },
+  scheduleTime: {
+    color: COLORS.goldInk,
+    fontSize: 13,
+    fontWeight: "800",
   },
   flyerSection: {
     overflow: "hidden",
@@ -1232,6 +1483,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     boxShadow: "0 12px 26px rgba(1,22,64,0.08)",
+    transitionProperty: "transform, box-shadow, background-color",
+    transitionDuration: "160ms",
+    transitionTimingFunction: easeOut,
+  },
+  iconButtonHover: {
+    transform: "translateY(-1px)",
+    backgroundColor: COLORS.soft,
   },
   flyerCount: {
     minWidth: 64,
@@ -1255,22 +1513,19 @@ const styles = StyleSheet.create({
     padding: 14,
     borderWidth: 1,
     borderColor: COLORS.line,
-    borderRadius: 8,
-    backgroundColor: "#f9fbff",
+    borderRadius: 12,
+    backgroundColor: COLORS.cloud,
     boxShadow: baseShadow,
+    transitionProperty: "transform, box-shadow",
+    transitionDuration: "200ms",
+    transitionTimingFunction: easeOut,
   },
   flyerFeatureCardMobile: {
     height: 540,
     padding: 10,
   },
   flyerFeatureCardHover: {
-    transform: "translateY(-2px)",
-  },
-  flyerFeatureImage: {
-    width: "100%",
-    height: "100%",
-    borderRadius: 6,
-    backgroundColor: COLORS.white,
+    transform: "translateY(-3px)",
   },
   flyerMeta: {
     marginTop: 16,
@@ -1291,6 +1546,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "800",
     textTransform: "uppercase",
+    letterSpacing: 0.3,
   },
   flyerRailScroll: {
     marginTop: 34,
@@ -1309,21 +1565,18 @@ const styles = StyleSheet.create({
     padding: 8,
     borderWidth: 1,
     borderColor: COLORS.line,
-    borderRadius: 8,
-    backgroundColor: "#fbfcff",
+    borderRadius: 10,
+    backgroundColor: COLORS.frost,
+    transitionProperty: "transform, border-color, background-color",
+    transitionDuration: "160ms",
+    transitionTimingFunction: easeOut,
   },
   flyerThumbActive: {
     borderColor: COLORS.gold,
-    backgroundColor: "#fffaf0",
+    backgroundColor: COLORS.amber,
   },
   flyerThumbHover: {
-    transform: "translateY(-1px)",
-  },
-  flyerThumbImage: {
-    width: "100%",
-    height: 132,
-    borderRadius: 6,
-    backgroundColor: COLORS.soft,
+    transform: "translateY(-2px)",
   },
   flyerThumbTitle: {
     marginTop: 9,
@@ -1342,7 +1595,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     borderWidth: 1,
     borderColor: COLORS.line,
-    borderRadius: 8,
+    borderRadius: 12,
     backgroundColor: COLORS.white,
     boxShadow: baseShadow,
   },
@@ -1350,7 +1603,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: COLORS.line,
-    backgroundColor: "#fbfcff",
+    backgroundColor: COLORS.frost,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -1372,9 +1625,9 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     padding: 14,
     borderWidth: 1,
-    borderColor: "rgba(162,125,44,0.28)",
+    borderColor: "rgba(132,100,32,0.32)",
     borderRadius: 8,
-    backgroundColor: "#fffaf0",
+    backgroundColor: COLORS.amber,
   },
   calendarAccessTitle: {
     color: COLORS.navy,
@@ -1382,17 +1635,50 @@ const styles = StyleSheet.create({
     fontWeight: "900",
   },
   calendarAccessCopy: {
-    marginTop: 3,
+    marginTop: 4,
     color: COLORS.muted,
     fontSize: 13,
-    lineHeight: 18,
+    lineHeight: 19,
   },
   calendarEmbedShell: {
+    position: "relative",
     height: 560,
-    backgroundColor: COLORS.white,
+    margin: 16,
+    borderRadius: 8,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: COLORS.line,
+    backgroundColor: COLORS.soft,
   },
   calendarEmbedShellMobile: {
     height: 420,
+  },
+  calendarPlaceholder: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    zIndex: 0,
+    paddingHorizontal: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: COLORS.soft,
+  },
+  placeholderTitle: {
+    marginTop: 6,
+    color: COLORS.navy,
+    fontSize: 16,
+    fontWeight: "900",
+  },
+  placeholderCopy: {
+    maxWidth: 320,
+    marginBottom: 8,
+    color: COLORS.muted,
+    fontSize: 13,
+    lineHeight: 19,
+    textAlign: "center",
   },
   syncNote: {
     minHeight: 28,
@@ -1429,10 +1715,10 @@ const styles = StyleSheet.create({
     color: COLORS.white,
   },
   whiteBody: {
-    maxWidth: 680,
+    maxWidth: 640,
     marginTop: 16,
     marginBottom: 20,
-    color: "rgba(255,255,255,0.78)",
+    color: "rgba(255,255,255,0.82)",
     fontSize: 16,
     lineHeight: 25,
   },
@@ -1442,7 +1728,7 @@ const styles = StyleSheet.create({
     padding: 24,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.2)",
-    borderRadius: 8,
+    borderRadius: 12,
     backgroundColor: "rgba(255,255,255,0.08)",
   },
   pledgeLabel: {
@@ -1450,17 +1736,18 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "900",
     textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   pledgeTitle: {
     marginTop: 6,
     color: COLORS.white,
-    fontSize: 54,
+    fontSize: 50,
     fontWeight: "900",
-    lineHeight: 52,
+    lineHeight: 50,
   },
   footer: {
     paddingVertical: 48,
-    backgroundColor: "#081020",
+    backgroundColor: COLORS.night,
   },
   footerLayout: {
     flexDirection: "row",
@@ -1472,7 +1759,9 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   footerCopy: {
-    color: "rgba(255,255,255,0.56)",
+    maxWidth: 320,
+    color: "rgba(255,255,255,0.64)",
+    lineHeight: 21,
   },
   footerHeading: {
     marginBottom: 14,
@@ -1480,10 +1769,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "900",
     textTransform: "uppercase",
+    letterSpacing: 0.5,
   },
   footerLink: {
     marginBottom: 7,
-    color: "rgba(255,255,255,0.78)",
+    color: "rgba(255,255,255,0.8)",
   },
   stack: {
     flexDirection: "column",

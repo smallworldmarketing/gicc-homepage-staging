@@ -7,6 +7,11 @@ body,
 
 body {
   background: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 * {
@@ -15,4 +20,19 @@ body {
 
 a {
   color: inherit;
+}
+
+/*
+ * Reduced-motion: neutralize every transition/animation and instant-scroll.
+ * The hero entrance and hover transitions all degrade to their resting state.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
