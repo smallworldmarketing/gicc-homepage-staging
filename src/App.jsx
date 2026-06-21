@@ -6,7 +6,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
-  Text,
+  Text as RNText,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -60,29 +60,38 @@ import flyerYoungChampsFull from "../assets/community-flyers/poster3.jpeg?w=1000
 import flyerYoungChampsThumb from "../assets/community-flyers/poster3.jpeg?w=300&format=webp&quality=72";
 import logoImage from "../assets/gicc-logo-white.png";
 
+// GICC brand palette (client brand board, 2026-06): navy + gold.
 const COLORS = {
-  navy: "#011640",
-  blue: "#012c6d",
-  royal: "#003399",
-  blush: "#ffd6d6",
-  rose: "#fff1f1",
-  gold: "#a27d2c", // decorative only: borders, thumb states, icons on dark
-  goldInk: "#846420", // gold as readable text on light bg (WCAG AA, 5.49:1 on white)
-  goldGlow: "#c9a24a", // brighter gold for accents on the navy strip
-  green: "#0f7f68",
-  ink: "#142033",
-  muted: "#5a6878", // darker than the old #617086 for comfortable AA on tinted bg
+  navy: "#002a48", // primary dark surface
+  blueMid: "#2273ab", // mid blue accent (secondary button, on-dark)
+  night: "#00182e", // deepest navy (footer)
+  goldLight: "#fdd48d", // light gold: primary button + gold-on-dark text/accents
+  goldInk: "#875b32", // gold TEXT / icons + active states on light (WCAG AA 5.9:1)
+  goldGlow: "#fdd48d", // gold accent on the dark prayer strip
+  ink: "#0a2236", // strong text on light
+  muted: "#475a6b", // body text on light (AA 7.1:1, blue-tinted to match brand)
   line: "#dfe5ee",
   soft: "#f6f8fb",
   mist: "#f3f6fb", // calendar section bg
   frost: "#fbfcff", // toolbar / thumbnail bg
   cloud: "#f9fbff", // flyer feature card bg
   amber: "#fffaf0", // notice / active-thumb bg
-  night: "#081020", // footer bg
   white: "#ffffff",
 };
 
-const FONT_DISPLAY = 'Spectral, Georgia, "Times New Roman", serif';
+const FONT_DISPLAY = 'Cormorant, "Cormorant Garamond", Georgia, serif';
+const FONT_BODY =
+  '"Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
+
+// react-native-web's <Text> sets its own default font-family and does not
+// inherit from ancestors, so wrap it to inject the brand body font as a base.
+// Heading/label styles that set their own fontFamily (Cormorant) still win,
+// since their style is composed after this base.
+const baseTextStyle = { fontFamily: FONT_BODY };
+
+function Text({ style, ...props }) {
+  return <RNText style={style ? [baseTextStyle, style] : baseTextStyle} {...props} />;
+}
 
 const GOOGLE_CALENDAR_ID = "ammar@giccmasjid.org";
 const GOOGLE_CALENDAR_EMBED_URL =
@@ -491,7 +500,7 @@ function Welcome({ isTablet, isMobile }) {
           {points.map(([Icon, label], index) => (
             <View key={label} style={[styles.missionItem, index > 0 && styles.missionItemDivider]}>
               <View style={styles.missionIcon}>
-                <Icon size={20} color={COLORS.green} strokeWidth={2} />
+                <Icon size={20} color={COLORS.goldInk} strokeWidth={2} />
               </View>
               <Text style={styles.missionItemText}>{label}</Text>
             </View>
@@ -528,7 +537,7 @@ function Programs({ isTablet, isMobile }) {
           {programs.map(([Icon, title, copy, day, time], index) => (
             <View key={title} style={[styles.scheduleRow, index === 0 && styles.scheduleRowFirst, isMobile && styles.scheduleRowMobile]}>
               <View style={styles.scheduleIcon}>
-                <Icon size={22} color={COLORS.green} strokeWidth={1.9} />
+                <Icon size={22} color={COLORS.goldInk} strokeWidth={1.9} />
               </View>
               <View style={styles.scheduleBody}>
                 <Text style={styles.scheduleTitle}>{title}</Text>
@@ -712,7 +721,7 @@ function CalendarSection({ isMobile, isTablet }) {
           </View>
           <View style={[styles.calendarEmbedShell, isMobile && styles.calendarEmbedShellMobile]}>
             <View style={styles.calendarPlaceholder} aria-hidden>
-              <CalendarDays size={30} color={COLORS.gold} strokeWidth={1.7} />
+              <CalendarDays size={30} color={COLORS.goldInk} strokeWidth={1.7} />
               <Text style={styles.placeholderTitle}>Loading the GICC calendar</Text>
               <Text style={styles.placeholderCopy}>If events do not appear here, open the calendar directly.</Text>
               <Button icon={ExternalLink} variant="light" onPress={() => openUrl(GOOGLE_CALENDAR_OPEN_URL, "_blank")}>Open Calendar</Button>
@@ -844,13 +853,14 @@ export default function App() {
   );
 }
 
-const baseShadow = "0 24px 60px rgba(1, 22, 64, 0.16)";
+const baseShadow = "0 24px 60px rgba(0, 42, 72, 0.18)";
 const easeOut = "cubic-bezier(0.22, 1, 0.36, 1)";
 
 const styles = StyleSheet.create({
   app: {
     minHeight: "100vh",
     backgroundColor: COLORS.white,
+    fontFamily: FONT_BODY,
   },
   page: {
     minHeight: "100vh",
@@ -873,7 +883,7 @@ const styles = StyleSheet.create({
     gap: 28,
     paddingHorizontal: 16,
     paddingVertical: 7,
-    backgroundColor: "rgba(1,22,64,0.92)",
+    backgroundColor: "rgba(0,42,72,0.92)",
   },
   topbarMobile: {
     minHeight: 34,
@@ -911,7 +921,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.18)",
     borderRadius: 8,
-    backgroundColor: "rgba(1,22,64,0.74)",
+    backgroundColor: "rgba(0,42,72,0.74)",
     boxShadow: "0 16px 40px rgba(0,0,0,0.18)",
     backdropFilter: "blur(8px)",
     flexDirection: "row",
@@ -923,7 +933,7 @@ const styles = StyleSheet.create({
     width: "calc(100% - 20px)",
     marginTop: 6,
     paddingLeft: 10,
-    backgroundColor: "rgba(1,22,64,0.84)",
+    backgroundColor: "rgba(0,42,72,0.84)",
   },
   logo: {
     width: 150,
@@ -960,7 +970,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.18)",
     borderRadius: 8,
-    backgroundColor: "rgba(1,22,64,0.97)",
+    backgroundColor: "rgba(0,42,72,0.97)",
     boxShadow: baseShadow,
   },
   navLinkWrap: {
@@ -988,13 +998,13 @@ const styles = StyleSheet.create({
     gap: 8,
     borderTopRightRadius: 8,
     borderBottomRightRadius: 8,
-    backgroundColor: COLORS.blush,
+    backgroundColor: COLORS.goldLight,
     transitionProperty: "background-color",
     transitionDuration: "160ms",
     transitionTimingFunction: easeOut,
   },
   donateLinkHover: {
-    backgroundColor: "#ffc4c4",
+    backgroundColor: "#f6c878",
   },
   donateLinkText: {
     color: COLORS.navy,
@@ -1023,7 +1033,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundColor: "rgba(1,22,64,0.74)",
+    backgroundColor: "rgba(0,42,72,0.74)",
   },
   heroContent: {
     width: "100%",
@@ -1045,7 +1055,7 @@ const styles = StyleSheet.create({
   },
   eyebrow: {
     marginBottom: 14,
-    color: COLORS.blush,
+    color: COLORS.goldLight,
     fontSize: 15,
     fontWeight: "700",
     letterSpacing: 0.2,
@@ -1056,8 +1066,8 @@ const styles = StyleSheet.create({
     fontFamily: FONT_DISPLAY,
     fontSize: 92,
     fontWeight: "700",
-    lineHeight: 92,
-    letterSpacing: -1.2,
+    lineHeight: 96,
+    letterSpacing: -0.5,
   },
   heroTitleTablet: {
     fontSize: 62,
@@ -1104,7 +1114,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.22)",
     borderRadius: 8,
-    backgroundColor: "rgba(1,22,64,0.34)",
+    backgroundColor: "rgba(0,42,72,0.34)",
     backdropFilter: "blur(6px)",
     animationKeyframes: {
       "0%": { opacity: 0, transform: [{ translateY: 12 }] },
@@ -1173,16 +1183,16 @@ const styles = StyleSheet.create({
   },
   buttonHover: {
     transform: "translateY(-1px)",
-    boxShadow: "0 10px 22px rgba(1,22,64,0.18)",
+    boxShadow: "0 10px 22px rgba(0,42,72,0.18)",
   },
   buttonPressed: {
     transform: "translateY(0px)",
   },
   buttonPrimary: {
-    backgroundColor: COLORS.blush,
+    backgroundColor: COLORS.goldLight,
   },
   buttonSecondary: {
-    backgroundColor: COLORS.green,
+    backgroundColor: COLORS.blueMid,
   },
   buttonLight: {
     backgroundColor: COLORS.white,
@@ -1304,8 +1314,8 @@ const styles = StyleSheet.create({
     fontFamily: FONT_DISPLAY,
     fontSize: 56,
     fontWeight: "700",
-    lineHeight: 60,
-    letterSpacing: -0.6,
+    lineHeight: 62,
+    letterSpacing: -0.25,
   },
   sectionTitleTablet: {
     fontSize: 40,
@@ -1384,7 +1394,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: COLORS.white,
     overflow: "hidden",
-    boxShadow: "0 12px 30px rgba(1,22,64,0.05)",
+    boxShadow: "0 12px 30px rgba(0,42,72,0.05)",
   },
   scheduleRow: {
     paddingVertical: 22,
@@ -1482,7 +1492,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     alignItems: "center",
     justifyContent: "center",
-    boxShadow: "0 12px 26px rgba(1,22,64,0.08)",
+    boxShadow: "0 12px 26px rgba(0,42,72,0.08)",
     transitionProperty: "transform, box-shadow, background-color",
     transitionDuration: "160ms",
     transitionTimingFunction: easeOut,
@@ -1572,7 +1582,7 @@ const styles = StyleSheet.create({
     transitionTimingFunction: easeOut,
   },
   flyerThumbActive: {
-    borderColor: COLORS.gold,
+    borderColor: COLORS.goldInk,
     backgroundColor: COLORS.amber,
   },
   flyerThumbHover: {
@@ -1625,7 +1635,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     padding: 14,
     borderWidth: 1,
-    borderColor: "rgba(132,100,32,0.32)",
+    borderColor: "rgba(135,91,50,0.34)",
     borderRadius: 8,
     backgroundColor: COLORS.amber,
   },
@@ -1732,7 +1742,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.08)",
   },
   pledgeLabel: {
-    color: COLORS.blush,
+    color: COLORS.goldLight,
     fontSize: 12,
     fontWeight: "900",
     textTransform: "uppercase",
