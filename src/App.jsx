@@ -703,22 +703,6 @@ function CalendarSection({ isMobile, isTablet }) {
           </View>
         </View>
         <View style={styles.calendarTool}>
-          <View style={[styles.calendarToolbar, isTablet && styles.stack]}>
-            <View>
-              <Text style={styles.calendarEmbedTitle}>Live calendar</Text>
-              <Text style={styles.calendarEmbedMeta}>Source: {GOOGLE_CALENDAR_ID}</Text>
-            </View>
-            <Pressable onPress={() => openUrl(GOOGLE_CALENDAR_OPEN_URL, "_blank")} accessibilityRole="link" style={styles.textLinkRow}>
-              <Text style={styles.textLink}>Manage in Google Calendar</Text>
-              <ArrowUpRight size={14} color={COLORS.goldInk} />
-            </Pressable>
-          </View>
-          <View style={styles.calendarAccessNotice}>
-            <Text style={styles.calendarAccessTitle}>Calendar access note</Text>
-            <Text style={styles.calendarAccessCopy}>
-              If the embedded calendar looks empty, its Google sharing needs to be set to public. Until then, tap Open Calendar to see every event.
-            </Text>
-          </View>
           <View style={[styles.calendarEmbedShell, isMobile && styles.calendarEmbedShellMobile]}>
             <View style={styles.calendarPlaceholder} aria-hidden>
               <CalendarDays size={30} color={COLORS.goldInk} strokeWidth={1.7} />
@@ -743,7 +727,6 @@ function CalendarSection({ isMobile, isTablet }) {
             })}
           </View>
         </View>
-        <Text style={styles.syncNote}>Calendar source: {GOOGLE_CALENDAR_ID}</Text>
       </View>
     </View>
   );
@@ -1609,55 +1592,10 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     boxShadow: baseShadow,
   },
-  calendarToolbar: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.line,
-    backgroundColor: COLORS.frost,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 16,
-  },
-  calendarEmbedTitle: {
-    color: COLORS.navy,
-    fontSize: 15,
-    fontWeight: "900",
-  },
-  calendarEmbedMeta: {
-    marginTop: 3,
-    color: COLORS.muted,
-    fontSize: 13,
-    fontWeight: "700",
-  },
-  calendarAccessNotice: {
-    margin: 16,
-    marginBottom: 0,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: "rgba(135,91,50,0.34)",
-    borderRadius: 8,
-    backgroundColor: COLORS.amber,
-  },
-  calendarAccessTitle: {
-    color: COLORS.navy,
-    fontSize: 14,
-    fontWeight: "900",
-  },
-  calendarAccessCopy: {
-    marginTop: 4,
-    color: COLORS.muted,
-    fontSize: 13,
-    lineHeight: 19,
-  },
   calendarEmbedShell: {
     position: "relative",
     height: 560,
-    margin: 16,
-    borderRadius: 8,
     overflow: "hidden",
-    borderWidth: 1,
-    borderColor: COLORS.line,
     backgroundColor: COLORS.soft,
   },
   calendarEmbedShellMobile: {
@@ -1689,12 +1627,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 19,
     textAlign: "center",
-  },
-  syncNote: {
-    minHeight: 28,
-    marginTop: 16,
-    color: COLORS.muted,
-    fontSize: 14,
   },
   newCenterSection: {
     position: "relative",

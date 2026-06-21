@@ -6,3 +6,4 @@ npm-debug.log*
 
 # impeccable live-mode runtime journals (keep the committed config.json)
 .impeccable/live/sessions/
+config.bat
