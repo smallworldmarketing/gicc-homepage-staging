@@ -22,6 +22,16 @@ a {
   color: inherit;
 }
 
+/* Keyboard focus ring for the program coverflow stage (a focusable div). */
+.coverflow-stage:focus-visible {
+  outline: 2px solid #fdd48d;
+  outline-offset: 6px;
+  border-radius: 14px;
+}
+.coverflow-stage:focus:not(:focus-visible) {
+  outline: none;
+}
+
 /*
  * Reduced-motion: neutralize every transition/animation and instant-scroll.
  * The hero entrance and hover transitions all degrade to their resting state.

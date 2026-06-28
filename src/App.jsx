@@ -20,6 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
+  CloudSun,
   Coffee,
   Copy,
   Download,
@@ -30,10 +31,14 @@ import {
   Mail,
   MapPin,
   Menu,
+  Moon,
   MoonStar,
   Phone,
   RefreshCw,
   Sparkles,
+  Sun,
+  Sunrise,
+  Sunset,
   UsersRound,
 } from "lucide-react";
 // Build-time derivatives via vite-imagetools: a medium WebP for the feature
@@ -67,15 +72,11 @@ const COLORS = {
   night: "#00182e", // deepest navy (footer)
   goldLight: "#fdd48d", // light gold: primary button + gold-on-dark text/accents
   goldInk: "#875b32", // gold TEXT / icons + active states on light (WCAG AA 5.9:1)
-  goldGlow: "#fdd48d", // gold accent on the dark prayer strip
   ink: "#0a2236", // strong text on light
   muted: "#475a6b", // body text on light (AA 7.1:1, blue-tinted to match brand)
   line: "#dfe5ee",
   soft: "#f6f8fb",
   mist: "#f3f6fb", // calendar section bg
-  frost: "#fbfcff", // toolbar / thumbnail bg
-  cloud: "#f9fbff", // flyer feature card bg
-  amber: "#fffaf0", // notice / active-thumb bg
   white: "#ffffff",
 };
 
@@ -176,6 +177,21 @@ function prefersReducedMotion() {
   );
 }
 
+// Live reduced-motion preference: the coverflow and prayer reveals branch on
+// this so motion degrades to a crossfade when the OS asks for less movement.
+function useReducedMotion() {
+  const [reduced, setReduced] = useState(() => prefersReducedMotion());
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(query.matches);
+    update();
+    query.addEventListener?.("change", update);
+    return () => query.removeEventListener?.("change", update);
+  }, []);
+  return reduced;
+}
+
 function openUrl(url, target = "_self") {
   if (typeof window !== "undefined") {
     if (target === "_blank") {
@@ -213,6 +229,21 @@ function vancouverLongDate(date = new Date()) {
     month: "long",
     day: "numeric",
   }).format(date);
+}
+
+// Hijri date via the Islamic (Umm al-Qura) calendar. Falls back gracefully
+// where the calendar isn't supported. Returns e.g. "Muharram 9, 1448 AH".
+function hijriLongDate(date = new Date()) {
+  try {
+    const formatted = new Intl.DateTimeFormat("en-US-u-ca-islamic-umalqura", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(date);
+    return /AH|\d/.test(formatted) ? `${formatted.replace(/\s*AH$/, "")} AH` : null;
+  } catch {
+    return null;
+  }
 }
 
 function formatPrayerTime(value) {
@@ -325,7 +356,7 @@ function Header({ isMobile }) {
   const navItems = [
     ["About", "welcome"],
     ["Programs", "programs"],
-    ["Flyers", "flyers"],
+    ["Registrations", "flyers"],
     ["Calendar", "calendar"],
     ["New Masjid", "new-center"],
     ["Contact", "contact"],
@@ -443,33 +474,97 @@ function Hero({ isMobile, isTablet, prayerTimes }) {
   );
 }
 
-function PrayerStrip({ isTablet, prayerTimes, prayerStatus }) {
-  const times = [
-    ["Fajr", formatPrayerTime(prayerTimes?.fajr_iqamah)],
-    ["Dhuhr", formatPrayerTime(prayerTimes?.dhuhr_iqamah)],
-    ["Asr", formatPrayerTime(prayerTimes?.asr_iqamah)],
-    ["Maghrib", formatPrayerTime(prayerTimes?.maghrib_iqamah)],
-    ["Isha", formatPrayerTime(prayerTimes?.isha_iqamah)],
+function PrayerTimes({ isMobile, isTablet, prayerTimes, prayerStatus }) {
+  const prayers = [
+    ["Fajr", "الفجر", Sunrise, prayerTimes?.fajr_azan, prayerTimes?.fajr_iqamah],
+    ["Dhuhr", "الظهر", Sun, prayerTimes?.dhuhr_azan, prayerTimes?.dhuhr_iqamah],
+    ["Asr", "العصر", CloudSun, prayerTimes?.asr_azan, prayerTimes?.asr_iqamah],
+    ["Maghrib", "المغرب", Sunset, prayerTimes?.maghrib_azan, prayerTimes?.maghrib_iqamah],
+    ["Isha", "العشاء", Moon, prayerTimes?.isha_azan, prayerTimes?.isha_iqamah],
   ];
+  const jummahs = [
+    ["Jummah 1", "Brothers only", prayerTimes?.jumah_time_1],
+    ["Jummah 2", "Brothers & Sisters", prayerTimes?.jumah_time_2],
+    ["Jummah 3", "Brothers & Sisters", prayerTimes?.jumah_time_3],
+  ];
+  const hijri = hijriLongDate();
 
   return (
-    <View style={styles.prayerStrip}>
-      <View style={[styles.sectionInner, styles.prayerInner, isTablet && styles.prayerInnerTablet]}>
-        <View style={styles.stripHeading}>
-          <Heading level={2} style={styles.stripTitle}>Iqama times</Heading>
-          <Text style={styles.stripDate}>{vancouverLongDate()}</Text>
+    <View nativeID="prayer" accessibilityRole="region" aria-label="Prayer times" style={styles.prayerSection}>
+      <View style={styles.prayerPattern} aria-hidden />
+      <View style={[styles.sectionInner, styles.prayerContent]}>
+        <View style={[styles.prayerHeader, isTablet && styles.stack]}>
+          <View style={styles.prayerHeaderText}>
+            <Text style={styles.prayerArabicEyebrow}>أوقات الصلاة</Text>
+            <Heading level={2} style={[styles.prayerHeading, isMobile && styles.prayerHeadingMobile]}>
+              Prayer Times
+            </Heading>
+            <Button
+              icon={Download}
+              onPress={() => openUrl(AWQAT_PAGE_URL, "_blank")}
+              accessibilityLabel="Download the monthly prayer times schedule"
+              style={[styles.prayerDownload, isMobile && styles.fullWidthButton]}
+            >
+              Download Monthly Times
+            </Button>
+          </View>
+          <View style={[styles.prayerDates, isTablet && styles.prayerDatesTablet]}>
+            {hijri ? <Text style={styles.prayerHijri}>{hijri}</Text> : null}
+            <Text style={styles.prayerGregorian}>{vancouverLongDate()}</Text>
+          </View>
         </View>
-        <View style={[styles.prayerTimes, isTablet && styles.prayerTimesTablet]}>
-          {times.map(([label, value]) => (
-            <View key={label} style={styles.prayerTime}>
-              <Text style={styles.prayerLabel}>{label}</Text>
-              <Text style={styles.prayerValue}>{value}</Text>
+
+        <View style={[styles.prayerGrid, isMobile && styles.prayerGridMobile]}>
+          {prayers.map(([en, ar, Icon, azan, iqamah]) => (
+            <View key={en} style={[styles.prayerCard, isMobile && styles.prayerCardMobile]}>
+              <View style={styles.prayerCardTop}>
+                <Text style={styles.prayerCardArabic}>{ar}</Text>
+                <Icon size={19} color={COLORS.goldLight} strokeWidth={1.8} />
+              </View>
+              <Text style={styles.prayerCardName}>{en}</Text>
+              <View style={styles.prayerCardRows}>
+                <View style={styles.prayerCardRow}>
+                  <Text style={styles.prayerCardRowLabel}>Start</Text>
+                  <Text style={styles.prayerCardRowValue}>{formatPrayerTime(azan)}</Text>
+                </View>
+                <View style={[styles.prayerCardRow, styles.prayerCardRowIqama]}>
+                  <Text style={styles.prayerCardRowLabel}>Iqama</Text>
+                  <Text style={[styles.prayerCardRowValue, styles.prayerCardIqamaValue]}>{formatPrayerTime(iqamah)}</Text>
+                </View>
+              </View>
             </View>
           ))}
         </View>
-        <Pressable onPress={() => openUrl(AWQAT_PAGE_URL, "_blank")} accessibilityRole="link" style={styles.stripLinkRow}>
-          <Text style={styles.stripLink}>{prayerStatus === "error" ? "Open Awqat" : "Synced from Awqat"}</Text>
-          <ArrowUpRight size={14} color={COLORS.goldGlow} />
+
+        <View style={styles.jummahBlock}>
+          <View style={styles.jummahHeadingRow}>
+            <View style={styles.jummahRule} />
+            <Text style={styles.jummahHeading}>Friday Jumu'ah</Text>
+            <View style={styles.jummahRule} />
+          </View>
+          <View style={[styles.jummahGrid, isTablet && styles.jummahGridTablet, isMobile && styles.stack]}>
+            {jummahs.map(([label, audience, time]) => (
+              <View key={label} style={styles.jummahCard}>
+                <View style={styles.jummahCardHead}>
+                  <Text style={styles.jummahCardArabic}>الجمعة</Text>
+                  <MoonStar size={17} color={COLORS.goldLight} strokeWidth={1.8} />
+                </View>
+                <Text style={styles.jummahCardName}>{label}</Text>
+                <View style={styles.jummahAudience}>
+                  <UsersRound size={13} color={COLORS.goldLight} strokeWidth={2} />
+                  <Text style={styles.jummahAudienceText}>{audience}</Text>
+                </View>
+                <Text style={styles.jummahCardTime}>{formatPrayerTime(time)}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        <Pressable onPress={() => openUrl(AWQAT_PAGE_URL, "_blank")} accessibilityRole="link" style={styles.prayerSourceRow}>
+          <Text style={styles.prayerSourceText}>
+            {prayerStatus === "error" ? "Open prayer times on Awqat" : "Times synced live from Awqat"}
+          </Text>
+          <ArrowUpRight size={14} color={COLORS.goldLight} />
         </Pressable>
       </View>
     </View>
@@ -558,114 +653,178 @@ function Programs({ isTablet, isMobile }) {
   );
 }
 
-function CommunityFlyers({ isMobile, isTablet }) {
+function ProgramsCarousel({ isMobile, isTablet }) {
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeFlyer = COMMUNITY_FLYERS[activeIndex];
+  const reduceMotion = useReducedMotion();
+  const count = COMMUNITY_FLYERS.length;
+  const active = COMMUNITY_FLYERS[activeIndex];
 
-  function moveFlyer(direction) {
-    setActiveIndex((current) => (current + direction + COMMUNITY_FLYERS.length) % COMMUNITY_FLYERS.length);
+  const move = (direction) => setActiveIndex((i) => (i + direction + count) % count);
+  const goTo = (i) => setActiveIndex(((i % count) + count) % count);
+
+  const sideCount = isMobile ? 1 : 2;
+  const cardW = isMobile ? 224 : isTablet ? 296 : 336;
+  const cardH = isMobile ? 312 : isTablet ? 412 : 466;
+  const spacing = isMobile ? 150 : isTablet ? 208 : 248;
+  const stageH = cardH + 52;
+
+  // Shortest signed distance around the ring, so the coverflow wraps both ways.
+  function offsetOf(i) {
+    let d = i - activeIndex;
+    if (d > count / 2) d -= count;
+    if (d < -count / 2) d += count;
+    return d;
+  }
+
+  function onStageKeyDown(event) {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      move(-1);
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      move(1);
+    }
   }
 
   return (
-    <View nativeID="flyers" accessibilityRole="region" aria-label="Community flyers" style={[styles.flyerSection, isMobile && styles.mobileSection]}>
-      <View style={[styles.sectionInner, styles.flyerLayout, isTablet && styles.stack]}>
-        <View style={styles.flyerCopyPane}>
-          <Heading level={2} style={[styles.sectionTitle, isTablet && styles.sectionTitleTablet, isMobile && styles.sectionTitleMobile]}>
-            Current programs and registrations.
-          </Heading>
-          <Text style={styles.bodyText}>
-            Registration links, classes, youth sports, and learning opportunities for families across the GICC community.
-          </Text>
-          <View style={styles.flyerControls}>
-            <Pressable onPress={() => moveFlyer(-1)} style={({ hovered }) => [styles.iconButton, hovered && styles.iconButtonHover]} accessibilityRole="button" accessibilityLabel="Previous flyer">
-              <ChevronLeft size={22} color={COLORS.navy} />
-            </Pressable>
-            <Text style={styles.flyerCount}>{activeIndex + 1} / {COMMUNITY_FLYERS.length}</Text>
-            <Pressable onPress={() => moveFlyer(1)} style={({ hovered }) => [styles.iconButton, hovered && styles.iconButtonHover]} accessibilityRole="button" accessibilityLabel="Next flyer">
-              <ChevronRight size={22} color={COLORS.navy} />
-            </Pressable>
-          </View>
+    <View nativeID="flyers" accessibilityRole="region" aria-label="Programs and registrations" style={styles.carouselSection}>
+      <View style={styles.carouselPattern} aria-hidden />
+      <View style={[styles.sectionInner, styles.carouselContent]}>
+        <Text style={styles.carouselArabicEyebrow}>برامجنا</Text>
+        <Heading level={2} style={[styles.carouselHeading, isMobile && styles.carouselHeadingMobile]}>
+          Programs &amp; Registrations
+        </Heading>
+        <View style={styles.carouselDivider} aria-hidden>
+          <View style={styles.carouselDividerLine} />
+          <MoonStar size={16} color={COLORS.goldLight} strokeWidth={1.8} />
+          <View style={styles.carouselDividerLine} />
         </View>
 
-        <View style={[styles.flyerStage, isMobile && styles.flyerStageMobile]}>
-          <Pressable
-            onPress={() => openUrl(activeFlyer.href, "_blank")}
-            style={({ hovered }) => [styles.flyerFeatureCard, isMobile && styles.flyerFeatureCardMobile, hovered && styles.flyerFeatureCardHover]}
-            accessibilityRole="link"
-            accessibilityLabel={`${activeFlyer.title} flyer, opens registration`}
-          >
-            {React.createElement("img", {
-              src: activeFlyer.image,
-              alt: `${activeFlyer.title} flyer`,
-              loading: "eager",
-              decoding: "async",
-              style: {
-                width: "100%",
-                flex: "1 1 0%",
-                minHeight: 0,
-                objectFit: "contain",
-                borderRadius: 6,
-                backgroundColor: COLORS.white,
-                display: "block",
+        {React.createElement(
+          "div",
+          {
+            className: "coverflow-stage",
+            role: "group",
+            "aria-roledescription": "carousel",
+            "aria-label": "Program flyers",
+            tabIndex: 0,
+            onKeyDown: onStageKeyDown,
+            style: {
+              position: "relative",
+              width: "100%",
+              height: stageH,
+              marginTop: 6,
+              perspective: isMobile ? "1100px" : "1700px",
+              touchAction: "pan-y",
+            },
+          },
+          COMMUNITY_FLYERS.map((flyer, i) => {
+            const o = offsetOf(i);
+            const abs = Math.abs(o);
+            const visible = abs <= sideCount;
+            const isActive = o === 0;
+            const scale = isActive ? 1 : abs === 1 ? 0.84 : 0.68;
+            const rotateY = reduceMotion || isActive ? 0 : o < 0 ? 32 : -32;
+            const translateZ = reduceMotion || isActive ? 0 : -abs * 64;
+            const translateX = o * spacing;
+            const opacity = abs === 0 ? 1 : abs === 1 ? 0.72 : 0.34;
+            const transform = `translate(-50%, -50%) translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`;
+            return React.createElement(
+              "div",
+              {
+                key: flyer.title,
+                "aria-hidden": !isActive,
+                onClick: () => (isActive ? openUrl(flyer.href, "_blank") : goTo(i)),
+                style: {
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  width: cardW,
+                  height: cardH,
+                  transform,
+                  transformStyle: "preserve-3d",
+                  transition: reduceMotion
+                    ? "opacity 220ms ease"
+                    : `transform 540ms ${easeOut}, opacity 540ms ${easeOut}`,
+                  opacity: visible ? opacity : 0,
+                  zIndex: 50 - abs,
+                  pointerEvents: visible ? "auto" : "none",
+                  cursor: "pointer",
+                  borderRadius: 14,
+                  overflow: "hidden",
+                  border: isActive
+                    ? `1.5px solid ${COLORS.goldLight}`
+                    : "1px solid rgba(255,255,255,0.12)",
+                  background: COLORS.night,
+                  boxShadow: isActive
+                    ? "0 34px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(253,212,141,0.22)"
+                    : "0 18px 44px rgba(0,0,0,0.45)",
+                  willChange: "transform, opacity",
+                },
               },
-            })}
-          </Pressable>
-          <View style={[styles.flyerMeta, isMobile && styles.stack]}>
-            <View>
-              <Text style={styles.flyerTitle}>{activeFlyer.title}</Text>
-              <Text style={styles.flyerSubtitle}>{activeFlyer.meta}</Text>
-            </View>
-            <Pressable onPress={() => openUrl(activeFlyer.href, "_blank")} style={styles.textLinkRow} accessibilityRole="link" accessibilityLabel={`Open details for ${activeFlyer.title}`}>
-              <Text style={styles.textLink}>Open details</Text>
-              <ArrowUpRight size={14} color={COLORS.goldInk} />
-            </Pressable>
-          </View>
-        </View>
-      </View>
+              React.createElement("img", {
+                src: flyer.image,
+                alt: isActive ? `${flyer.title} — ${flyer.meta}` : "",
+                loading: i <= sideCount ? "eager" : "lazy",
+                decoding: "async",
+                draggable: false,
+                style: {
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  objectPosition: "top center",
+                  display: "block",
+                },
+              })
+            );
+          })
+        )}
 
-      <View style={styles.sectionInner}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.flyerRailScroll}
-          contentContainerStyle={[styles.flyerRail, isMobile && styles.flyerRailMobile]}
-        >
-          {COMMUNITY_FLYERS.map((flyer, index) => {
-            const isActive = index === activeIndex;
-            return (
+        <View style={styles.carouselControls}>
+          <Pressable
+            onPress={() => move(-1)}
+            style={({ hovered }) => [styles.carouselArrow, hovered && styles.carouselArrowHover]}
+            accessibilityRole="button"
+            accessibilityLabel="Previous program"
+          >
+            <ChevronLeft size={22} color={COLORS.goldLight} />
+          </Pressable>
+          <View style={styles.carouselDots}>
+            {COMMUNITY_FLYERS.map((flyer, i) => (
               <Pressable
                 key={flyer.title}
-                onPress={() => setActiveIndex(index)}
-                style={({ hovered }) => [
-                  styles.flyerThumb,
-                  isActive && styles.flyerThumbActive,
-                  hovered && styles.flyerThumbHover,
-                ]}
+                onPress={() => goTo(i)}
                 accessibilityRole="button"
                 accessibilityLabel={`Show ${flyer.title}`}
-                accessibilityState={{ selected: isActive }}
+                accessibilityState={{ selected: i === activeIndex }}
+                style={styles.carouselDotHit}
               >
-                {React.createElement("img", {
-                  src: flyer.thumb,
-                  alt: "",
-                  loading: "lazy",
-                  decoding: "async",
-                  width: 122,
-                  height: 132,
-                  style: {
-                    width: "100%",
-                    height: 132,
-                    objectFit: "cover",
-                    borderRadius: 6,
-                    backgroundColor: COLORS.soft,
-                    display: "block",
-                  },
-                })}
-                <Text style={styles.flyerThumbTitle} numberOfLines={2}>{flyer.title}</Text>
+                <View style={[styles.carouselDot, i === activeIndex && styles.carouselDotActive]} />
               </Pressable>
-            );
-          })}
-        </ScrollView>
+            ))}
+          </View>
+          <Pressable
+            onPress={() => move(1)}
+            style={({ hovered }) => [styles.carouselArrow, hovered && styles.carouselArrowHover]}
+            accessibilityRole="button"
+            accessibilityLabel="Next program"
+          >
+            <ChevronRight size={22} color={COLORS.goldLight} />
+          </Pressable>
+        </View>
+
+        <View style={styles.carouselCaption} accessibilityLiveRegion="polite">
+          <Text style={styles.carouselCaptionTitle}>{active.title}</Text>
+          <Text style={styles.carouselCaptionMeta}>{active.meta}</Text>
+          <Button
+            icon={ArrowUpRight}
+            onPress={() => openUrl(active.href, "_blank")}
+            accessibilityLabel={`Open ${active.title} registration`}
+            style={[styles.carouselCaptionButton, isMobile && styles.fullWidthButton]}
+          >
+            Register now
+          </Button>
+        </View>
       </View>
     </View>
   );
@@ -824,10 +983,10 @@ export default function App() {
       <Header isMobile={useCompactHeader} />
       <View accessibilityRole="main" style={styles.main}>
         <Hero isMobile={isMobile} isTablet={isTablet} prayerTimes={prayerState.data} />
-        <PrayerStrip isTablet={isTablet} prayerTimes={prayerState.data} prayerStatus={prayerState.status} />
+        <PrayerTimes isMobile={isMobile} isTablet={isTablet} prayerTimes={prayerState.data} prayerStatus={prayerState.status} />
         <Welcome isTablet={isTablet} isMobile={isMobile} />
         <Programs isTablet={isTablet} isMobile={isMobile} />
-        <CommunityFlyers isMobile={isMobile} isTablet={isTablet} />
+        <ProgramsCarousel isMobile={isMobile} isTablet={isTablet} />
         <CalendarSection isMobile={isMobile} isTablet={isTablet} />
         <NewCenter isTablet={isTablet} isMobile={isMobile} />
       </View>
@@ -1044,23 +1203,24 @@ const styles = StyleSheet.create({
     letterSpacing: 0.2,
   },
   heroTitle: {
-    maxWidth: 880,
+    maxWidth: 940,
     color: COLORS.white,
     fontFamily: FONT_DISPLAY,
-    fontSize: 92,
+    fontSize: 82,
     fontWeight: "700",
-    lineHeight: 96,
-    letterSpacing: -0.5,
+    lineHeight: 84,
+    letterSpacing: -1,
+    textTransform: "uppercase",
   },
   heroTitleTablet: {
-    fontSize: 62,
-    lineHeight: 64,
+    fontSize: 56,
+    lineHeight: 58,
     letterSpacing: -0.8,
   },
   heroTitleMobile: {
-    fontSize: 46,
-    lineHeight: 49,
-    letterSpacing: -0.5,
+    fontSize: 38,
+    lineHeight: 41,
+    letterSpacing: -0.4,
   },
   heroCopy: {
     width: "100%",
@@ -1198,76 +1358,247 @@ const styles = StyleSheet.create({
     minWidth: 0,
     maxWidth: 760,
   },
-  prayerStrip: {
+  prayerSection: {
+    position: "relative",
+    overflow: "hidden",
+    paddingVertical: 96,
     backgroundColor: COLORS.navy,
+    backgroundImage: `linear-gradient(160deg, ${COLORS.navy} 0%, ${COLORS.night} 100%)`,
   },
-  prayerInner: {
-    minHeight: 116,
+  prayerPattern: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    opacity: 0.1,
+    backgroundImage:
+      "radial-gradient(circle at 1px 1px, rgba(253,212,141,0.55) 1px, transparent 0)",
+    backgroundSize: "26px 26px",
+  },
+  prayerContent: {
+    position: "relative",
+    zIndex: 1,
+  },
+  prayerHeader: {
+    marginBottom: 36,
     flexDirection: "row",
-    alignItems: "center",
-    gap: 24,
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+    gap: 28,
   },
-  prayerInnerTablet: {
-    minHeight: 0,
-    flexDirection: "column",
-    alignItems: "stretch",
-    paddingVertical: 28,
+  prayerHeaderText: {
+    flexShrink: 1,
+    minWidth: 0,
   },
-  stripHeading: {
-    width: 180,
-  },
-  stripTitle: {
-    color: COLORS.white,
-    fontSize: 26,
-    fontWeight: "900",
+  prayerArabicEyebrow: {
+    color: COLORS.goldLight,
+    fontSize: 22,
+    fontWeight: "600",
     lineHeight: 30,
   },
-  stripDate: {
+  prayerHeading: {
     marginTop: 4,
-    color: "rgba(255,255,255,0.66)",
-    fontSize: 13,
-    fontWeight: "700",
-  },
-  prayerTimes: {
-    flex: 1,
-    flexDirection: "row",
-    gap: 9,
-  },
-  prayerTimesTablet: {
-    flexWrap: "wrap",
-  },
-  prayerTime: {
-    flex: 1,
-    minWidth: 118,
-    minHeight: 70,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.14)",
-    borderRadius: 8,
-    backgroundColor: "rgba(255,255,255,0.07)",
-  },
-  prayerLabel: {
-    color: "rgba(255,255,255,0.72)",
-    fontSize: 11,
-    fontWeight: "900",
-    textTransform: "uppercase",
-    letterSpacing: 0.4,
-  },
-  prayerValue: {
-    marginTop: 3,
     color: COLORS.white,
-    fontSize: 18,
-    fontWeight: "900",
+    fontFamily: FONT_DISPLAY,
+    fontSize: 56,
+    fontWeight: "700",
+    lineHeight: 60,
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
   },
-  stripLinkRow: {
+  prayerHeadingMobile: {
+    fontSize: 38,
+    lineHeight: 42,
+  },
+  prayerDownload: {
+    marginTop: 20,
+    alignSelf: "flex-start",
+  },
+  prayerDates: {
+    alignItems: "flex-end",
+  },
+  prayerDatesTablet: {
+    alignItems: "flex-start",
+    marginTop: 18,
+  },
+  prayerHijri: {
+    color: COLORS.goldLight,
+    fontFamily: FONT_DISPLAY,
+    fontSize: 27,
+    fontWeight: "600",
+    lineHeight: 31,
+  },
+  prayerGregorian: {
+    marginTop: 4,
+    color: "rgba(255,255,255,0.76)",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  prayerGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 14,
+  },
+  prayerGridMobile: {
+    gap: 10,
+  },
+  prayerCard: {
+    flexGrow: 1,
+    flexBasis: 170,
+    minWidth: 150,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.13)",
+    borderRadius: 14,
+    backgroundColor: "rgba(255,255,255,0.05)",
+  },
+  prayerCardMobile: {
+    flexBasis: 150,
+    minWidth: 142,
+    padding: 14,
+  },
+  prayerCardTop: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+  },
+  prayerCardArabic: {
+    color: COLORS.goldLight,
+    fontSize: 17,
+    fontWeight: "600",
+  },
+  prayerCardName: {
+    marginTop: 8,
+    color: COLORS.white,
+    fontSize: 17,
+    fontWeight: "800",
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+  },
+  prayerCardRows: {
+    marginTop: 14,
+  },
+  prayerCardRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  prayerCardRowIqama: {
+    marginTop: 8,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(255,255,255,0.1)",
+  },
+  prayerCardRowLabel: {
+    color: "rgba(255,255,255,0.66)",
+    fontSize: 11,
+    fontWeight: "800",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  prayerCardRowValue: {
+    color: COLORS.white,
+    fontSize: 17,
+    fontWeight: "800",
+  },
+  prayerCardIqamaValue: {
+    color: COLORS.goldLight,
+  },
+  jummahBlock: {
+    marginTop: 42,
+  },
+  jummahHeadingRow: {
+    marginBottom: 22,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 16,
+  },
+  jummahRule: {
+    flex: 1,
+    maxWidth: 150,
+    height: 1,
+    backgroundColor: "rgba(253,212,141,0.4)",
+  },
+  jummahHeading: {
+    color: COLORS.goldLight,
+    fontFamily: FONT_DISPLAY,
+    fontSize: 30,
+    fontWeight: "600",
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  jummahGrid: {
+    flexDirection: "row",
+    gap: 14,
+  },
+  jummahGridTablet: {
+    flexWrap: "wrap",
+  },
+  jummahCard: {
+    flexGrow: 1,
+    flexBasis: 200,
+    minWidth: 180,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.13)",
+    borderRadius: 14,
+    backgroundColor: "rgba(255,255,255,0.05)",
+  },
+  jummahCardHead: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  jummahCardArabic: {
+    color: COLORS.goldLight,
+    fontSize: 17,
+    fontWeight: "600",
+  },
+  jummahCardName: {
+    marginTop: 8,
+    color: COLORS.white,
+    fontSize: 18,
+    fontWeight: "800",
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+  },
+  jummahAudience: {
+    marginTop: 10,
+    alignSelf: "flex-start",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: "rgba(253,212,141,0.3)",
+    backgroundColor: "rgba(253,212,141,0.12)",
+  },
+  jummahAudienceText: {
+    color: COLORS.goldLight,
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  jummahCardTime: {
+    marginTop: 14,
+    color: COLORS.white,
+    fontSize: 26,
+    fontWeight: "800",
+  },
+  prayerSourceRow: {
+    marginTop: 30,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 7,
   },
-  stripLink: {
-    color: COLORS.goldGlow,
-    fontWeight: "800",
-    fontSize: 14,
+  prayerSourceText: {
+    color: "rgba(255,255,255,0.7)",
+    fontSize: 13,
+    fontWeight: "700",
   },
   whiteSection: {
     paddingVertical: 105,
@@ -1446,137 +1777,136 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "800",
   },
-  flyerSection: {
+  carouselSection: {
+    position: "relative",
     overflow: "hidden",
-    paddingVertical: 105,
-    backgroundColor: COLORS.white,
+    paddingVertical: 92,
+    backgroundColor: COLORS.night,
+    backgroundImage: `linear-gradient(180deg, ${COLORS.night} 0%, ${COLORS.navy} 52%, ${COLORS.night} 100%)`,
   },
-  flyerLayout: {
-    flexDirection: "row",
+  carouselPattern: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    opacity: 0.08,
+    backgroundImage:
+      "linear-gradient(135deg, transparent 0 46%, rgba(253,212,141,0.7) 46% 47%, transparent 47% 100%), linear-gradient(45deg, transparent 0 46%, rgba(253,212,141,0.6) 46% 47%, transparent 47% 100%)",
+    backgroundSize: "120px 120px",
+  },
+  carouselContent: {
+    position: "relative",
+    zIndex: 1,
     alignItems: "center",
-    gap: 64,
   },
-  flyerCopyPane: {
-    flex: 0.88,
-    minWidth: 0,
+  carouselArabicEyebrow: {
+    color: COLORS.goldLight,
+    fontSize: 20,
+    fontWeight: "600",
+    letterSpacing: 1,
   },
-  flyerControls: {
-    marginTop: 28,
+  carouselHeading: {
+    marginTop: 6,
+    color: COLORS.white,
+    fontFamily: FONT_DISPLAY,
+    fontSize: 60,
+    fontWeight: "700",
+    lineHeight: 64,
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+    textAlign: "center",
+  },
+  carouselHeadingMobile: {
+    fontSize: 36,
+    lineHeight: 40,
+  },
+  carouselDivider: {
+    marginTop: 14,
+    marginBottom: 6,
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
   },
-  iconButton: {
-    width: 48,
-    height: 48,
-    borderWidth: 1,
-    borderColor: COLORS.line,
-    borderRadius: 8,
-    backgroundColor: COLORS.white,
+  carouselDividerLine: {
+    width: 54,
+    height: 1,
+    backgroundColor: "rgba(253,212,141,0.5)",
+  },
+  carouselControls: {
+    marginTop: 26,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    boxShadow: "0 12px 26px rgba(0,42,72,0.08)",
-    transitionProperty: "transform, box-shadow, background-color",
+    gap: 18,
+  },
+  carouselArrow: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: "rgba(253,212,141,0.45)",
+    backgroundColor: "rgba(255,255,255,0.05)",
+    alignItems: "center",
+    justifyContent: "center",
+    transitionProperty: "transform, background-color, border-color",
     transitionDuration: "160ms",
     transitionTimingFunction: easeOut,
   },
-  iconButtonHover: {
+  carouselArrowHover: {
     transform: "translateY(-1px)",
-    backgroundColor: COLORS.soft,
+    borderColor: COLORS.goldLight,
+    backgroundColor: "rgba(253,212,141,0.16)",
   },
-  flyerCount: {
-    minWidth: 64,
-    color: COLORS.navy,
-    fontSize: 14,
-    fontWeight: "900",
-    textAlign: "center",
+  carouselDots: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
   },
-  flyerStage: {
-    flex: 1.12,
-    minWidth: 0,
+  carouselDotHit: {
+    minHeight: 44,
+    minWidth: 20,
+    paddingHorizontal: 5,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  flyerStageMobile: {
-    width: "100%",
-  },
-  flyerFeatureCard: {
-    width: "100%",
-    maxWidth: 486,
-    height: 660,
-    alignSelf: "center",
-    padding: 14,
-    borderWidth: 1,
-    borderColor: COLORS.line,
-    borderRadius: 12,
-    backgroundColor: COLORS.cloud,
-    boxShadow: baseShadow,
-    transitionProperty: "transform, box-shadow",
+  carouselDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "rgba(255,255,255,0.28)",
+    transitionProperty: "background-color, width",
     transitionDuration: "200ms",
     transitionTimingFunction: easeOut,
   },
-  flyerFeatureCardMobile: {
-    height: 540,
-    padding: 10,
+  carouselDotActive: {
+    width: 22,
+    backgroundColor: COLORS.goldLight,
   },
-  flyerFeatureCardHover: {
-    transform: "translateY(-3px)",
-  },
-  flyerMeta: {
-    marginTop: 16,
-    flexDirection: "row",
+  carouselCaption: {
+    marginTop: 22,
+    maxWidth: 520,
     alignItems: "center",
-    justifyContent: "space-between",
-    gap: 16,
   },
-  flyerTitle: {
-    color: COLORS.navy,
-    fontSize: 18,
-    fontWeight: "900",
-    lineHeight: 22,
+  carouselCaptionTitle: {
+    color: COLORS.white,
+    fontFamily: FONT_DISPLAY,
+    fontSize: 30,
+    fontWeight: "700",
+    lineHeight: 36,
+    textAlign: "center",
   },
-  flyerSubtitle: {
-    marginTop: 3,
-    color: COLORS.muted,
-    fontSize: 13,
-    fontWeight: "800",
+  carouselCaptionMeta: {
+    marginTop: 6,
+    color: "rgba(255,255,255,0.72)",
+    fontSize: 14,
+    fontWeight: "700",
     textTransform: "uppercase",
-    letterSpacing: 0.3,
+    letterSpacing: 0.6,
+    textAlign: "center",
   },
-  flyerRailScroll: {
-    marginTop: 34,
-    overflow: "visible",
-  },
-  flyerRail: {
-    gap: 12,
-    paddingBottom: 10,
-  },
-  flyerRailMobile: {
-    paddingRight: 16,
-  },
-  flyerThumb: {
-    width: 138,
-    minHeight: 192,
-    padding: 8,
-    borderWidth: 1,
-    borderColor: COLORS.line,
-    borderRadius: 10,
-    backgroundColor: COLORS.frost,
-    transitionProperty: "transform, border-color, background-color",
-    transitionDuration: "160ms",
-    transitionTimingFunction: easeOut,
-  },
-  flyerThumbActive: {
-    borderColor: COLORS.goldInk,
-    backgroundColor: COLORS.amber,
-  },
-  flyerThumbHover: {
-    transform: "translateY(-2px)",
-  },
-  flyerThumbTitle: {
-    marginTop: 9,
-    color: COLORS.ink,
-    fontSize: 12,
-    fontWeight: "900",
-    lineHeight: 15,
+  carouselCaptionButton: {
+    marginTop: 18,
   },
   calendarActions: {
     flexDirection: "row",
