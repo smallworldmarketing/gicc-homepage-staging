@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Image,
   ImageBackground,
@@ -40,6 +41,7 @@ import {
   Sunrise,
   Sunset,
   UsersRound,
+  X,
 } from "lucide-react";
 // Build-time derivatives via vite-imagetools: a medium WebP for the feature
 // viewer and a small WebP for the thumbnail rail. Cuts the flyer payload from
@@ -59,8 +61,7 @@ import flyerMadrasahGradesOneSevenFull from "../assets/community-flyers/madrasah
 import flyerMadrasahGradesOneSevenThumb from "../assets/community-flyers/madrasah-grades-1-7.jpeg?w=300&format=webp&quality=72";
 import flyerMadrasahGradesEightTwelveFull from "../assets/community-flyers/madrasah-grades-8-12.jpeg?w=1000&format=webp&quality=80";
 import flyerMadrasahGradesEightTwelveThumb from "../assets/community-flyers/madrasah-grades-8-12.jpeg?w=300&format=webp&quality=72";
-import flyerHeartsHandsFull from "../assets/community-flyers/poster2.jpeg?w=1000&format=webp&quality=80";
-import flyerHeartsHandsThumb from "../assets/community-flyers/poster2.jpeg?w=300&format=webp&quality=72";
+import flyerGirlsWhoLeadFull from "../assets/community-flyers/girls-who-lead.jpeg?w=1000&format=webp&quality=82";
 import flyerYoungChampsFull from "../assets/community-flyers/poster3.jpeg?w=1000&format=webp&quality=80";
 import flyerYoungChampsThumb from "../assets/community-flyers/poster3.jpeg?w=300&format=webp&quality=72";
 import logoImage from "../assets/gicc-logo-white.png";
@@ -99,17 +100,17 @@ const GOOGLE_CALENDAR_EMBED_URL =
   "https://calendar.google.com/calendar/embed?src=ammar%40giccmasjid.org&ctz=America%2FVancouver&mode=AGENDA&showTitle=0&showPrint=0&showCalendars=0&showTabs=1";
 const GOOGLE_CALENDAR_OPEN_URL = "https://calendar.google.com/calendar/u/0/r?cid=ammar%40giccmasjid.org";
 const AWQAT_PAGE_URL = "https://www.awqat.net/masjid/masjid-guildford";
+const MONTHLY_PRAYER_TIMES_URL = "https://gicc.sash-group.com/monthly_prayer_times.aspx";
 const AWQAT_SUPABASE_URL = "https://kjbutgbpddsadvnbgblg.supabase.co";
 const AWQAT_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtqYnV0Z2JwZGRzYWR2bmJnYmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc3NjQ1NjMsImV4cCI6MjA1MzM0MDU2M30.giaKfNM-hUj2UCrC_ZBUjamv9vFkhP7TORF5xkzyL4Y";
 const MASJID_GUILDFORD_ID = "96ac3382-aef7-4710-a187-7002ba7f4323";
 const COMMUNITY_FLYERS = [
   {
-    title: "Hearts & Hands",
-    meta: "Girls program",
-    image: flyerHeartsHandsFull,
-    thumb: flyerHeartsHandsThumb,
-    href: "https://form.jotform.com/250506588302253",
+    title: "Girls Who Lead",
+    meta: "Teen girls · Ages 13–18",
+    image: flyerGirlsWhoLeadFull,
+    href: "https://tinyurl.com/giccdeendunya",
   },
   {
     title: "GICC United Young Champs",
@@ -231,16 +232,25 @@ function vancouverLongDate(date = new Date()) {
   }).format(date);
 }
 
-// Hijri date via the Islamic (Umm al-Qura) calendar. Falls back gracefully
-// where the calendar isn't supported. Returns e.g. "Muharram 9, 1448 AH".
-function hijriLongDate(date = new Date()) {
+// Hijri date via the Islamic (Umm al-Qura) calendar, pinned to the masjid's
+// local (Vancouver) day so it never drifts with the visitor's timezone.
+// Returns parts in conventional day–month–year order, e.g.
+// { label: "20 Muharram 1448", era: "AH" }, so the era can be styled/aligned
+// separately. Returns null where the calendar isn't supported.
+function hijriDateParts(date = new Date()) {
   try {
-    const formatted = new Intl.DateTimeFormat("en-US-u-ca-islamic-umalqura", {
+    const parts = new Intl.DateTimeFormat("en-US-u-ca-islamic-umalqura", {
+      timeZone: "America/Vancouver",
       day: "numeric",
       month: "long",
       year: "numeric",
-    }).format(date);
-    return /AH|\d/.test(formatted) ? `${formatted.replace(/\s*AH$/, "")} AH` : null;
+    }).formatToParts(date);
+    const get = (type) => parts.find((part) => part.type === type)?.value;
+    const day = get("day");
+    const month = get("month");
+    const year = get("year");
+    if (!day || !month || !year) return null;
+    return { label: `${day} ${month} ${year}`, era: "AH" };
   } catch {
     return null;
   }
@@ -475,6 +485,7 @@ function Hero({ isMobile, isTablet, prayerTimes }) {
 }
 
 function PrayerTimes({ isMobile, isTablet, prayerTimes, prayerStatus }) {
+  const [showMonthly, setShowMonthly] = useState(false);
   const prayers = [
     ["Fajr", "الفجر", Sunrise, prayerTimes?.fajr_azan, prayerTimes?.fajr_iqamah],
     ["Dhuhr", "الظهر", Sun, prayerTimes?.dhuhr_azan, prayerTimes?.dhuhr_iqamah],
@@ -487,7 +498,7 @@ function PrayerTimes({ isMobile, isTablet, prayerTimes, prayerStatus }) {
     ["Jummah 2", "Brothers & Sisters", prayerTimes?.jumah_time_2],
     ["Jummah 3", "Brothers & Sisters", prayerTimes?.jumah_time_3],
   ];
-  const hijri = hijriLongDate();
+  const hijri = hijriDateParts();
 
   return (
     <View nativeID="prayer" accessibilityRole="region" aria-label="Prayer times" style={styles.prayerSection}>
@@ -500,16 +511,21 @@ function PrayerTimes({ isMobile, isTablet, prayerTimes, prayerStatus }) {
               Prayer Times
             </Heading>
             <Button
-              icon={Download}
-              onPress={() => openUrl(AWQAT_PAGE_URL, "_blank")}
-              accessibilityLabel="Download the monthly prayer times schedule"
+              icon={CalendarDays}
+              onPress={() => setShowMonthly(true)}
+              accessibilityLabel="Open the monthly prayer times"
               style={[styles.prayerDownload, isMobile && styles.fullWidthButton]}
             >
-              Download Monthly Times
+              Monthly Prayer Times
             </Button>
           </View>
           <View style={[styles.prayerDates, isTablet && styles.prayerDatesTablet]}>
-            {hijri ? <Text style={styles.prayerHijri}>{hijri}</Text> : null}
+            {hijri ? (
+              <View style={styles.prayerHijriRow}>
+                <Text style={styles.prayerHijri}>{hijri.label}</Text>
+                <Text style={styles.prayerHijriEra}>{hijri.era}</Text>
+              </View>
+            ) : null}
             <Text style={styles.prayerGregorian}>{vancouverLongDate()}</Text>
           </View>
         </View>
@@ -567,7 +583,71 @@ function PrayerTimes({ isMobile, isTablet, prayerTimes, prayerStatus }) {
           <ArrowUpRight size={14} color={COLORS.goldLight} />
         </Pressable>
       </View>
+      <MonthlyPrayerTimesModal open={showMonthly} onClose={() => setShowMonthly(false)} isMobile={isMobile} />
     </View>
+  );
+}
+
+function MonthlyPrayerTimesModal({ open, onClose, isMobile }) {
+  useEffect(() => {
+    if (!open || typeof document === "undefined") return undefined;
+    const onKey = (event) => {
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [open, onClose]);
+
+  if (!open || typeof document === "undefined") return null;
+
+  // Portaled to <body> so position:fixed resolves against the viewport — the
+  // app's transformed ancestors would otherwise become the containing block.
+  return createPortal(
+    <View style={styles.modalScrim}>
+      <Pressable style={styles.modalBackdrop} onPress={onClose} accessibilityLabel="Close" />
+      <View
+        style={[styles.modalPanel, isMobile && styles.modalPanelMobile]}
+        accessibilityRole="dialog"
+        aria-modal="true"
+        aria-label="Monthly prayer times"
+      >
+        <View style={styles.modalHeader}>
+          <View style={styles.modalHeaderText}>
+            <Text style={styles.modalEyebrow}>Guildford Islamic Cultural Center</Text>
+            <Heading level={2} style={styles.modalTitle}>Monthly Prayer Times</Heading>
+          </View>
+          <Pressable
+            onPress={onClose}
+            style={({ hovered }) => [styles.modalClose, hovered && styles.modalCloseHover]}
+            accessibilityRole="button"
+            accessibilityLabel="Close monthly prayer times"
+          >
+            <X size={20} color={COLORS.white} />
+          </Pressable>
+        </View>
+        <View style={styles.modalBody}>
+          {React.createElement("iframe", {
+            title: "GICC monthly prayer times",
+            src: MONTHLY_PRAYER_TIMES_URL,
+            loading: "lazy",
+            frameBorder: "0",
+            style: {
+              border: 0,
+              width: "100%",
+              height: "100%",
+              display: "block",
+              backgroundColor: COLORS.white,
+            },
+          })}
+        </View>
+      </View>
+    </View>,
+    document.body
   );
 }
 
@@ -1175,7 +1255,9 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundColor: "rgba(0,42,72,0.74)",
+    backgroundColor: "rgba(0,24,46,0.58)",
+    backgroundImage:
+      "linear-gradient(180deg, rgba(0,24,46,0.42) 0%, rgba(0,42,72,0.5) 38%, rgba(0,15,30,0.88) 100%)",
   },
   heroContent: {
     width: "100%",
@@ -1206,11 +1288,14 @@ const styles = StyleSheet.create({
     maxWidth: 940,
     color: COLORS.white,
     fontFamily: FONT_DISPLAY,
-    fontSize: 82,
+    fontSize: 74,
     fontWeight: "700",
-    lineHeight: 84,
+    lineHeight: 78,
     letterSpacing: -1,
     textTransform: "uppercase",
+    textShadowColor: "rgba(0,15,30,0.4)",
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 26,
   },
   heroTitleTablet: {
     fontSize: 56,
@@ -1326,13 +1411,14 @@ const styles = StyleSheet.create({
   },
   buttonHover: {
     transform: "translateY(-1px)",
-    boxShadow: "0 10px 22px rgba(0,42,72,0.18)",
+    boxShadow: "0 16px 38px rgba(253,212,141,0.4)",
   },
   buttonPressed: {
     transform: "translateY(0px)",
   },
   buttonPrimary: {
     backgroundColor: COLORS.goldLight,
+    boxShadow: "0 10px 26px rgba(253,212,141,0.32)",
   },
   buttonSecondary: {
     backgroundColor: COLORS.blueMid,
@@ -1363,7 +1449,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     paddingVertical: 96,
     backgroundColor: COLORS.navy,
-    backgroundImage: `linear-gradient(160deg, ${COLORS.navy} 0%, ${COLORS.night} 100%)`,
+    backgroundImage: `radial-gradient(1200px 520px at 82% -8%, rgba(253,212,141,0.12), transparent 58%), linear-gradient(160deg, ${COLORS.navy} 0%, ${COLORS.night} 100%)`,
   },
   prayerPattern: {
     position: "absolute",
@@ -1401,11 +1487,14 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: COLORS.white,
     fontFamily: FONT_DISPLAY,
-    fontSize: 56,
+    fontSize: 48,
     fontWeight: "700",
-    lineHeight: 60,
+    lineHeight: 52,
     letterSpacing: 0.5,
     textTransform: "uppercase",
+    textShadowColor: "rgba(253,212,141,0.3)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 22,
   },
   prayerHeadingMobile: {
     fontSize: 38,
@@ -1452,6 +1541,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.13)",
     borderRadius: 14,
     backgroundColor: "rgba(255,255,255,0.05)",
+    backgroundImage: "linear-gradient(158deg, rgba(255,255,255,0.09), rgba(255,255,255,0.02))",
   },
   prayerCardMobile: {
     flexBasis: 150,
@@ -1528,6 +1618,9 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     letterSpacing: 1,
     textTransform: "uppercase",
+    textShadowColor: "rgba(253,212,141,0.35)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 18,
   },
   jummahGrid: {
     flexDirection: "row",
@@ -1545,6 +1638,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(255,255,255,0.13)",
     borderRadius: 14,
     backgroundColor: "rgba(255,255,255,0.05)",
+    backgroundImage: "linear-gradient(158deg, rgba(255,255,255,0.09), rgba(255,255,255,0.02))",
   },
   jummahCardHead: {
     flexDirection: "row",
@@ -1600,6 +1694,113 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "700",
   },
+  prayerHijriRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: 6,
+  },
+  prayerHijriEra: {
+    color: "rgba(253,212,141,0.82)",
+    fontSize: 13,
+    fontWeight: "700",
+    letterSpacing: 1.5,
+  },
+  modalScrim: {
+    position: "fixed",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    zIndex: 100,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  modalBackdrop: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    backgroundColor: "rgba(0,10,22,0.72)",
+    backdropFilter: "blur(4px)",
+  },
+  modalPanel: {
+    position: "relative",
+    zIndex: 1,
+    width: "100%",
+    maxWidth: 940,
+    height: "88vh",
+    maxHeight: 900,
+    overflow: "hidden",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "rgba(253,212,141,0.28)",
+    backgroundColor: COLORS.navy,
+    boxShadow: "0 40px 100px rgba(0,0,0,0.55)",
+    animationKeyframes: {
+      "0%": { opacity: 0, transform: [{ translateY: 14 }, { scale: 0.985 }] },
+      "100%": { opacity: 1, transform: [{ translateY: 0 }, { scale: 1 }] },
+    },
+    animationDuration: "300ms",
+    animationTimingFunction: easeOut,
+    animationFillMode: "both",
+  },
+  modalPanelMobile: {
+    height: "92vh",
+    borderRadius: 12,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 16,
+    paddingHorizontal: 22,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.12)",
+    backgroundImage: `linear-gradient(120deg, ${COLORS.navy}, ${COLORS.night})`,
+  },
+  modalHeaderText: {
+    flexShrink: 1,
+    minWidth: 0,
+  },
+  modalEyebrow: {
+    color: "rgba(253,212,141,0.9)",
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 1,
+    textTransform: "uppercase",
+  },
+  modalTitle: {
+    marginTop: 2,
+    color: COLORS.white,
+    fontFamily: FONT_DISPLAY,
+    fontSize: 26,
+    fontWeight: "700",
+    letterSpacing: 0.4,
+    textTransform: "uppercase",
+  },
+  modalClose: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.22)",
+    alignItems: "center",
+    justifyContent: "center",
+    transitionProperty: "background-color, border-color",
+    transitionDuration: "160ms",
+    transitionTimingFunction: easeOut,
+  },
+  modalCloseHover: {
+    backgroundColor: "rgba(253,212,141,0.16)",
+    borderColor: COLORS.goldLight,
+  },
+  modalBody: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
   whiteSection: {
     paddingVertical: 105,
     backgroundColor: COLORS.white,
@@ -1626,9 +1827,9 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: COLORS.navy,
     fontFamily: FONT_DISPLAY,
-    fontSize: 56,
+    fontSize: 48,
     fontWeight: "700",
-    lineHeight: 62,
+    lineHeight: 54,
     letterSpacing: -0.25,
   },
   sectionTitleTablet: {
@@ -1782,7 +1983,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     paddingVertical: 92,
     backgroundColor: COLORS.night,
-    backgroundImage: `linear-gradient(180deg, ${COLORS.night} 0%, ${COLORS.navy} 52%, ${COLORS.night} 100%)`,
+    backgroundImage: `radial-gradient(900px 540px at 50% 40%, rgba(253,212,141,0.12), transparent 60%), linear-gradient(180deg, ${COLORS.night} 0%, ${COLORS.navy} 52%, ${COLORS.night} 100%)`,
   },
   carouselPattern: {
     position: "absolute",
@@ -1810,12 +2011,15 @@ const styles = StyleSheet.create({
     marginTop: 6,
     color: COLORS.white,
     fontFamily: FONT_DISPLAY,
-    fontSize: 60,
+    fontSize: 52,
     fontWeight: "700",
-    lineHeight: 64,
+    lineHeight: 56,
     letterSpacing: 0.5,
     textTransform: "uppercase",
     textAlign: "center",
+    textShadowColor: "rgba(253,212,141,0.3)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 24,
   },
   carouselHeadingMobile: {
     fontSize: 36,
@@ -1963,6 +2167,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     paddingVertical: 92,
     backgroundColor: COLORS.navy,
+    backgroundImage: `radial-gradient(1000px 500px at 12% -5%, rgba(253,212,141,0.09), transparent 58%), linear-gradient(160deg, ${COLORS.navy} 0%, ${COLORS.night} 100%)`,
   },
   patternLayer: {
     position: "absolute",
@@ -2013,9 +2218,12 @@ const styles = StyleSheet.create({
   pledgeTitle: {
     marginTop: 6,
     color: COLORS.white,
-    fontSize: 50,
+    fontSize: 44,
     fontWeight: "900",
-    lineHeight: 50,
+    lineHeight: 46,
+    textShadowColor: "rgba(253,212,141,0.28)",
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 18,
   },
   footer: {
     paddingVertical: 48,
