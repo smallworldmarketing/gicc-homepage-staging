@@ -99,6 +99,10 @@ const GOOGLE_CALENDAR_ID = "ammar@giccmasjid.org";
 const GOOGLE_CALENDAR_EMBED_URL =
   "https://calendar.google.com/calendar/embed?src=ammar%40giccmasjid.org&ctz=America%2FVancouver&mode=AGENDA&showTitle=0&showPrint=0&showCalendars=0&showTabs=1";
 const GOOGLE_CALENDAR_OPEN_URL = "https://calendar.google.com/calendar/u/0/r?cid=ammar%40giccmasjid.org";
+// Public Calendar API key, HTTP-referrer-restricted to the site's domain and
+// scoped to the Calendar API only — read-only access to the public GICC
+// calendar, safe to ship in client-side code.
+const GOOGLE_CALENDAR_API_KEY = "AIzaSyD2HvEjfbAwVnqXW4C7rWHAyT-ALaMU71Q";
 const AWQAT_PAGE_URL = "https://www.awqat.net/masjid/masjid-guildford";
 const MONTHLY_PRAYER_TIMES_URL = "https://gicc.sash-group.com/monthly_prayer_times.aspx";
 const AWQAT_SUPABASE_URL = "https://kjbutgbpddsadvnbgblg.supabase.co";
@@ -910,61 +914,170 @@ function ProgramsCarousel({ isMobile, isTablet }) {
   );
 }
 
-function CalendarSection({ isMobile, isTablet }) {
-  const [copied, setCopied] = useState(false);
+async function fetchCalendarEvents() {
+  const params = new URLSearchParams({
+    key: GOOGLE_CALENDAR_API_KEY,
+    singleEvents: "true",
+    orderBy: "startTime",
+    timeMin: new Date().toISOString(),
+    maxResults: "12",
+    fields: "items(summary,location,start,end,htmlLink)",
+  });
+  const response = await fetch(
+    `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events?${params.toString()}`,
+  );
+  if (!response.ok) throw new Error(`Calendar request failed: ${response.status}`);
+  const data = await response.json();
+  return Array.isArray(data.items) ? data.items : [];
+}
 
-  async function copyCalendarId() {
-    try {
-      await navigator.clipboard.writeText(GOOGLE_CALENDAR_ID);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      openUrl(GOOGLE_CALENDAR_OPEN_URL, "_blank");
+// Bucket events by their Vancouver-local day, with a pre-formatted time label
+// and a venue flag (YEC vs. Masjid) for the location badge.
+function groupEventsByDay(events) {
+  const tz = "America/Vancouver";
+  const fmt = (options) => new Intl.DateTimeFormat("en-CA", { timeZone: tz, ...options });
+  const dayKey = fmt({ year: "numeric", month: "2-digit", day: "2-digit" });
+  const weekday = fmt({ weekday: "short" });
+  const dayNum = fmt({ day: "numeric" });
+  const month = fmt({ month: "short" });
+  const time = fmt({ hour: "numeric", minute: "2-digit" });
+
+  const groups = [];
+  const byKey = {};
+  for (const event of events) {
+    const isAllDay = Boolean(event.start?.date) && !event.start?.dateTime;
+    const startRaw = event.start?.dateTime || event.start?.date;
+    if (!startRaw) continue;
+    const start = isAllDay ? new Date(`${event.start.date}T12:00:00`) : new Date(startRaw);
+    const key = dayKey.format(start);
+    if (!byKey[key]) {
+      byKey[key] = {
+        key,
+        weekday: weekday.format(start),
+        day: dayNum.format(start),
+        month: month.format(start),
+        events: [],
+      };
+      groups.push(byKey[key]);
     }
+    let timeLabel = "All day";
+    if (!isAllDay) {
+      const end = event.end?.dateTime ? new Date(event.end.dateTime) : null;
+      timeLabel = end ? `${time.format(start)} – ${time.format(end)}` : time.format(start);
+    }
+    const location = event.location || "";
+    byKey[key].events.push({
+      summary: event.summary || "Community event",
+      location,
+      timeLabel,
+      htmlLink: event.htmlLink,
+      isYec: /yec|youth/i.test(location),
+    });
   }
+  return groups;
+}
+
+function CalendarSection({ isMobile, isTablet }) {
+  const [calendar, setCalendar] = useState({ status: "loading", groups: [] });
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchCalendarEvents()
+      .then((events) => {
+        if (!cancelled) setCalendar({ status: "ready", groups: groupEventsByDay(events) });
+      })
+      .catch(() => {
+        if (!cancelled) setCalendar({ status: "error", groups: [] });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const { status, groups } = calendar;
 
   return (
     <View nativeID="calendar" accessibilityRole="region" aria-label="Community calendar" style={[styles.calendarSection, isMobile && styles.mobileSection]}>
       <View style={styles.sectionInner}>
         <View style={[styles.sectionHeading, isTablet && styles.stack]}>
           <View style={styles.headingTextWrap}>
-            <Heading level={2} style={[styles.sectionTitle, isTablet && styles.sectionTitleTablet, isMobile && styles.sectionTitleMobile]}>GICC community calendar</Heading>
-            <Text style={styles.bodyText}>Weekly programs and community events load from our shared GICC Google Calendar.</Text>
+            <Heading level={2} style={[styles.sectionTitle, isTablet && styles.sectionTitleTablet, isMobile && styles.sectionTitleMobile]}>
+              Community Calendar
+            </Heading>
+            <Text style={styles.bodyText}>Upcoming programs and events at GICC, synced live from our community calendar.</Text>
           </View>
-          <View style={[styles.calendarActions, isMobile && styles.stack]}>
-            <Button icon={RefreshCw} onPress={() => openUrl(GOOGLE_CALENDAR_OPEN_URL, "_blank")} style={isMobile && styles.fullWidthButton}>
-              Open Calendar
-            </Button>
-            <Button icon={Download} variant="light" onPress={() => openUrl(GOOGLE_CALENDAR_EMBED_URL, "_blank")} style={isMobile && styles.fullWidthButton}>
-              Full View
-            </Button>
-            <Button icon={Copy} variant="light" onPress={copyCalendarId} style={isMobile && styles.fullWidthButton}>{copied ? "Copied" : "Copy Calendar ID"}</Button>
-          </View>
+          <Button
+            icon={ArrowUpRight}
+            onPress={() => openUrl(GOOGLE_CALENDAR_OPEN_URL, "_blank")}
+            accessibilityLabel="Open the full GICC calendar in Google Calendar"
+            style={isMobile && styles.fullWidthButton}
+          >
+            Open Full Calendar
+          </Button>
         </View>
-        <View style={styles.calendarTool}>
-          <View style={[styles.calendarEmbedShell, isMobile && styles.calendarEmbedShellMobile]}>
-            <View style={styles.calendarPlaceholder} aria-hidden>
+
+        <View style={styles.calCard}>
+          {status === "loading" ? (
+            [0, 1, 2].map((row) => (
+              <View key={row} style={[styles.calDayRow, row > 0 && styles.calDayRowDivider]} aria-hidden>
+                <View style={styles.calDateChip}>
+                  <View style={[styles.calSkelLine, { width: 34 }]} />
+                </View>
+                <View style={styles.calDayEvents}>
+                  <View style={[styles.calSkelLine, { width: "55%" }]} />
+                  <View style={[styles.calSkelLine, { width: "35%", marginTop: 9 }]} />
+                </View>
+              </View>
+            ))
+          ) : groups.length === 0 ? (
+            <View style={styles.calEmpty}>
               <CalendarDays size={30} color={COLORS.goldInk} strokeWidth={1.7} />
-              <Text style={styles.placeholderTitle}>Loading the GICC calendar</Text>
-              <Text style={styles.placeholderCopy}>If events do not appear here, open the calendar directly.</Text>
-              <Button icon={ExternalLink} variant="light" onPress={() => openUrl(GOOGLE_CALENDAR_OPEN_URL, "_blank")}>Open Calendar</Button>
+              <Text style={styles.calEmptyTitle}>
+                {status === "error" ? "Couldn't load events right now" : "No upcoming events"}
+              </Text>
+              <Text style={styles.calEmptyCopy}>See the full schedule and add it to your own calendar.</Text>
+              <Button icon={ExternalLink} variant="light" onPress={() => openUrl(GOOGLE_CALENDAR_OPEN_URL, "_blank")}>
+                Open Full Calendar
+              </Button>
             </View>
-            {React.createElement("iframe", {
-              title: "GICC Google Calendar",
-              src: GOOGLE_CALENDAR_EMBED_URL,
-              loading: "lazy",
-              frameBorder: "0",
-              style: {
-                position: "relative",
-                zIndex: 1,
-                border: 0,
-                width: "100%",
-                height: "100%",
-                minHeight: isMobile ? 420 : 560,
-                display: "block",
-              },
-            })}
-          </View>
+          ) : (
+            groups.map((group, groupIndex) => (
+              <View key={group.key} style={[styles.calDayRow, isMobile && styles.calDayRowMobile, groupIndex > 0 && styles.calDayRowDivider]}>
+                <View style={styles.calDateChip}>
+                  <Text style={styles.calDateWeekday}>{group.weekday}</Text>
+                  <Text style={styles.calDateDay}>{group.day}</Text>
+                  <Text style={styles.calDateMonth}>{group.month}</Text>
+                </View>
+                <View style={styles.calDayEvents}>
+                  {group.events.map((event, eventIndex) => (
+                    <Pressable
+                      key={eventIndex}
+                      onPress={() => event.htmlLink && openUrl(event.htmlLink, "_blank")}
+                      accessibilityRole="link"
+                      accessibilityLabel={`${event.summary}${event.location ? `, ${event.location}` : ""}, ${event.timeLabel}`}
+                      style={({ hovered }) => [styles.calEvent, isMobile && styles.calEventMobile, eventIndex > 0 && styles.calEventDivider, hovered && styles.calEventHover]}
+                    >
+                      <View style={styles.calEventMain}>
+                        <Text style={styles.calEventTitle}>{event.summary}</Text>
+                        <View style={styles.calEventMeta}>
+                          <Clock size={12} color={COLORS.muted} strokeWidth={2} />
+                          <Text style={styles.calEventTime}>{event.timeLabel}</Text>
+                        </View>
+                      </View>
+                      {event.location ? (
+                        <View style={[styles.calLocBadge, event.isYec ? styles.calLocBadgeYec : styles.calLocBadgeMasjid]}>
+                          <MapPin size={11} color={event.isYec ? "#064972" : COLORS.goldInk} strokeWidth={2.2} />
+                          <Text style={[styles.calLocText, { color: event.isYec ? "#064972" : COLORS.goldInk }]} numberOfLines={1}>
+                            {event.location}
+                          </Text>
+                        </View>
+                      ) : null}
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+            ))
+          )}
         </View>
       </View>
     </View>
@@ -1812,6 +1925,7 @@ const styles = StyleSheet.create({
   calendarSection: {
     paddingVertical: 105,
     backgroundColor: COLORS.mist,
+    backgroundImage: `linear-gradient(180deg, ${COLORS.white} 0%, ${COLORS.mist} 100%)`,
   },
   mobileSection: {
     paddingVertical: 64,
@@ -2112,55 +2226,152 @@ const styles = StyleSheet.create({
   carouselCaptionButton: {
     marginTop: 18,
   },
-  calendarActions: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "flex-end",
-    gap: 10,
-  },
-  calendarTool: {
+  calCard: {
     overflow: "hidden",
     borderWidth: 1,
     borderColor: COLORS.line,
-    borderRadius: 12,
+    borderRadius: 14,
     backgroundColor: COLORS.white,
-    boxShadow: baseShadow,
+    boxShadow: "0 18px 40px rgba(0,42,72,0.06)",
   },
-  calendarEmbedShell: {
-    position: "relative",
-    height: 560,
-    overflow: "hidden",
-    backgroundColor: COLORS.soft,
+  calDayRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 20,
+    paddingVertical: 18,
+    paddingHorizontal: 22,
   },
-  calendarEmbedShellMobile: {
-    height: 420,
+  calDayRowMobile: {
+    gap: 12,
+    paddingHorizontal: 14,
   },
-  calendarPlaceholder: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    bottom: 0,
-    left: 0,
-    zIndex: 0,
-    paddingHorizontal: 24,
+  calDayRowDivider: {
+    borderTopWidth: 1,
+    borderTopColor: COLORS.line,
+  },
+  calDateChip: {
+    width: 74,
+    paddingVertical: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#f0e0c4",
+    backgroundColor: "#fbf3e4",
     alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    backgroundColor: COLORS.soft,
   },
-  placeholderTitle: {
-    marginTop: 6,
+  calDateWeekday: {
+    color: COLORS.goldInk,
+    fontSize: 11,
+    fontWeight: "800",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  calDateDay: {
+    color: COLORS.navy,
+    fontFamily: FONT_DISPLAY,
+    fontSize: 30,
+    fontWeight: "700",
+    lineHeight: 32,
+  },
+  calDateMonth: {
+    color: COLORS.muted,
+    fontSize: 11,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  calDayEvents: {
+    flex: 1,
+    minWidth: 0,
+  },
+  calEvent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+    paddingVertical: 10,
+    transitionProperty: "opacity",
+    transitionDuration: "150ms",
+    transitionTimingFunction: easeOut,
+  },
+  calEventMobile: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+    gap: 7,
+  },
+  calEventDivider: {
+    borderTopWidth: 1,
+    borderTopColor: COLORS.soft,
+  },
+  calEventHover: {
+    opacity: 0.72,
+  },
+  calEventMain: {
+    flex: 1,
+    minWidth: 0,
+  },
+  calEventTitle: {
     color: COLORS.navy,
     fontSize: 16,
-    fontWeight: "900",
+    fontWeight: "800",
+    lineHeight: 21,
   },
-  placeholderCopy: {
-    maxWidth: 320,
-    marginBottom: 8,
+  calEventMeta: {
+    marginTop: 4,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  calEventTime: {
     color: COLORS.muted,
     fontSize: 13,
-    lineHeight: 19,
+    fontWeight: "600",
+  },
+  calLocBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 999,
+    borderWidth: 1,
+  },
+  calLocBadgeYec: {
+    backgroundColor: "rgba(34,115,171,0.1)",
+    borderColor: "rgba(34,115,171,0.3)",
+  },
+  calLocBadgeMasjid: {
+    backgroundColor: "rgba(135,91,50,0.1)",
+    borderColor: "rgba(135,91,50,0.28)",
+  },
+  calLocText: {
+    fontSize: 12,
+    fontWeight: "800",
+  },
+  calEmpty: {
+    paddingVertical: 48,
+    paddingHorizontal: 24,
+    alignItems: "center",
+    gap: 8,
+  },
+  calEmptyTitle: {
+    marginTop: 6,
+    color: COLORS.navy,
+    fontSize: 17,
+    fontWeight: "800",
+  },
+  calEmptyCopy: {
+    maxWidth: 340,
+    marginBottom: 8,
+    color: COLORS.muted,
+    fontSize: 14,
+    lineHeight: 20,
     textAlign: "center",
+  },
+  calSkelLine: {
+    height: 12,
+    width: "100%",
+    borderRadius: 6,
+    backgroundColor: COLORS.soft,
   },
   newCenterSection: {
     position: "relative",
