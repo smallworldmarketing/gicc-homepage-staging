@@ -8,6 +8,7 @@ import {
   ScrollView,
   StyleSheet,
   Text as RNText,
+  TextInput,
   useWindowDimensions,
   View,
 } from "react-native";
@@ -18,6 +19,7 @@ import {
   BookOpen,
   Building2,
   CalendarDays,
+  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Clock,
@@ -103,6 +105,29 @@ const GOOGLE_CALENDAR_OPEN_URL = "https://calendar.google.com/calendar/u/0/r?cid
 // scoped to the Calendar API only — read-only access to the public GICC
 // calendar, safe to ship in client-side code.
 const GOOGLE_CALENDAR_API_KEY = "AIzaSyD2HvEjfbAwVnqXW4C7rWHAyT-ALaMU71Q";
+// GICC booking backend (Supabase, GICC org). The publishable key is public by
+// design; row-level security allows anon INSERT only (no reads), so community
+// details submitted here are never publicly readable.
+const SUPABASE_BOOKINGS_URL = "https://fpjmbsqxlzkjbgaeifdv.supabase.co";
+const SUPABASE_BOOKINGS_KEY = "sb_publishable_gJG-z0bCf5VzJ11rjuBdKg_h3_GmV5H";
+
+const BOOKING_LOCATIONS = [
+  { id: "yec", label: "GICC YEC", sub: "Youth & Education Center" },
+  { id: "masjid", label: "GICC Masjid", sub: "15290 103A Ave, Surrey" },
+];
+
+// Programs open to booking requests, per location — seeded from the live
+// calendar + weekly schedule. Edit this list as programs change.
+const BOOKING_PROGRAMS = [
+  { location: "yec", name: "Summer School", when: "Mon–Fri · 9:00 AM – 4:00 PM" },
+  { location: "yec", name: "Karate Classes", when: "Mon & Wed · 8:00 – 9:30 PM" },
+  { location: "yec", name: "Math / Science Tutoring", when: "Tue & Fri" },
+  { location: "yec", name: "Ibn Masood Madrasah", when: "Mon–Fri · 4:30 PM" },
+  { location: "masjid", name: "Youth Night", when: "Friday · 7:30 PM" },
+  { location: "masjid", name: "Quran Circle", when: "Saturday · 11:00 AM" },
+  { location: "masjid", name: "Community Halaqa", when: "Sunday · 9:30 AM" },
+  { location: "masjid", name: "Girls Who Lead", when: "Monthly · Ages 13–18" },
+];
 const AWQAT_PAGE_URL = "https://www.awqat.net/masjid/masjid-guildford";
 const MONTHLY_PRAYER_TIMES_URL = "https://gicc.sash-group.com/monthly_prayer_times.aspx";
 const AWQAT_SUPABASE_URL = "https://kjbutgbpddsadvnbgblg.supabase.co";
@@ -372,6 +397,7 @@ function Header({ isMobile }) {
     ["Programs", "programs"],
     ["Registrations", "flyers"],
     ["Calendar", "calendar"],
+    ["Book", "booking"],
     ["New Masjid", "new-center"],
     ["Contact", "contact"],
   ];
@@ -1084,6 +1110,202 @@ function CalendarSection({ isMobile, isTablet }) {
   );
 }
 
+async function submitBookingRequest(payload) {
+  const response = await fetch(`${SUPABASE_BOOKINGS_URL}/rest/v1/booking_requests`, {
+    method: "POST",
+    headers: {
+      apikey: SUPABASE_BOOKINGS_KEY,
+      Authorization: `Bearer ${SUPABASE_BOOKINGS_KEY}`,
+      "Content-Type": "application/json",
+      Prefer: "return=minimal",
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) throw new Error(`Booking request failed: ${response.status}`);
+}
+
+const dateInputStyle = {
+  width: "100%",
+  height: 46,
+  padding: "0 14px",
+  border: `1px solid ${COLORS.line}`,
+  borderRadius: 10,
+  backgroundColor: COLORS.white,
+  color: COLORS.ink,
+  fontFamily: FONT_BODY,
+  fontSize: 15,
+  boxSizing: "border-box",
+};
+
+function BookingSection({ isMobile, isTablet }) {
+  const [location, setLocation] = useState("yec");
+  const [program, setProgram] = useState("");
+  const [form, setForm] = useState({ date: "", name: "", email: "", phone: "", notes: "" });
+  const [status, setStatus] = useState("idle");
+
+  const programs = BOOKING_PROGRAMS.filter((item) => item.location === location);
+  const update = (field, value) => setForm((current) => ({ ...current, [field]: value }));
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim());
+  const canSubmit = Boolean(program) && Boolean(form.name.trim()) && emailOk && status !== "submitting";
+
+  function selectLocation(id) {
+    setLocation(id);
+    setProgram("");
+  }
+
+  async function handleSubmit() {
+    if (!canSubmit) return;
+    setStatus("submitting");
+    try {
+      await submitBookingRequest({
+        location,
+        program,
+        requested_date: form.date || null,
+        name: form.name.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim() || null,
+        notes: form.notes.trim() || null,
+      });
+      setStatus("success");
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  function reset() {
+    setStatus("idle");
+    setProgram("");
+    setForm({ date: "", name: "", email: "", phone: "", notes: "" });
+  }
+
+  return (
+    <View nativeID="booking" accessibilityRole="region" aria-label="Book a program spot" style={[styles.bookingSection, isMobile && styles.mobileSection]}>
+      <View style={styles.sectionInner}>
+        <View style={styles.headingTextWrap}>
+          <Heading level={2} style={[styles.sectionTitle, isTablet && styles.sectionTitleTablet, isMobile && styles.sectionTitleMobile]}>
+            Book a Program Spot
+          </Heading>
+          <Text style={styles.bodyText}>
+            Request a place in a GICC program — we&apos;ll confirm your spot by email, inshaAllah.
+          </Text>
+        </View>
+
+        {status === "success" ? (
+          <View style={styles.bookingCard}>
+            <View style={styles.bookingSuccess}>
+              <CheckCircle2 size={40} color={COLORS.goldInk} strokeWidth={1.8} />
+              <Heading level={3} style={styles.bookingSuccessTitle}>Request received</Heading>
+              <Text style={styles.bookingSuccessCopy}>
+                Jazakum Allahu khayran. We&apos;ve received your request for {program}, and someone from GICC
+                will reach out to {form.email || "you"} to confirm.
+              </Text>
+              <Button variant="light" onPress={reset} accessibilityLabel="Make another booking request">
+                Make another request
+              </Button>
+            </View>
+          </View>
+        ) : (
+          <View style={styles.bookingCard}>
+            <Text style={styles.bookingLabel}>Location</Text>
+            <View style={[styles.bookingToggle, isMobile && styles.stack]}>
+              {BOOKING_LOCATIONS.map((loc) => {
+                const active = location === loc.id;
+                return (
+                  <Pressable
+                    key={loc.id}
+                    onPress={() => selectLocation(loc.id)}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: active }}
+                    style={[styles.bookingToggleBtn, active && styles.bookingToggleBtnActive]}
+                  >
+                    <Text style={[styles.bookingToggleLabel, active && styles.bookingToggleLabelActive]}>{loc.label}</Text>
+                    <Text style={[styles.bookingToggleSub, active && styles.bookingToggleSubActive]}>{loc.sub}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            <Text style={[styles.bookingLabel, styles.bookingLabelSpaced]}>Program</Text>
+            <View style={styles.bookingChips}>
+              {programs.map((item) => {
+                const active = program === item.name;
+                return (
+                  <Pressable
+                    key={item.name}
+                    onPress={() => setProgram(item.name)}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: active }}
+                    style={[styles.bookingChip, active && styles.bookingChipActive]}
+                  >
+                    <Text style={[styles.bookingChipName, active && styles.bookingChipNameActive]}>{item.name}</Text>
+                    <Text style={[styles.bookingChipWhen, active && styles.bookingChipWhenActive]}>{item.when}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            <View style={[styles.bookingFields, isMobile && styles.stack]}>
+              <View style={styles.bookingField}>
+                <Text style={styles.bookingLabel}>Your name *</Text>
+                <TextInput value={form.name} onChangeText={(value) => update("name", value)} placeholder="Full name" placeholderTextColor={COLORS.muted} style={styles.bookingInput} />
+              </View>
+              <View style={styles.bookingField}>
+                <Text style={styles.bookingLabel}>Email *</Text>
+                <TextInput value={form.email} onChangeText={(value) => update("email", value)} placeholder="you@example.com" placeholderTextColor={COLORS.muted} keyboardType="email-address" autoCapitalize="none" style={styles.bookingInput} />
+              </View>
+            </View>
+
+            <View style={[styles.bookingFields, isMobile && styles.stack]}>
+              <View style={styles.bookingField}>
+                <Text style={styles.bookingLabel}>Phone</Text>
+                <TextInput value={form.phone} onChangeText={(value) => update("phone", value)} placeholder="Optional" placeholderTextColor={COLORS.muted} keyboardType="phone-pad" style={styles.bookingInput} />
+              </View>
+              <View style={styles.bookingField}>
+                <Text style={styles.bookingLabel}>Preferred start date</Text>
+                {React.createElement("input", {
+                  type: "date",
+                  value: form.date,
+                  onChange: (event) => update("date", event.target.value),
+                  "aria-label": "Preferred start date",
+                  style: dateInputStyle,
+                })}
+              </View>
+            </View>
+
+            <View style={styles.bookingField}>
+              <Text style={styles.bookingLabel}>Notes</Text>
+              <TextInput
+                value={form.notes}
+                onChangeText={(value) => update("notes", value)}
+                placeholder="Age, questions, or anything else we should know"
+                placeholderTextColor={COLORS.muted}
+                multiline
+                style={[styles.bookingInput, styles.bookingTextarea]}
+              />
+            </View>
+
+            {status === "error" ? (
+              <Text style={styles.bookingError}>
+                Something went wrong sending your request. Please try again, or email info@giccmasjid.org.
+              </Text>
+            ) : null}
+
+            <Button
+              icon={HandHeart}
+              onPress={handleSubmit}
+              accessibilityLabel="Send booking request"
+              style={[styles.bookingSubmit, isMobile && styles.fullWidthButton, !canSubmit && styles.bookingSubmitDisabled]}
+            >
+              {status === "submitting" ? "Sending…" : "Request Spot"}
+            </Button>
+            <Text style={styles.bookingFinePrint}>* required · we only use your details to confirm this booking.</Text>
+          </View>
+        )}
+      </View>
+    </View>
+  );
+}
+
 function NewCenter({ isTablet, isMobile }) {
   return (
     <View nativeID="new-center" accessibilityRole="region" aria-label="New Islamic Center project" style={styles.newCenterSection}>
@@ -1181,6 +1403,7 @@ export default function App() {
         <Programs isTablet={isTablet} isMobile={isMobile} />
         <ProgramsCarousel isMobile={isMobile} isTablet={isTablet} />
         <CalendarSection isMobile={isMobile} isTablet={isTablet} />
+        <BookingSection isMobile={isMobile} isTablet={isTablet} />
         <NewCenter isTablet={isTablet} isMobile={isMobile} />
       </View>
       <Footer isTablet={isTablet} />
@@ -2372,6 +2595,173 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 6,
     backgroundColor: COLORS.soft,
+  },
+  bookingSection: {
+    paddingVertical: 105,
+    backgroundColor: COLORS.white,
+  },
+  bookingCard: {
+    marginTop: 32,
+    maxWidth: 820,
+    padding: 28,
+    borderWidth: 1,
+    borderColor: COLORS.line,
+    borderRadius: 16,
+    backgroundColor: COLORS.soft,
+    boxShadow: "0 18px 44px rgba(0,42,72,0.06)",
+  },
+  bookingLabel: {
+    color: COLORS.ink,
+    fontSize: 13,
+    fontWeight: "800",
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
+  },
+  bookingLabelSpaced: {
+    marginTop: 22,
+  },
+  bookingToggle: {
+    marginTop: 10,
+    flexDirection: "row",
+    gap: 12,
+  },
+  bookingToggleBtn: {
+    flex: 1,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderWidth: 1.5,
+    borderColor: COLORS.line,
+    borderRadius: 12,
+    backgroundColor: COLORS.white,
+    transitionProperty: "border-color, background-color",
+    transitionDuration: "160ms",
+    transitionTimingFunction: easeOut,
+  },
+  bookingToggleBtnActive: {
+    borderColor: COLORS.goldInk,
+    backgroundColor: "#fbf3e4",
+  },
+  bookingToggleLabel: {
+    color: COLORS.navy,
+    fontSize: 16,
+    fontWeight: "900",
+  },
+  bookingToggleLabelActive: {
+    color: COLORS.goldInk,
+  },
+  bookingToggleSub: {
+    marginTop: 2,
+    color: COLORS.muted,
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  bookingToggleSubActive: {
+    color: COLORS.goldInk,
+  },
+  bookingChips: {
+    marginTop: 10,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+  },
+  bookingChip: {
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderWidth: 1.5,
+    borderColor: COLORS.line,
+    borderRadius: 10,
+    backgroundColor: COLORS.white,
+    transitionProperty: "border-color, background-color",
+    transitionDuration: "160ms",
+    transitionTimingFunction: easeOut,
+  },
+  bookingChipActive: {
+    borderColor: COLORS.goldInk,
+    backgroundColor: "#fbf3e4",
+  },
+  bookingChipName: {
+    color: COLORS.navy,
+    fontSize: 14,
+    fontWeight: "800",
+  },
+  bookingChipNameActive: {
+    color: COLORS.goldInk,
+  },
+  bookingChipWhen: {
+    marginTop: 2,
+    color: COLORS.muted,
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  bookingChipWhenActive: {
+    color: COLORS.goldInk,
+  },
+  bookingFields: {
+    marginTop: 20,
+    flexDirection: "row",
+    gap: 16,
+  },
+  bookingField: {
+    flex: 1,
+    minWidth: 0,
+    gap: 8,
+  },
+  bookingInput: {
+    minHeight: 46,
+    paddingHorizontal: 14,
+    paddingVertical: 11,
+    borderWidth: 1,
+    borderColor: COLORS.line,
+    borderRadius: 10,
+    backgroundColor: COLORS.white,
+    color: COLORS.ink,
+    fontFamily: FONT_BODY,
+    fontSize: 15,
+  },
+  bookingTextarea: {
+    minHeight: 92,
+    paddingTop: 11,
+    textAlignVertical: "top",
+  },
+  bookingError: {
+    marginTop: 16,
+    color: "#a8341f",
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  bookingSubmit: {
+    marginTop: 22,
+    alignSelf: "flex-start",
+  },
+  bookingSubmitDisabled: {
+    opacity: 0.5,
+  },
+  bookingFinePrint: {
+    marginTop: 12,
+    color: COLORS.muted,
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  bookingSuccess: {
+    alignItems: "center",
+    gap: 8,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+  },
+  bookingSuccessTitle: {
+    marginTop: 8,
+    color: COLORS.navy,
+    fontFamily: FONT_DISPLAY,
+    fontSize: 28,
+    fontWeight: "700",
+  },
+  bookingSuccessCopy: {
+    maxWidth: 460,
+    marginBottom: 10,
+    color: COLORS.muted,
+    fontSize: 15,
+    lineHeight: 22,
+    textAlign: "center",
   },
   newCenterSection: {
     position: "relative",
