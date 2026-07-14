@@ -64,8 +64,6 @@ import flyerMadrasahGradesOneSevenThumb from "../assets/community-flyers/madrasa
 import flyerMadrasahGradesEightTwelveFull from "../assets/community-flyers/madrasah-grades-8-12.jpeg?w=1000&format=webp&quality=80";
 import flyerMadrasahGradesEightTwelveThumb from "../assets/community-flyers/madrasah-grades-8-12.jpeg?w=300&format=webp&quality=72";
 import flyerGirlsWhoLeadFull from "../assets/community-flyers/girls-who-lead.jpeg?w=1000&format=webp&quality=82";
-import flyerYoungChampsFull from "../assets/community-flyers/poster3.jpeg?w=1000&format=webp&quality=80";
-import flyerYoungChampsThumb from "../assets/community-flyers/poster3.jpeg?w=300&format=webp&quality=72";
 import logoImage from "../assets/gicc-logo-white.png";
 
 // GICC brand palette (client brand board, 2026-06): navy + gold.
@@ -140,13 +138,6 @@ const COMMUNITY_FLYERS = [
     meta: "Teen girls · Ages 13–18",
     image: flyerGirlsWhoLeadFull,
     href: "https://tinyurl.com/giccdeendunya",
-  },
-  {
-    title: "GICC United Young Champs",
-    meta: "Soccer registration",
-    image: flyerYoungChampsFull,
-    thumb: flyerYoungChampsThumb,
-    href: "https://form.jotform.com/241621402102234",
   },
   {
     title: "Madrasah Grades 8-12",
