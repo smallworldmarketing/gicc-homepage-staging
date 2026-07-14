@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, MapPin, Menu, Phone, X } from "lucide-react";
+import { HeartHandshake, Mail, MapPin, Menu, Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -24,7 +24,7 @@ export function SiteHeader() {
         <div className="shell utility-bar__inner">
           <a className="utility-bar__address" href={SITE.mapsUrl} target="_blank" rel="noreferrer">
             <MapPin aria-hidden="true" />
-            <span className="utility-bar__address-full">{SITE.addressLine}, {SITE.cityLine}</span>
+            <span className="utility-bar__address-full">{SITE.addressLine}, Surrey, BC</span>
             <span className="utility-bar__address-short">Surrey, BC</span>
           </a>
           <a href={SITE.phoneHref}><Phone aria-hidden="true" /> {SITE.phoneDisplay}</a>
@@ -35,10 +35,10 @@ export function SiteHeader() {
         <div className="shell nav-bar__inner">
           <Link className="brand" href="/" aria-label={`${SITE.name} home`}>
             <Image
-              src="/images/gicc-logo-white.webp"
+              src="/images/gicc-logo-white.png"
               alt=""
-              width={320}
-              height={181}
+              width={1920}
+              height={1080}
               priority
             />
           </Link>
@@ -50,7 +50,7 @@ export function SiteHeader() {
             aria-label={open ? "Close navigation" : "Open navigation"}
             onClick={() => setOpen((current) => !current)}
           >
-            {open ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+            <Menu aria-hidden="true" />
           </button>
           <nav
             id="primary-navigation"
@@ -62,11 +62,8 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
-            <Link className="nav-request" href="/event-request/" onClick={() => setOpen(false)}>
-              Request space
-            </Link>
-            <Link className="nav-donate" href={SITE.donationUrl} onClick={() => setOpen(false)}>
-              Donate
+            <Link className="nav-donate" href={SITE.donationUrl} target="_blank" rel="noreferrer" onClick={() => setOpen(false)}>
+              <HeartHandshake aria-hidden="true" /> Donate
             </Link>
           </nav>
         </div>

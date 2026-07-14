@@ -1,5 +1,23 @@
 # Decisions Log
 
+## 2026-07-14 — Use the published GitHub Pages build as the visual and editorial baseline
+
+**Context:** The client preferred the typography, spacing, copy, icons, flyer coverflow, Awqat prayer experience, and Google Calendar presentation in the last published staging build.
+
+**Choice:** Treat `origin/main@3fd5a56` and the matching published GitHub Pages site as the canonical homepage reference. Preserve its Cormorant/Poppins typography, colour layers, responsive geometry, copy, eight-slide flyer order, Awqat prayer-time experience, and community calendar presentation in the semantic Next.js migration.
+
+**Exceptions:** Keep the client-approved space-request flow at `/event-request/` instead of restoring the obsolete existing-program booking form. Keep the removed Young Champs flyer out of the carousel; the current GICC United 2026 flyer remains in its place.
+
+**Consequences:** Future visual or copy changes should be compared against the published reference unless the client explicitly approves a new direction. The migration may change implementation details for accessibility, security, and reliability without changing the approved surface.
+
+## 2026-07-14 — Proxy the public community calendar through Cloudflare
+
+**Context:** The reference site called the Google Calendar API directly from the browser. That required a public browser key and failed completely when the API was unavailable. Google’s public ICS feed also contains an outdated fixed Vancouver offset, which makes winter recurring events one hour early unless corrected.
+
+**Choice:** Load calendar events through the same-origin `/api/calendar` Pages Function. Use an optional server-runtime Calendar API key first, then a cached public ICS fallback that expands recurrences with the `America/Vancouver` IANA timezone and serves stale data during temporary upstream failures.
+
+**Consequences:** The homepage keeps the reference calendar UI and event links without exposing a browser key. Production may optionally provision a server-only Google Calendar API key restricted to the Calendar API; the verified public-calendar feed remains operational without it.
+
 ## 2026-07-14 — Convert the approved staging site to the SWM migration stack
 
 **Context:** The staging homepage was a Vite/React Native Web prototype on GitHub Pages. The SWM WordPress migration playbook locks production sites to Next.js static export, TypeScript, Cloudflare Pages, semantic SEO, and documented operations.

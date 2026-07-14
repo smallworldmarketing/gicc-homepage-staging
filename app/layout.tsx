@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
-import { Cormorant_Garamond, Poppins } from "next/font/google";
+import { Cormorant, Poppins } from "next/font/google";
 import { AttributionTracker } from "@/components/AttributionTracker";
 import { JsonLd } from "@/components/JsonLd";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -8,7 +8,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { ORGANIZATION_JSON_LD, SITE } from "@/lib/site";
 import "./globals.css";
 
-const displayFont = Cormorant_Garamond({
+const displayFont = Cormorant({
   subsets: ["latin"],
   variable: "--font-display",
   display: "swap",
@@ -19,11 +19,11 @@ const bodyFont = Poppins({
   subsets: ["latin"],
   variable: "--font-body",
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const viewport: Viewport = {
-  themeColor: "#00182e",
+  themeColor: "#002a48",
   colorScheme: "light",
 };
 

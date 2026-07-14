@@ -22,7 +22,7 @@
 | `TURNSTILE_SECRET_KEY` | Secret | Optional until Turnstile widget is provisioned |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Build variable | Public widget key |
 | `NEXT_PUBLIC_SITE_URL` | Build variable | Production origin; preview must use preview origin |
-| `NEXT_PUBLIC_GOOGLE_CALENDAR_API_KEY` | Build variable | Browser key restricted to GICC/Pages hostnames and Calendar API |
+| `GOOGLE_CALENDAR_API_KEY` | Runtime variable | Calendar API key restricted to the Google Calendar API; the cached public ICS feed is the fallback |
 | `NEXT_PUBLIC_AWQAT_SUPABASE_ANON_KEY` | Build variable | Public Awqat key |
 
 Do not place secrets in `NEXT_PUBLIC_*` variables or commit `.env.local`.

@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import {
-  ArrowRight,
+  ArrowDown,
   BookMarked,
   BookOpen,
-  Building2,
-  CalendarDays,
   Clock,
   Coffee,
+  ExternalLink,
   GraduationCap,
   HandHeart,
   MapPin,
@@ -16,13 +15,15 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { CommunityCalendar } from "@/components/CommunityCalendar";
-import { MasjidBuildingPicture } from "@/components/MasjidBuildingPicture";
-import { PrayerTimes } from "@/components/PrayerTimes";
+import { HomePrayerExperience } from "@/components/PrayerTimes";
 import { RegistrationsCarousel } from "@/components/RegistrationsCarousel";
 import { WEEKLY_PROGRAMS } from "@/lib/site";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
+  title: "Guildford Islamic Cultural Center | GICC Surrey",
+  description:
+    "Guildford Islamic Cultural Center (GICC): daily prayer and iqama times, weekly programs, community events, and the New Islamic Center project in Surrey, BC.",
 };
 
 export default function HomePage() {
@@ -36,37 +37,7 @@ export default function HomePage() {
 
   return (
     <>
-      <section className="hero" aria-labelledby="home-heading">
-        <MasjidBuildingPicture
-          className="hero__media"
-          alt="The new Guildford Islamic Cultural Center building in Surrey"
-          priority
-        />
-        <div className="hero__veil" aria-hidden="true" />
-        <div className="shell hero__content">
-          <p className="hero__kicker">Assalamu alaikum, welcome.</p>
-          <h1 id="home-heading">Guildford Islamic Cultural Center</h1>
-          <p className="hero__lede">
-            A spiritual home for daily prayer, Islamic learning, family programs,
-            and community service in Guildford.
-          </p>
-          <div className="hero__actions">
-            <a className="button button--gold" href="#calendar">
-              <CalendarDays aria-hidden="true" /> View weekly events
-            </a>
-            <Link className="button button--outline" href="/new-masjid/">
-              <Building2 aria-hidden="true" /> New Islamic Center
-            </Link>
-          </div>
-          <dl className="hero__status">
-            <div><dt>Prayer times</dt><dd>Updated live</dd></div>
-            <div><dt>Jumuah</dt><dd>Three Friday prayers</dd></div>
-            <div><dt>Calendar</dt><dd>Live</dd></div>
-          </dl>
-        </div>
-      </section>
-
-      <PrayerTimes />
+      <HomePrayerExperience />
 
       <section id="welcome" className="welcome-section" aria-labelledby="welcome-heading">
         <div className="shell section-space welcome-layout">
@@ -93,7 +64,7 @@ export default function HomePage() {
         <div className="shell section-space">
           <div className="section-heading-row">
             <h2 id="programs-heading">A weekly rhythm for every stage of family life.</h2>
-            <a className="text-link" href="#calendar">See all events <ArrowRight aria-hidden="true" /></a>
+            <a className="text-link" href="#calendar">See all events <ArrowDown aria-hidden="true" /></a>
           </div>
           <div className="program-list">
             {WEEKLY_PROGRAMS.map((program, index) => {
@@ -116,7 +87,7 @@ export default function HomePage() {
       <RegistrationsCarousel />
       <CommunityCalendar />
 
-      <section className="space-request-section" aria-labelledby="space-request-heading">
+      <section id="booking" className="space-request-section" aria-labelledby="space-request-heading">
         <div className="shell section-space space-request-layout">
           <div className="space-request-copy">
             <p className="section-note">New programs and one-time rentals</p>
@@ -133,7 +104,7 @@ export default function HomePage() {
             </div>
             <p>This form is not for registering in an existing GICC program.</p>
             <Link className="button button--navy" href="/event-request/">
-              Start a space request <ArrowRight aria-hidden="true" />
+              Start a space request <ExternalLink aria-hidden="true" />
             </Link>
           </div>
         </div>
@@ -153,9 +124,9 @@ export default function HomePage() {
             <p className="donation-panel__label">Project focus</p>
             <h3>14888 104 Ave</h3>
             <p>Future Islamic Center property in Surrey, BC.</p>
-            <Link className="button button--outline" href="/new-masjid/">
-              Visit project site <ArrowRight aria-hidden="true" />
-            </Link>
+            <a className="button button--blue" href="https://surreyislamiccenter.com/" target="_blank" rel="noreferrer">
+              <ExternalLink aria-hidden="true" /> Visit project site
+            </a>
           </div>
         </div>
       </section>

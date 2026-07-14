@@ -22,7 +22,7 @@
 - Audit the complete DNS zone, all subdomains, email records, registrar lock, DNSSEC, CAA, third-party webhooks, and domain verifications.
 - Connect the `gicc-website` Pages project to the renamed private GitHub repo and add the production deploy hook.
 - Provision MailerSend and Turnstile values; perform success, upload, honeypot, rate-limit, and failure-path submissions.
-- Update the Google Calendar browser-key referrer restrictions for the Pages preview and final GICC hostnames.
+- Optionally provision `GOOGLE_CALENDAR_API_KEY` as a Cloudflare runtime variable restricted to the Google Calendar API. The same-origin calendar function remains live through its verified, cached public ICS feed when the key is absent.
 - Create the Cloudflare Access `/staff/*` application and set `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, and `STAFF_EMAIL_ALLOWLIST` so the implemented staff request queue can be enabled. Google Calendar remains the booking source of truth.
 - Provision GICC in the SWM Payload CMS, import retained content/media, test publish→rebuild, and invite the tenant-scoped client admin.
 - Make the GitHub repo private, rename it to `gicc-website`, add branch protection, and connect Cloudflare preview checks.

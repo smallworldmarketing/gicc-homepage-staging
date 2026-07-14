@@ -73,15 +73,21 @@ export function RegistrationsCarousel() {
                 aria-pressed={isActive}
                 aria-hidden={distance > 1 ? "true" : undefined}
                 tabIndex={distance <= 1 ? 0 : -1}
-                onClick={() => goTo(index)}
+                onClick={() => {
+                  if (isActive) {
+                    window.open(item.href, "_blank", "noopener,noreferrer");
+                    return;
+                  }
+                  goTo(index);
+                }}
                 style={{ zIndex: 20 - distance }}
               >
                 <Image
-                  src={isActive ? item.image : item.thumbnail}
-                  alt=""
+                  src={item.image}
+                  alt={isActive ? `${item.title} — ${item.meta}` : ""}
                   fill
-                  sizes="(max-width: 760px) 288px, 336px"
-                  loading="lazy"
+                  sizes="(max-width: 639px) 224px, (max-width: 1039px) 296px, 336px"
+                  loading={index <= 2 ? "eager" : "lazy"}
                   draggable={false}
                 />
               </button>
@@ -106,7 +112,6 @@ export function RegistrationsCarousel() {
               </button>
             ))}
           </div>
-          <p className="carousel-count" aria-live="polite">{activeIndex + 1} of {count}</p>
           <button className="carousel-arrow" type="button" onClick={() => move(1)} aria-label="Next registration">
             <ChevronRight aria-hidden="true" />
           </button>
@@ -116,7 +121,7 @@ export function RegistrationsCarousel() {
           <h3>{active.title}</h3>
           <p>{active.meta}</p>
           <a className="button button--gold" href={active.href} target="_blank" rel="noreferrer">
-            Register now <ArrowUpRight aria-hidden="true" />
+            <ArrowUpRight aria-hidden="true" /> Register now
           </a>
         </div>
       </div>
