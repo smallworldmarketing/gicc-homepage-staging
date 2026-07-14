@@ -1,0 +1,46 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "gicc-website",
+  "pages_build_output_dir": "./out",
+  "compatibility_date": "2026-07-14",
+  "d1_databases": [
+    {
+      "binding": "BOOKINGS_DB",
+      "database_name": "gicc-event-requests-prod",
+      "database_id": "9f3b866f-3653-4f6d-b3a2-7ab40cd18f7a",
+      "migrations_dir": "./migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BOOKING_FILES",
+      "bucket_name": "gicc-event-request-files-prod"
+    }
+  ],
+  "vars": {
+    "LEAD_RECIPIENT": "info@giccmasjid.org",
+    "MAIL_FROM_NAME": "GICC Website"
+  },
+  "env": {
+    "preview": {
+      "d1_databases": [
+        {
+          "binding": "BOOKINGS_DB",
+          "database_name": "gicc-event-requests-preview",
+          "database_id": "120deb8d-d41c-4b6e-ab25-e44f588aca1a",
+          "migrations_dir": "./migrations"
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "BOOKING_FILES",
+          "bucket_name": "gicc-event-request-files-preview"
+        }
+      ],
+      "vars": {
+        "LEAD_RECIPIENT": "info@giccmasjid.org",
+        "MAIL_FROM_NAME": "GICC Website"
+      }
+    }
+  }
+}
