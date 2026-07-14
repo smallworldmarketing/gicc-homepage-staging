@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
+import { ArrowUpRight, MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 import { SITE } from "@/lib/site";
 
@@ -82,13 +82,14 @@ export function CommunityCalendar() {
 
   return (
     <section id="calendar" className="calendar-section" aria-labelledby="calendar-heading">
-      <div className="shell section-space calendar-layout">
-        <div className="calendar-copy">
-          <CalendarDays aria-hidden="true" />
-          <h2 id="calendar-heading">What’s happening at GICC</h2>
-          <p>Prayer, learning, and community gatherings—kept in one public calendar.</p>
-          <a className="text-link" href={SITE.calendarUrl} target="_blank" rel="noreferrer">
-            Open full calendar <ArrowUpRight aria-hidden="true" />
+      <div className="shell section-space">
+        <div className="calendar-heading-row">
+          <div>
+            <h2 id="calendar-heading">Community Calendar</h2>
+            <p>Upcoming programs and events at GICC, synced live from our community calendar.</p>
+          </div>
+          <a className="button button--gold" href={SITE.calendarUrl} target="_blank" rel="noreferrer">
+            Open Full Calendar <ArrowUpRight aria-hidden="true" />
           </a>
         </div>
         <div className="calendar-list" aria-live="polite" aria-busy={state.status === "loading"}>

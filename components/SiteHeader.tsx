@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, X } from "lucide-react";
+import { Mail, MapPin, Menu, Phone, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -22,14 +22,13 @@ export function SiteHeader() {
     <header className="site-header">
       <div className="utility-bar">
         <div className="shell utility-bar__inner">
-          <a href={SITE.mapsUrl} target="_blank" rel="noreferrer">
-            {SITE.addressLine}, {SITE.cityLine}
+          <a className="utility-bar__address" href={SITE.mapsUrl} target="_blank" rel="noreferrer">
+            <MapPin aria-hidden="true" />
+            <span className="utility-bar__address-full">{SITE.addressLine}, {SITE.cityLine}</span>
+            <span className="utility-bar__address-short">Surrey, BC</span>
           </a>
-          <div>
-            <a href={SITE.phoneHref}>{SITE.phoneDisplay}</a>
-            <span aria-hidden="true">·</span>
-            <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
-          </div>
+          <a href={SITE.phoneHref}><Phone aria-hidden="true" /> {SITE.phoneDisplay}</a>
+          <a className="utility-bar__email" href={`mailto:${SITE.email}`}><Mail aria-hidden="true" /> {SITE.email}</a>
         </div>
       </div>
       <div className="nav-bar">

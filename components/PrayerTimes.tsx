@@ -151,9 +151,9 @@ export function PrayerTimes() {
         <div className="prayer-heading-row">
           <div>
             <p className="arabic-label" lang="ar">أوقات الصلاة</p>
-            <h2 id="prayer-heading">Prayer times</h2>
+            <h2 id="prayer-heading">Prayer Times</h2>
             <a className="button button--gold" href={SITE.monthlyPrayerUrl} target="_blank" rel="noreferrer">
-              <CalendarDays aria-hidden="true" /> Monthly prayer times
+              <CalendarDays aria-hidden="true" /> Monthly Prayer Times
             </a>
           </div>
           <div className="date-stack">

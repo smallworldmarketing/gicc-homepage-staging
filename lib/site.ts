@@ -19,33 +19,38 @@ export const SITE = {
 } as const;
 
 export const PRIMARY_NAV = [
-  { label: "Prayer Times", href: "/#prayer-times" },
+  { label: "About", href: "/#welcome" },
   { label: "Programs", href: "/#programs" },
+  { label: "Registrations", href: "/#registrations" },
   { label: "Calendar", href: "/#calendar" },
-  { label: "About", href: "/about/" },
+  { label: "New Masjid", href: "/#new-center" },
   { label: "Contact", href: "/contact/" },
 ] as const;
 
 export const WEEKLY_PROGRAMS = [
   {
     title: "Ibn Masood Madrasah",
-    description: "Qur’an, Islamic studies, and character-building for school-age students.",
-    schedule: "Monday–Friday · 4:30 PM",
+    description: "Weekday Islamic education with Quran, Arabic, and foundational studies for young students.",
+    day: "Mon to Fri",
+    time: "4:30 PM",
   },
   {
     title: "Youth Night",
-    description: "Faith, friendship, and mentorship for GICC youth.",
-    schedule: "Friday · 7:30 PM",
+    description: "Guided discussions, brotherhood, sisterhood, and practical reminders for high-school students.",
+    day: "Friday",
+    time: "7:30 PM",
   },
   {
-    title: "Qur’an Circle",
-    description: "A welcoming weekly circle for recitation and reflection.",
-    schedule: "Saturday · 11:00 AM",
+    title: "Quran Circle",
+    description: "Recitation, reflection, and steady learning in a welcoming community setting.",
+    day: "Saturday",
+    time: "11:00 AM",
   },
   {
     title: "Community Halaqa",
-    description: "Learning and conversation rooted in Qur’an and Sunnah.",
-    schedule: "Sunday · 9:30 AM",
+    description: "Sunday morning breakfast, reminders, and connection for families and newcomers.",
+    day: "Sunday",
+    time: "9:30 AM",
   },
 ] as const;
 

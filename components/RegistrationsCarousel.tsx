@@ -35,7 +35,7 @@ export function RegistrationsCarousel() {
   };
 
   return (
-    <section className="registrations-section" aria-labelledby="registrations-heading">
+    <section id="registrations" className="registrations-section" aria-labelledby="registrations-heading">
       <div className="shell section-space registrations-layout">
         <header className="registrations-heading">
           <p className="arabic-label" lang="ar">برامجنا</p>

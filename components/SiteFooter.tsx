@@ -14,13 +14,10 @@ export function SiteFooter() {
             width={320}
             height={181}
           />
-          <p>
-            Serving the Muslim community of Guildford and Surrey through prayer,
-            learning, service, and belonging.
-          </p>
+          <p>Serving the Muslim community in Guildford, Surrey, British Columbia.</p>
         </div>
         <div>
-          <h2>Visit GICC</h2>
+          <h2>Contact</h2>
           <ul className="footer-list">
             <li>
               <MapPin aria-hidden="true" />
@@ -41,9 +38,11 @@ export function SiteFooter() {
           </ul>
         </div>
         <div>
-          <h2>Quick links</h2>
+          <h2>Site</h2>
           <nav className="footer-links" aria-label="Footer navigation">
-            <Link href="/about/">About GICC</Link>
+            <Link href="/about/">About Us</Link>
+            <Link href="/#prayer-times">Iqama Times</Link>
+            <Link href="/contact/">Contact Us</Link>
             <Link href="/event-request/">Request GICC space</Link>
             <Link href="/youth-mental-health-support/">Youth mental health support</Link>
             <Link href="/privacy/">Privacy</Link>
