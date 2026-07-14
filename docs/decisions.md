@@ -30,7 +30,19 @@
 
 **Reasoning:** This keeps the public form server-side, avoids exposing privileged database credentials, and removes the additional $10/month Supabase project dependency.
 
-**Consequences:** The internal management calendar still needs a protected staff surface. Do not ship an unprotected admin endpoint; configure Cloudflare Access or a separate authenticated staff app first.
+**Consequences:** The public form writes a pending request to D1; it does not create a Google Calendar event or reserve either facility. Request review stays private.
+
+## 2026-07-14 — Use the existing GICC calendar for internal space management
+
+**Context:** Staff need a quick way to see open times and reserve a location for approved public requests or internally planned programs. The shared calendar `ammar@giccmasjid.org` already records events with the location values `GICC Masjid` and `GICC YEC`.
+
+**Options considered:** Expose an admin calendar on the public site; build a second scheduling database; use the existing shared Google Calendar as the internal source of truth.
+
+**Choice:** Use the existing shared Google Calendar for staff availability and confirmed bookings. Keep public submissions in D1 as pending requests until a staff member approves one and creates an opaque calendar event for the correct location.
+
+**Reasoning:** Google Calendar already provides staff access control, recurring events, conflict visibility, notifications, and mobile support. A second booking calendar would create sync and double-booking risk without improving the public request flow.
+
+**Consequences:** Staff must use the exact location value `GICC Masjid` or `GICC YEC` and leave confirmed events opaque so they block time. A future request-review dashboard must be protected before deployment; it should read from D1 and link into Google Calendar rather than becoming another scheduling source of truth.
 
 ## 2026-07-14 — Keep editorial content in-repo for the migration preview
 

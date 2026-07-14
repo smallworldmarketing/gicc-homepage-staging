@@ -22,6 +22,17 @@ The website does not accept requests for spots in existing programs. The public
 form is only for a proposed new recurring program or a one-time space rental.
 Every submission is pending until GICC approves it.
 
+## Internal space management
+
+The shared Google Calendar `ammar@giccmasjid.org` is the source of truth for
+availability and confirmed bookings. Staff should use its week view to compare
+times, then create an opaque event with the canonical location `GICC Masjid` or
+`GICC YEC`. Do not automatically convert a public form submission into a
+calendar event.
+
+See [`docs/internal-booking-workflow.md`](docs/internal-booking-workflow.md) for
+the approval workflow, naming conventions, and protected request-queue setup.
+
 ## External dependencies
 
 - Awqat public prayer-time API

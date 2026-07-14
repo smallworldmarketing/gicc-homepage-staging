@@ -12,6 +12,7 @@
 - Updated privacy and website terms aligned with the actual form pipeline.
 - Secure server-side form validation, honeypot, optional Turnstile, D1 rate limiting, private file storage, MailerSend notification, and first-touch attribution.
 - Existing-program booking removed; new program/one-time space requests moved to a dedicated page.
+- Internal availability and confirmed bookings remain in the existing private GICC Google Calendar, with `GICC Masjid` and `GICC YEC` as the canonical location values.
 - CI quality workflow and dependency/runtime pinning.
 
 ## External gates before production cutover
@@ -22,7 +23,7 @@
 - Connect the `gicc-website` Pages project to the renamed private GitHub repo and add the production deploy hook.
 - Provision MailerSend and Turnstile values; perform success, upload, honeypot, rate-limit, and failure-path submissions.
 - Update the Google Calendar browser-key referrer restrictions for the Pages preview and final GICC hostnames.
-- Configure an authenticated staff request/calendar surface through Cloudflare Access or another approved identity layer.
+- Create the Cloudflare Access `/staff/*` application and set `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, and `STAFF_EMAIL_ALLOWLIST` so the implemented staff request queue can be enabled. Google Calendar remains the booking source of truth.
 - Provision GICC in the SWM Payload CMS, import retained content/media, test publish→rebuild, and invite the tenant-scoped client admin.
 - Make the GitHub repo private, rename it to `gicc-website`, add branch protection, and connect Cloudflare preview checks.
 - Run production Lighthouse, axe, Rich Results, HTML validation, crawl/link checks, multi-browser/mobile tests, redirect sampling, AI-bot user-agent tests, and tag/attribution QA.
@@ -38,3 +39,10 @@
 - Production R2: `gicc-event-request-files-prod` (private)
 - Migration `0001_event_requests.sql` applied to both databases on 2026-07-14.
 - Synthetic preview submission verified with HTTP 201 and a persisted D1 record. Notification was correctly marked `skipped` because the MailerSend secret is not provisioned yet.
+
+## Internal booking verification
+
+- Connected account access to `ammar@giccmasjid.org` was verified on 2026-07-14.
+- A bounded check of July 20–26, 2026 returned 24 events: 13 at `GICC YEC` and 11 at `GICC Masjid`.
+- All returned events were opaque and therefore correctly block busy time.
+- Staff workflow and event conventions are documented in [`internal-booking-workflow.md`](internal-booking-workflow.md).

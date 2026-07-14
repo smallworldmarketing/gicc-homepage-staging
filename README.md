@@ -51,3 +51,9 @@ Prayer times and calendar events are external feeds. Editorial pages and program
 registrations currently live in the repo; see [`docs/content-edits.md`](docs/content-edits.md).
 The SWM Payload CMS migration remains a production handoff item so client editors
 can publish without a code change.
+
+## Staff space management
+
+Public submissions are unconfirmed requests stored in D1. Staff check and reserve
+space in the existing GICC Google Calendar; see
+[`docs/internal-booking-workflow.md`](docs/internal-booking-workflow.md).
