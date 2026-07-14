@@ -738,101 +738,249 @@ li {
 
 .registrations-section {
   background:
-    radial-gradient(circle at 70% 28%, color-mix(in oklch, var(--blue) 23%, transparent), transparent 36%),
-    linear-gradient(150deg, var(--night), var(--navy));
+    radial-gradient(ellipse 48% 40% at 50% 37%, color-mix(in oklch, var(--gold) 16%, transparent), transparent 70%),
+    radial-gradient(ellipse 58% 44% at 8% 88%, color-mix(in oklch, var(--blue) 25%, transparent), transparent 72%),
+    linear-gradient(155deg, var(--night) 0%, var(--navy) 48%, oklch(0.31 0.09 239) 72%, var(--night) 100%);
   color: var(--on-dark-muted);
+  overflow: hidden;
 }
 
 .registrations-layout {
-  align-items: center;
-  display: grid;
-  gap: clamp(3rem, 7vw, 6rem);
-  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+  position: relative;
+  text-align: center;
 }
 
-.registrations-copy > p:not(.arabic-label) {
-  max-width: 42ch;
+.registrations-heading {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.registrations-heading .arabic-label {
+  font-size: 1.25rem;
+  margin-bottom: 0.35rem;
+}
+
+.registrations-heading h2 {
+  color: var(--on-dark);
+  font-size: clamp(3rem, 5.5vw, 5rem);
+  line-height: 1;
+  margin: 0;
+  text-shadow: 0 0 24px color-mix(in oklch, var(--gold) 26%, transparent);
+}
+
+.carousel-divider {
+  align-items: center;
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1.15rem;
+}
+
+.carousel-divider span {
+  background: color-mix(in oklch, var(--gold) 52%, transparent);
+  height: 1px;
+  width: 54px;
+}
+
+.carousel-divider svg {
+  color: var(--gold);
+  height: 19px;
+  filter: drop-shadow(0 0 7px color-mix(in oklch, var(--gold) 38%, transparent));
+  width: 19px;
+}
+
+.coverflow-stage {
+  --card-width: clamp(18rem, 24vw, 21rem);
+  --near-left: clamp(-15.5rem, -17.25vw, -13rem);
+  --near-right: clamp(13rem, 17.25vw, 15.5rem);
+  --far-left: clamp(-31rem, -34.5vw, -22rem);
+  --far-right: clamp(22rem, 34.5vw, 31rem);
+  --hidden-left: clamp(-37rem, -42vw, -27rem);
+  --hidden-right: clamp(27rem, 42vw, 37rem);
+  height: clamp(31rem, 42vw, 34.5rem);
+  margin-top: 0.4rem;
+  perspective: 1700px;
+  position: relative;
+  touch-action: pan-y;
+  width: 100%;
+}
+
+.registration-card {
+  appearance: none;
+  aspect-ratio: 0.72;
+  background: var(--night);
+  border: 0;
+  border-radius: var(--radius-md);
+  box-shadow: 0 18px 44px color-mix(in oklch, black 46%, transparent);
+  cursor: pointer;
+  left: 50%;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%) translateX(var(--hidden-right)) translateZ(-180px) rotateY(-34deg) scale(0.56);
+  transform-style: preserve-3d;
+  transition: transform 540ms cubic-bezier(0.16, 1, 0.3, 1), opacity 540ms cubic-bezier(0.16, 1, 0.3, 1), filter 220ms ease-out;
+  width: var(--card-width);
+  will-change: transform, opacity;
+}
+
+.registration-card img {
+  display: block;
+  object-fit: cover;
+  object-position: top center;
+  pointer-events: none;
+  transition: filter 220ms ease-out;
+  user-select: none;
+}
+
+.registration-card[data-offset="-3"] {
+  transform: translate(-50%, -50%) translateX(var(--hidden-left)) translateZ(-180px) rotateY(34deg) scale(0.56);
+}
+
+.registration-card[data-offset="-2"] {
+  opacity: 0.34;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) translateX(var(--far-left)) translateZ(-128px) rotateY(32deg) scale(0.68);
+}
+
+.registration-card[data-offset="-1"] {
+  opacity: 0.72;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) translateX(var(--near-left)) translateZ(-64px) rotateY(32deg) scale(0.84);
+}
+
+.registration-card[data-offset="0"] {
+  box-shadow:
+    0 34px 80px color-mix(in oklch, black 56%, transparent),
+    0 0 38px color-mix(in oklch, var(--gold) 22%, transparent);
+  cursor: default;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) translateZ(0) rotateY(0) scale(1);
+}
+
+.registration-card[data-offset="1"] {
+  opacity: 0.72;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) translateX(var(--near-right)) translateZ(-64px) rotateY(-32deg) scale(0.84);
+}
+
+.registration-card[data-offset="2"] {
+  opacity: 0.34;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) translateX(var(--far-right)) translateZ(-128px) rotateY(-32deg) scale(0.68);
+}
+
+.registration-card[data-offset="3"] {
+  transform: translate(-50%, -50%) translateX(var(--hidden-right)) translateZ(-180px) rotateY(-34deg) scale(0.56);
+}
+
+.registration-card:not([data-offset="0"]):hover img {
+  filter: brightness(1.12) saturate(1.06);
 }
 
 .carousel-controls {
   align-items: center;
   display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
+  gap: 0.65rem;
+  justify-content: center;
+  margin-top: 1.35rem;
 }
 
-.carousel-controls button {
+.carousel-arrow {
   align-items: center;
-  background: transparent;
-  border: 1px solid color-mix(in oklch, var(--on-dark) 30%, transparent);
+  background: color-mix(in oklch, var(--on-dark) 5%, transparent);
+  border: 1px solid color-mix(in oklch, var(--gold) 45%, transparent);
   border-radius: 50%;
   color: var(--gold);
   display: inline-flex;
+  flex: 0 0 auto;
   height: 48px;
   justify-content: center;
+  transition: background-color 180ms ease-out, border-color 180ms ease-out, transform 180ms ease-out;
   width: 48px;
 }
 
-.carousel-controls p {
+.carousel-arrow:hover {
+  background: color-mix(in oklch, var(--gold) 15%, transparent);
+  border-color: var(--gold);
+  transform: translateY(-1px);
+}
+
+.carousel-arrow svg {
+  height: 22px;
+  width: 22px;
+}
+
+.carousel-dots {
+  align-items: center;
+  display: flex;
+  gap: 0;
+}
+
+.carousel-dots button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  display: inline-flex;
+  height: 44px;
+  justify-content: center;
+  min-width: 44px;
+  padding: 0;
+}
+
+.carousel-dots button span {
+  background: color-mix(in oklch, var(--on-dark) 28%, transparent);
+  border-radius: 999px;
+  display: block;
+  height: 8px;
+  transform: scaleX(0.36);
+  transition: background-color 200ms ease-out, transform 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  width: 22px;
+}
+
+.carousel-dots button[aria-pressed="true"] span {
+  background: var(--gold);
+  transform: scaleX(1);
+}
+
+.carousel-count {
   color: var(--on-dark-muted);
-  font-size: 0.75rem;
+  display: none;
+  font-size: 0.8rem;
   margin: 0;
-}
-
-.registration-feature {
-  min-width: 0;
-}
-
-.registration-poster {
-  aspect-ratio: 4 / 3;
-  background: color-mix(in oklch, var(--night) 68%, black);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  position: relative;
-}
-
-.registration-poster img {
-  object-fit: contain;
+  min-width: 4rem;
 }
 
 .registration-caption {
   align-items: center;
   display: flex;
-  gap: 1.5rem;
-  justify-content: space-between;
-  padding-top: 1.4rem;
+  flex-direction: column;
+  margin: 1.35rem auto 0;
+  max-width: 520px;
 }
 
 .registration-caption h3 {
   color: var(--on-dark);
-  margin-bottom: 0.15rem;
+  font-size: 1.8rem;
+  margin-bottom: 0.2rem;
+  text-shadow: 0 0 18px color-mix(in oklch, var(--gold) 22%, transparent);
 }
 
 .registration-caption p {
   color: var(--on-dark-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   margin: 0;
+  text-transform: uppercase;
 }
 
-.carousel-dots {
-  display: flex;
-  gap: 0.55rem;
-  margin-top: 1.5rem;
-}
-
-.carousel-dots button {
-  background: color-mix(in oklch, var(--on-dark) 28%, transparent);
-  border: 0;
-  border-radius: 999px;
-  height: 12px;
-  min-width: 12px;
-  padding: 0;
-  transition: background-color 180ms ease-out;
-  width: 12px;
-}
-
-.carousel-dots button.is-active {
-  background: var(--gold);
-  width: 34px;
+.registration-caption .button {
+  margin-top: 1.1rem;
 }
 
 .calendar-layout {
@@ -1744,9 +1892,6 @@ li {
     grid-template-columns: 1fr;
   }
 
-  .registrations-layout {
-    grid-template-columns: minmax(230px, 0.7fr) minmax(0, 1.3fr);
-  }
 }
 
 @media (max-width: 760px) {
@@ -1819,7 +1964,6 @@ li {
 
   .prayer-grid,
   .jummah-grid,
-  .registrations-layout,
   .footer-grid {
     grid-template-columns: 1fr;
   }
@@ -1839,8 +1983,30 @@ li {
     grid-column: 2;
   }
 
-  .registration-poster {
-    aspect-ratio: 4 / 5;
+  .registrations-heading h2 {
+    font-size: clamp(2.7rem, 10vw, 4.25rem);
+  }
+
+  .coverflow-stage {
+    --card-width: clamp(14rem, 38vw, 18rem);
+    --near-left: clamp(-12rem, -25vw, -9.5rem);
+    --near-right: clamp(9.5rem, 25vw, 12rem);
+    --far-left: clamp(-22rem, -48vw, -18rem);
+    --far-right: clamp(18rem, 48vw, 22rem);
+    --hidden-left: clamp(-28rem, -62vw, -23rem);
+    --hidden-right: clamp(23rem, 62vw, 28rem);
+    height: clamp(23.5rem, 65vw, 29rem);
+    perspective: 1100px;
+  }
+
+  .registration-card[data-offset="-2"],
+  .registration-card[data-offset="2"] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .registration-caption {
+    margin-top: 1rem;
   }
 
   .calendar-event {
@@ -1892,6 +2058,34 @@ li {
     border-top: 1px solid color-mix(in oklch, var(--on-dark) 18%, transparent);
   }
 
+  .registrations-heading .arabic-label {
+    font-size: 1.05rem;
+  }
+
+  .registrations-heading h2 {
+    font-size: clamp(2.45rem, 12vw, 3.2rem);
+  }
+
+  .coverflow-stage {
+    --card-width: 14rem;
+    --near-left: -9.5rem;
+    --near-right: 9.5rem;
+    height: 23.5rem;
+  }
+
+  .carousel-dots {
+    display: none;
+  }
+
+  .carousel-count {
+    display: block;
+  }
+
+  .registration-caption .button {
+    max-width: 20rem;
+    width: 100%;
+  }
+
   .prayer-grid {
     grid-template-columns: 1fr;
   }
@@ -1913,5 +2107,33 @@ li {
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
     transition-duration: 0.001ms !important;
+  }
+
+  .registration-card[data-offset="-3"] {
+    transform: translate(-50%, -50%) translateX(var(--hidden-left)) scale(0.56);
+  }
+
+  .registration-card[data-offset="-2"] {
+    transform: translate(-50%, -50%) translateX(var(--far-left)) scale(0.68);
+  }
+
+  .registration-card[data-offset="-1"] {
+    transform: translate(-50%, -50%) translateX(var(--near-left)) scale(0.84);
+  }
+
+  .registration-card[data-offset="0"] {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .registration-card[data-offset="1"] {
+    transform: translate(-50%, -50%) translateX(var(--near-right)) scale(0.84);
+  }
+
+  .registration-card[data-offset="2"] {
+    transform: translate(-50%, -50%) translateX(var(--far-right)) scale(0.68);
+  }
+
+  .registration-card[data-offset="3"] {
+    transform: translate(-50%, -50%) translateX(var(--hidden-right)) scale(0.56);
   }
 }
