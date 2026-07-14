@@ -282,9 +282,17 @@ li {
   position: relative;
 }
 
-.hero__image {
+.hero__media {
+  inset: 0;
+  position: absolute;
+}
+
+.hero__media img {
+  display: block;
+  height: 100%;
   object-fit: cover;
   object-position: center 48%;
+  width: 100%;
 }
 
 .hero__veil {
@@ -609,6 +617,7 @@ li {
   font-weight: 600;
   gap: 0.45rem;
   margin-top: 1.7rem;
+  min-height: 44px;
   text-underline-offset: 4px;
 }
 
@@ -644,6 +653,7 @@ li {
   font-size: 0.87rem;
   font-weight: 700;
   gap: 0.45rem;
+  min-height: 44px;
   text-decoration-color: var(--gold-strong);
   text-underline-offset: 5px;
 }
@@ -1234,6 +1244,10 @@ li {
   margin: 0 0 3rem;
 }
 
+.feature-image picture {
+  display: block;
+}
+
 .feature-image img {
   border-radius: var(--radius-md);
   display: block;
@@ -1355,6 +1369,12 @@ li {
 
 .resource-list strong {
   color: var(--ink);
+}
+
+.resource-list a {
+  align-items: center;
+  display: inline-flex;
+  min-height: 44px;
 }
 
 .form-page {
@@ -1552,6 +1572,7 @@ li {
   display: inline-flex;
   gap: 0.45rem;
   margin: 0.5rem 1.2rem 0 0;
+  min-height: 44px;
 }
 
 .choice-group input,
@@ -1592,7 +1613,7 @@ li {
 
 .field-group input[type="file"] {
   border: 0;
-  min-height: auto;
+  min-height: 48px;
   padding: 0.65rem 0 0;
 }
 
@@ -1818,6 +1839,9 @@ li {
 
 .footer-links a,
 .footer-list a {
+  align-items: center;
+  display: inline-flex;
+  min-height: 44px;
   text-decoration-color: color-mix(in oklch, var(--gold) 36%, transparent);
   text-underline-offset: 4px;
 }
@@ -2039,6 +2063,16 @@ li {
   }
 }
 
+@media (max-width: 540px) {
+  .carousel-dots {
+    display: none;
+  }
+
+  .carousel-count {
+    display: block;
+  }
+}
+
 @media (max-width: 460px) {
   .brand img {
     height: 48px;
@@ -2071,14 +2105,6 @@ li {
     --near-left: -9.5rem;
     --near-right: 9.5rem;
     height: 23.5rem;
-  }
-
-  .carousel-dots {
-    display: none;
-  }
-
-  .carousel-count {
-    display: block;
   }
 
   .registration-caption .button {

@@ -9,10 +9,10 @@ export function SiteFooter() {
       <div className="shell footer-grid">
         <div className="footer-brand">
           <Image
-            src="/images/gicc-logo-white.png"
+            src="/images/gicc-logo-white.webp"
             alt={SITE.name}
-            width={210}
-            height={80}
+            width={320}
+            height={181}
           />
           <p>
             Serving the Muslim community of Guildford and Surrey through prayer,

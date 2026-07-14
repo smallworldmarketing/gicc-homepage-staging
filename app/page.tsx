@@ -10,9 +10,9 @@ import {
   Sparkles,
   UsersRound,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { CommunityCalendar } from "@/components/CommunityCalendar";
+import { MasjidBuildingPicture } from "@/components/MasjidBuildingPicture";
 import { PrayerTimes } from "@/components/PrayerTimes";
 import { RegistrationsCarousel } from "@/components/RegistrationsCarousel";
 import { SITE, WEEKLY_PROGRAMS } from "@/lib/site";
@@ -25,13 +25,10 @@ export default function HomePage() {
   return (
     <>
       <section className="hero" aria-labelledby="home-heading">
-        <Image
-          className="hero__image"
-          src="/images/new-masjid-building.jpg"
+        <MasjidBuildingPicture
+          className="hero__media"
           alt="The new Guildford Islamic Cultural Center building in Surrey"
-          fill
           priority
-          sizes="100vw"
         />
         <div className="hero__veil" aria-hidden="true" />
         <div className="shell hero__content">

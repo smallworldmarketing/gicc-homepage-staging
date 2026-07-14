@@ -3,7 +3,7 @@
 import { ArrowLeft, ArrowRight, CheckCircle2, FileUp, LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
-import { FormEvent, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { getAttributionPayload } from "@/lib/attribution";
 import { SITE } from "@/lib/site";
 
@@ -29,6 +29,10 @@ function vancouverToday() {
 
 export function EventRequestForm() {
   const formRef = useRef<HTMLFormElement>(null);
+  const stepHeadingRefs = useRef<Array<HTMLHeadingElement | null>>([]);
+  const successHeadingRef = useRef<HTMLHeadingElement>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
+  const hasNavigatedRef = useRef(false);
   const [step, setStep] = useState(1);
   const [requestType, setRequestType] = useState("recurring-program");
   const [chargesFees, setChargesFees] = useState("no");
@@ -36,6 +40,28 @@ export function EventRequestForm() {
   const [submitState, setSubmitState] = useState<SubmitState>({ status: "idle" });
   const [minDate] = useState(vancouverToday);
   const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+  useEffect(() => {
+    if (!hasNavigatedRef.current) return;
+    const heading = stepHeadingRefs.current[step - 1];
+    heading?.focus({ preventScroll: true });
+    heading?.scrollIntoView({
+      block: "start",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    });
+  }, [step]);
+
+  useEffect(() => {
+    if (submitState.status === "success") {
+      successHeadingRef.current?.focus({ preventScroll: true });
+      window.scrollTo({
+        top: 0,
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      });
+      return;
+    }
+    if (submitState.status === "error") errorRef.current?.focus();
+  }, [submitState.status]);
 
   const validateStep = (stepNumber: number) => {
     const fieldset = formRef.current?.querySelector<HTMLFieldSetElement>(`[data-step="${stepNumber}"]`);
@@ -52,8 +78,13 @@ export function EventRequestForm() {
 
   const nextStep = () => {
     if (!validateStep(step)) return;
+    hasNavigatedRef.current = true;
     setStep((current) => Math.min(3, current + 1));
-    window.requestAnimationFrame(() => document.querySelector<HTMLElement>(".form-step:not([hidden]) h2")?.focus());
+  };
+
+  const previousStep = () => {
+    hasNavigatedRef.current = true;
+    setStep((current) => Math.max(1, current - 1));
   };
 
   const onFileChange = (file?: File) => {
@@ -97,7 +128,6 @@ export function EventRequestForm() {
           ? payload.reference
           : "GICC request";
       setSubmitState({ status: "success", reference });
-      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
       console.error("GICC event request submission failed", error);
       setSubmitState({
@@ -109,10 +139,10 @@ export function EventRequestForm() {
 
   if (submitState.status === "success") {
     return (
-      <section className="form-success" aria-live="polite">
+      <section className="form-success" role="status" aria-labelledby="request-success-heading">
         <CheckCircle2 aria-hidden="true" />
         <p className="section-note">Request received</p>
-        <h2>JazakAllahu khayran</h2>
+        <h2 id="request-success-heading" ref={successHeadingRef} tabIndex={-1}>JazakAllahu khayran</h2>
         <p>
           GICC has received your space request. Your reference is <strong>{submitState.reference}</strong>.
           A request is not confirmed until the GICC team approves it by email.
@@ -137,7 +167,7 @@ export function EventRequestForm() {
 
         <fieldset className="form-step" data-step="1" hidden={step !== 1}>
           <legend className="sr-only">Event details</legend>
-          <h2 tabIndex={-1}>Tell us about the request</h2>
+          <h2 ref={(node) => { stepHeadingRefs.current[0] = node; }} tabIndex={-1}>Tell us about the request</h2>
           <p>Use this form for a new recurring program or one-time rental—not registration in an existing program.</p>
 
           <div className="field-group field-group--full">
@@ -227,7 +257,7 @@ export function EventRequestForm() {
 
         <fieldset className="form-step" data-step="2" hidden={step !== 2}>
           <legend className="sr-only">Lead person details</legend>
-          <h2 tabIndex={-1}>Lead person</h2>
+          <h2 ref={(node) => { stepHeadingRefs.current[1] = node; }} tabIndex={-1}>Lead person</h2>
           <p>The lead person must be present and is responsible for the program or event.</p>
           <div className="form-grid">
             <div className="field-group"><label htmlFor="full-name">Full name <span aria-hidden="true">*</span></label><input id="full-name" name="full_name" autoComplete="name" maxLength={150} required /></div>
@@ -242,14 +272,14 @@ export function EventRequestForm() {
           <div className="field-group field-group--full">
             <label htmlFor="certification">Certification copy</label>
             <label className="file-input" htmlFor="certification"><FileUp aria-hidden="true" /><span><strong>Choose a PDF or image</strong>Maximum 5 MB</span></label>
-            <input id="certification" name="certification" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" onChange={(event) => onFileChange(event.target.files?.[0])} aria-describedby="certification-error" />
+            <input id="certification" name="certification" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" onChange={(event) => onFileChange(event.target.files?.[0])} aria-describedby="certification-error" aria-invalid={Boolean(fileError)} />
             <p id="certification-error" className="field-error" role="alert">{fileError}</p>
           </div>
         </fieldset>
 
         <fieldset className="form-step" data-step="3" hidden={step !== 3}>
           <legend className="sr-only">Terms and signature</legend>
-          <h2 tabIndex={-1}>Terms and signature</h2>
+          <h2 ref={(node) => { stepHeadingRefs.current[2] = node; }} tabIndex={-1}>Terms and signature</h2>
           <p>Every participant must follow these requirements while using GICC facilities.</p>
           <div className="terms-list">
             <section><h3>Respect for the sanctity of the masjid</h3><p>Dress modestly, behave respectfully, and keep sound at a level that does not disturb prayer or worship.</p></section>
@@ -271,14 +301,14 @@ export function EventRequestForm() {
         </fieldset>
 
         {submitState.status === "error" ? (
-          <div className="form-error" role="alert">
+          <div ref={errorRef} className="form-error" role="alert" tabIndex={-1}>
             <p>{submitState.message}</p>
             <p>If the problem continues, email <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.</p>
           </div>
         ) : null}
 
         <div className="form-actions">
-          {step > 1 ? <button className="button button--back" type="button" onClick={() => setStep((current) => current - 1)}><ArrowLeft aria-hidden="true" /> Back</button> : <span />}
+          {step > 1 ? <button className="button button--back" type="button" onClick={previousStep}><ArrowLeft aria-hidden="true" /> Back</button> : <span />}
           {step < 3 ? <button className="button button--navy" type="button" onClick={nextStep}>Continue <ArrowRight aria-hidden="true" /></button> : (
             <button className="button button--navy" type="submit" disabled={submitState.status === "submitting"}>
               {submitState.status === "submitting" ? <><LoaderCircle className="spin" aria-hidden="true" /> Submitting…</> : "Submit request"}

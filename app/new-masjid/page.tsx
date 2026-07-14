@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ContentPage } from "@/components/ContentPage";
+import { MasjidBuildingPicture } from "@/components/MasjidBuildingPicture";
 
 export const metadata: Metadata = {
   title: "New Masjid Project",
@@ -18,7 +18,7 @@ export default function NewMasjidPage() {
       tone="dark"
     >
       <figure className="feature-image">
-        <Image src="/images/new-masjid-building.jpg" alt="The new GICC Islamic centre building" width={1600} height={900} priority />
+        <MasjidBuildingPicture alt="The new GICC Islamic centre building" />
       </figure>
       <h2>A home for worship and community life</h2>
       <p>
