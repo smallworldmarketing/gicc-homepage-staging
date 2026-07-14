@@ -556,7 +556,9 @@ function PrayerTimes({ isMobile, isTablet, prayerTimes, prayerStatus }) {
             <View key={en} style={[styles.prayerCard, isMobile && styles.prayerCardMobile]}>
               <View style={styles.prayerCardTop}>
                 <Text style={styles.prayerCardArabic}>{ar}</Text>
-                <Icon size={19} color={COLORS.goldLight} strokeWidth={1.8} />
+                <View style={styles.prayerIconGlow}>
+                  <Icon size={18} color={COLORS.goldLight} strokeWidth={1.8} />
+                </View>
               </View>
               <Text style={styles.prayerCardName}>{en}</Text>
               <View style={styles.prayerCardRows}>
@@ -584,7 +586,9 @@ function PrayerTimes({ isMobile, isTablet, prayerTimes, prayerStatus }) {
               <View key={label} style={styles.jummahCard}>
                 <View style={styles.jummahCardHead}>
                   <Text style={styles.jummahCardArabic}>الجمعة</Text>
-                  <MoonStar size={17} color={COLORS.goldLight} strokeWidth={1.8} />
+                  <View style={styles.prayerIconGlow}>
+                    <MoonStar size={17} color={COLORS.goldLight} strokeWidth={1.8} />
+                  </View>
                 </View>
                 <Text style={styles.jummahCardName}>{label}</Text>
                 <View style={styles.jummahAudience}>
@@ -853,12 +857,10 @@ function ProgramsCarousel({ isMobile, isTablet }) {
                   cursor: "pointer",
                   borderRadius: 14,
                   overflow: "hidden",
-                  border: isActive
-                    ? `1.5px solid ${COLORS.goldLight}`
-                    : "1px solid rgba(255,255,255,0.12)",
+                  border: isActive ? "none" : "1px solid rgba(255,255,255,0.12)",
                   background: COLORS.night,
                   boxShadow: isActive
-                    ? "0 34px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(253,212,141,0.22)"
+                    ? "0 34px 80px rgba(0,0,0,0.55), 0 0 38px rgba(253,212,141,0.22)"
                     : "0 18px 44px rgba(0,0,0,0.45)",
                   willChange: "transform, opacity",
                 },
@@ -1432,7 +1434,8 @@ const styles = StyleSheet.create({
     gap: 28,
     paddingHorizontal: 16,
     paddingVertical: 7,
-    backgroundColor: "rgba(0,42,72,0.92)",
+    backgroundColor: "rgba(0,34,61,0.96)",
+    backgroundImage: "linear-gradient(90deg, #00182e 0%, #063b5c 48%, #002a48 100%)",
   },
   topbarMobile: {
     minHeight: 34,
@@ -1468,11 +1471,12 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingLeft: 8,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.18)",
+    borderColor: "rgba(255,255,255,0.16)",
     borderRadius: 8,
-    backgroundColor: "rgba(0,42,72,0.74)",
-    boxShadow: "0 16px 40px rgba(0,0,0,0.18)",
-    backdropFilter: "blur(8px)",
+    backgroundColor: "rgba(0,32,57,0.8)",
+    backgroundImage: "linear-gradient(105deg, rgba(0,24,46,0.94), rgba(6,59,92,0.84) 58%, rgba(0,42,72,0.92))",
+    boxShadow: "0 6px 8px rgba(0,8,20,0.22)",
+    backdropFilter: "blur(10px)",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -1482,7 +1486,7 @@ const styles = StyleSheet.create({
     width: "calc(100% - 20px)",
     marginTop: 6,
     paddingLeft: 10,
-    backgroundColor: "rgba(0,42,72,0.84)",
+    backgroundColor: "rgba(0,32,57,0.92)",
   },
   logo: {
     width: 150,
@@ -1536,7 +1540,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 13,
     color: "rgba(255,255,255,0.92)",
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "700",
   },
   donateLink: {
@@ -1548,12 +1552,15 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 8,
     borderBottomRightRadius: 8,
     backgroundColor: COLORS.goldLight,
-    transitionProperty: "background-color",
+    backgroundImage: "linear-gradient(135deg, #ffe3ac 0%, #f8c96f 100%)",
+    boxShadow: "0 0 26px rgba(253,212,141,0.2)",
+    transitionProperty: "background-color, box-shadow",
     transitionDuration: "160ms",
     transitionTimingFunction: easeOut,
   },
   donateLinkHover: {
     backgroundColor: "#f6c878",
+    boxShadow: "0 0 34px rgba(253,212,141,0.34)",
   },
   donateLinkText: {
     color: COLORS.navy,
@@ -1582,13 +1589,13 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    backgroundColor: "rgba(0,24,46,0.58)",
+    backgroundColor: "rgba(0,24,46,0.56)",
     backgroundImage:
-      "linear-gradient(180deg, rgba(0,24,46,0.42) 0%, rgba(0,42,72,0.5) 38%, rgba(0,15,30,0.88) 100%)",
+      "radial-gradient(860px 520px at 18% 62%, rgba(34,115,171,0.28), transparent 68%), linear-gradient(90deg, rgba(0,18,35,0.9) 0%, rgba(0,39,67,0.68) 52%, rgba(0,24,46,0.5) 100%), linear-gradient(180deg, rgba(0,24,46,0.34) 0%, rgba(0,29,52,0.48) 46%, rgba(0,12,26,0.92) 100%)",
   },
   heroContent: {
     width: "100%",
-    maxWidth: 900,
+    maxWidth: 830,
     paddingHorizontal: 48,
     paddingBottom: 110,
     zIndex: 1,
@@ -1605,42 +1612,40 @@ const styles = StyleSheet.create({
     paddingBottom: 245,
   },
   eyebrow: {
-    marginBottom: 14,
+    marginBottom: 12,
     color: COLORS.goldLight,
-    fontSize: 15,
+    fontSize: 13,
     fontWeight: "700",
-    letterSpacing: 0.2,
+    letterSpacing: 0.5,
+    textShadow: "0 0 16px rgba(253,212,141,0.34)",
   },
   heroTitle: {
     maxWidth: 940,
     color: COLORS.white,
     fontFamily: FONT_DISPLAY,
-    fontSize: 74,
-    fontWeight: "700",
-    lineHeight: 78,
-    letterSpacing: -1,
-    textTransform: "uppercase",
-    textShadowColor: "rgba(0,15,30,0.4)",
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 26,
+    fontSize: 64,
+    fontWeight: "600",
+    lineHeight: 68,
+    letterSpacing: 0.2,
+    textShadow: "0 0 30px rgba(253,212,141,0.2)",
   },
   heroTitleTablet: {
-    fontSize: 56,
-    lineHeight: 58,
-    letterSpacing: -0.8,
+    fontSize: 50,
+    lineHeight: 53,
+    letterSpacing: 0.1,
   },
   heroTitleMobile: {
-    fontSize: 38,
-    lineHeight: 41,
-    letterSpacing: -0.4,
+    fontSize: 35,
+    lineHeight: 39,
+    letterSpacing: 0.1,
   },
   heroCopy: {
     width: "100%",
     maxWidth: 640,
     marginTop: 18,
     color: "rgba(255,255,255,0.88)",
-    fontSize: 19,
-    lineHeight: 28,
+    fontSize: 17,
+    lineHeight: 26,
   },
   heroCopyMobile: {
     maxWidth: 340,
@@ -1666,11 +1671,11 @@ const styles = StyleSheet.create({
     zIndex: 2,
     width: 520,
     flexDirection: "row",
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.22)",
-    borderRadius: 8,
-    backgroundColor: "rgba(0,42,72,0.34)",
-    backdropFilter: "blur(6px)",
+    borderRadius: 10,
+    backgroundColor: "rgba(0,35,62,0.5)",
+    backgroundImage: "linear-gradient(120deg, rgba(0,24,46,0.74), rgba(6,59,92,0.58))",
+    boxShadow: "0 20px 52px rgba(0,8,20,0.34), 0 0 30px rgba(253,212,141,0.12)",
+    backdropFilter: "blur(10px)",
     animationKeyframes: {
       "0%": { opacity: 0, transform: [{ translateY: 12 }] },
       "100%": { opacity: 1, transform: [{ translateY: 0 }] },
@@ -1710,7 +1715,7 @@ const styles = StyleSheet.create({
   },
   statusLabel: {
     color: "rgba(255,255,255,0.74)",
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: "900",
     textTransform: "uppercase",
     letterSpacing: 0.4,
@@ -1718,7 +1723,7 @@ const styles = StyleSheet.create({
   statusValue: {
     marginTop: 3,
     color: COLORS.white,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "900",
   },
   button: {
@@ -1738,17 +1743,19 @@ const styles = StyleSheet.create({
   },
   buttonHover: {
     transform: "translateY(-1px)",
-    boxShadow: "0 16px 38px rgba(253,212,141,0.4)",
+    boxShadow: "0 12px 30px rgba(253,212,141,0.34), 0 0 24px rgba(253,212,141,0.26)",
   },
   buttonPressed: {
     transform: "translateY(0px)",
   },
   buttonPrimary: {
     backgroundColor: COLORS.goldLight,
-    boxShadow: "0 10px 26px rgba(253,212,141,0.32)",
+    backgroundImage: "linear-gradient(135deg, #ffe2a8 0%, #f7c86f 100%)",
+    boxShadow: "0 10px 26px rgba(253,212,141,0.26), 0 0 20px rgba(253,212,141,0.18)",
   },
   buttonSecondary: {
     backgroundColor: COLORS.blueMid,
+    backgroundImage: "linear-gradient(135deg, #2d84bd 0%, #155d8d 100%)",
   },
   buttonLight: {
     backgroundColor: COLORS.white,
@@ -1776,7 +1783,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     paddingVertical: 96,
     backgroundColor: COLORS.navy,
-    backgroundImage: `radial-gradient(1200px 520px at 82% -8%, rgba(253,212,141,0.12), transparent 58%), linear-gradient(160deg, ${COLORS.navy} 0%, ${COLORS.night} 100%)`,
+    backgroundImage: `radial-gradient(820px 460px at 12% 4%, rgba(253,212,141,0.14), transparent 64%), radial-gradient(900px 620px at 88% 48%, rgba(34,115,171,0.28), transparent 68%), linear-gradient(145deg, ${COLORS.night} 0%, ${COLORS.navy} 45%, #063b5c 72%, ${COLORS.night} 100%)`,
   },
   prayerPattern: {
     position: "absolute",
@@ -1784,10 +1791,9 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    opacity: 0.1,
+    opacity: 1,
     backgroundImage:
-      "radial-gradient(circle at 1px 1px, rgba(253,212,141,0.55) 1px, transparent 0)",
-    backgroundSize: "26px 26px",
+      "radial-gradient(420px 180px at 50% 0%, rgba(255,255,255,0.05), transparent 72%), radial-gradient(360px 280px at 82% 72%, rgba(253,212,141,0.07), transparent 72%)",
   },
   prayerContent: {
     position: "relative",
@@ -1814,18 +1820,15 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: COLORS.white,
     fontFamily: FONT_DISPLAY,
-    fontSize: 48,
-    fontWeight: "700",
-    lineHeight: 52,
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
-    textShadowColor: "rgba(253,212,141,0.3)",
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 22,
+    fontSize: 44,
+    fontWeight: "600",
+    lineHeight: 48,
+    letterSpacing: 0.3,
+    textShadow: "0 0 22px rgba(253,212,141,0.28)",
   },
   prayerHeadingMobile: {
-    fontSize: 38,
-    lineHeight: 42,
+    fontSize: 34,
+    lineHeight: 38,
   },
   prayerDownload: {
     marginTop: 20,
@@ -1865,10 +1868,10 @@ const styles = StyleSheet.create({
     minWidth: 150,
     padding: 18,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.13)",
+    borderColor: "rgba(253,212,141,0.16)",
     borderRadius: 14,
     backgroundColor: "rgba(255,255,255,0.05)",
-    backgroundImage: "linear-gradient(158deg, rgba(255,255,255,0.09), rgba(255,255,255,0.02))",
+    backgroundImage: "linear-gradient(145deg, rgba(255,255,255,0.1), rgba(34,115,171,0.1) 58%, rgba(255,255,255,0.025))",
   },
   prayerCardMobile: {
     flexBasis: 150,
@@ -1880,6 +1883,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
+  prayerIconGlow: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(253,212,141,0.12)",
+    backgroundImage: "linear-gradient(145deg, rgba(253,212,141,0.18), rgba(253,212,141,0.05))",
+    boxShadow: "0 0 24px rgba(253,212,141,0.2)",
+  },
   prayerCardArabic: {
     color: COLORS.goldLight,
     fontSize: 17,
@@ -1888,10 +1901,9 @@ const styles = StyleSheet.create({
   prayerCardName: {
     marginTop: 8,
     color: COLORS.white,
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: "800",
-    textTransform: "uppercase",
-    letterSpacing: 0.6,
+    letterSpacing: 0.15,
   },
   prayerCardRows: {
     marginTop: 14,
@@ -1941,13 +1953,10 @@ const styles = StyleSheet.create({
   jummahHeading: {
     color: COLORS.goldLight,
     fontFamily: FONT_DISPLAY,
-    fontSize: 30,
+    fontSize: 27,
     fontWeight: "600",
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    textShadowColor: "rgba(253,212,141,0.35)",
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 18,
+    letterSpacing: 0.5,
+    textShadow: "0 0 18px rgba(253,212,141,0.35)",
   },
   jummahGrid: {
     flexDirection: "row",
@@ -1962,10 +1971,10 @@ const styles = StyleSheet.create({
     minWidth: 180,
     padding: 20,
     borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.13)",
+    borderColor: "rgba(253,212,141,0.16)",
     borderRadius: 14,
     backgroundColor: "rgba(255,255,255,0.05)",
-    backgroundImage: "linear-gradient(158deg, rgba(255,255,255,0.09), rgba(255,255,255,0.02))",
+    backgroundImage: "linear-gradient(145deg, rgba(255,255,255,0.1), rgba(34,115,171,0.1) 58%, rgba(255,255,255,0.025))",
   },
   jummahCardHead: {
     flexDirection: "row",
@@ -2131,15 +2140,17 @@ const styles = StyleSheet.create({
   whiteSection: {
     paddingVertical: 105,
     backgroundColor: COLORS.white,
+    backgroundImage: "radial-gradient(760px 360px at 6% 8%, rgba(34,115,171,0.08), transparent 68%), linear-gradient(180deg, #ffffff 0%, #f6f9fb 100%)",
   },
   softSection: {
     paddingVertical: 105,
     backgroundColor: COLORS.soft,
+    backgroundImage: "radial-gradient(720px 360px at 92% 8%, rgba(253,212,141,0.12), transparent 66%), linear-gradient(145deg, #f3f7fa 0%, #ffffff 52%, #edf4f8 100%)",
   },
   calendarSection: {
     paddingVertical: 105,
     backgroundColor: COLORS.mist,
-    backgroundImage: `linear-gradient(180deg, ${COLORS.white} 0%, ${COLORS.mist} 100%)`,
+    backgroundImage: "radial-gradient(820px 420px at 12% 2%, rgba(34,115,171,0.1), transparent 68%), radial-gradient(620px 320px at 94% 88%, rgba(253,212,141,0.12), transparent 68%), linear-gradient(180deg, #f8fbfd 0%, #edf4f8 100%)",
   },
   mobileSection: {
     paddingVertical: 64,
@@ -2155,27 +2166,27 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: COLORS.navy,
     fontFamily: FONT_DISPLAY,
-    fontSize: 48,
-    fontWeight: "700",
-    lineHeight: 54,
-    letterSpacing: -0.25,
+    fontSize: 42,
+    fontWeight: "600",
+    lineHeight: 47,
+    letterSpacing: 0.1,
   },
   sectionTitleTablet: {
-    fontSize: 40,
-    lineHeight: 44,
-    letterSpacing: -0.4,
+    fontSize: 36,
+    lineHeight: 41,
+    letterSpacing: 0.05,
   },
   sectionTitleMobile: {
-    fontSize: 32,
-    lineHeight: 37,
-    letterSpacing: -0.2,
+    fontSize: 30,
+    lineHeight: 35,
+    letterSpacing: 0.05,
   },
   bodyText: {
     maxWidth: 660,
     marginTop: 18,
     color: COLORS.muted,
-    fontSize: 16,
-    lineHeight: 25,
+    fontSize: 15,
+    lineHeight: 24,
   },
   missionList: {
     flex: 0.9,
@@ -2185,6 +2196,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.line,
     borderRadius: 10,
     backgroundColor: COLORS.soft,
+    backgroundImage: "linear-gradient(145deg, rgba(255,255,255,0.96), rgba(237,244,248,0.92))",
   },
   missionItem: {
     minHeight: 64,
@@ -2201,9 +2213,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.white,
-    borderWidth: 1,
-    borderColor: COLORS.line,
+    backgroundColor: "#fbf3e4",
+    backgroundImage: "linear-gradient(145deg, #fff8eb, #f5dfb8)",
+    boxShadow: "0 0 18px rgba(253,212,141,0.24)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -2237,7 +2249,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: COLORS.white,
     overflow: "hidden",
-    boxShadow: "0 12px 30px rgba(0,42,72,0.05)",
+    boxShadow: "0 6px 8px rgba(0,42,72,0.06)",
   },
   scheduleRow: {
     paddingVertical: 22,
@@ -2260,9 +2272,9 @@ const styles = StyleSheet.create({
     width: 46,
     height: 46,
     borderRadius: 23,
-    backgroundColor: COLORS.soft,
-    borderWidth: 1,
-    borderColor: COLORS.line,
+    backgroundColor: "#fbf3e4",
+    backgroundImage: "linear-gradient(145deg, #fff8eb, #f5dfb8)",
+    boxShadow: "0 0 18px rgba(253,212,141,0.2)",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -2272,7 +2284,7 @@ const styles = StyleSheet.create({
   },
   scheduleTitle: {
     color: COLORS.navy,
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: "900",
     lineHeight: 22,
   },
@@ -2311,7 +2323,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     paddingVertical: 92,
     backgroundColor: COLORS.night,
-    backgroundImage: `radial-gradient(900px 540px at 50% 40%, rgba(253,212,141,0.12), transparent 60%), linear-gradient(180deg, ${COLORS.night} 0%, ${COLORS.navy} 52%, ${COLORS.night} 100%)`,
+    backgroundImage: `radial-gradient(760px 500px at 50% 38%, rgba(253,212,141,0.16), transparent 64%), radial-gradient(900px 520px at 8% 88%, rgba(34,115,171,0.24), transparent 72%), linear-gradient(155deg, ${COLORS.night} 0%, ${COLORS.navy} 48%, #063b5c 70%, ${COLORS.night} 100%)`,
   },
   carouselPattern: {
     position: "absolute",
@@ -2319,10 +2331,9 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    opacity: 0.08,
+    opacity: 1,
     backgroundImage:
-      "linear-gradient(135deg, transparent 0 46%, rgba(253,212,141,0.7) 46% 47%, transparent 47% 100%), linear-gradient(45deg, transparent 0 46%, rgba(253,212,141,0.6) 46% 47%, transparent 47% 100%)",
-    backgroundSize: "120px 120px",
+      "radial-gradient(360px 180px at 50% 28%, rgba(255,255,255,0.05), transparent 72%), radial-gradient(460px 340px at 88% 74%, rgba(253,212,141,0.07), transparent 74%)",
   },
   carouselContent: {
     position: "relative",
@@ -2339,19 +2350,16 @@ const styles = StyleSheet.create({
     marginTop: 6,
     color: COLORS.white,
     fontFamily: FONT_DISPLAY,
-    fontSize: 52,
-    fontWeight: "700",
-    lineHeight: 56,
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
+    fontSize: 46,
+    fontWeight: "600",
+    lineHeight: 50,
+    letterSpacing: 0.3,
     textAlign: "center",
-    textShadowColor: "rgba(253,212,141,0.3)",
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 24,
+    textShadow: "0 0 24px rgba(253,212,141,0.3)",
   },
   carouselHeadingMobile: {
-    fontSize: 36,
-    lineHeight: 40,
+    fontSize: 34,
+    lineHeight: 38,
   },
   carouselDivider: {
     marginTop: 14,
@@ -2423,10 +2431,11 @@ const styles = StyleSheet.create({
   carouselCaptionTitle: {
     color: COLORS.white,
     fontFamily: FONT_DISPLAY,
-    fontSize: 30,
-    fontWeight: "700",
-    lineHeight: 36,
+    fontSize: 27,
+    fontWeight: "600",
+    lineHeight: 33,
     textAlign: "center",
+    textShadow: "0 0 18px rgba(253,212,141,0.22)",
   },
   carouselCaptionMeta: {
     marginTop: 6,
@@ -2446,7 +2455,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.line,
     borderRadius: 14,
     backgroundColor: COLORS.white,
-    boxShadow: "0 18px 40px rgba(0,42,72,0.06)",
+    boxShadow: "0 6px 8px rgba(0,42,72,0.06)",
   },
   calDayRow: {
     flexDirection: "row",
@@ -2590,6 +2599,7 @@ const styles = StyleSheet.create({
   bookingSection: {
     paddingVertical: 105,
     backgroundColor: COLORS.white,
+    backgroundImage: "radial-gradient(760px 360px at 90% 12%, rgba(34,115,171,0.08), transparent 68%), linear-gradient(155deg, #ffffff 0%, #f4f8fb 100%)",
   },
   bookingCard: {
     marginTop: 32,
@@ -2599,7 +2609,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.line,
     borderRadius: 16,
     backgroundColor: COLORS.soft,
-    boxShadow: "0 18px 44px rgba(0,42,72,0.06)",
+    boxShadow: "0 6px 8px rgba(0,42,72,0.06)",
   },
   bookingLabel: {
     color: COLORS.ink,
@@ -2759,7 +2769,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     paddingVertical: 92,
     backgroundColor: COLORS.navy,
-    backgroundImage: `radial-gradient(1000px 500px at 12% -5%, rgba(253,212,141,0.09), transparent 58%), linear-gradient(160deg, ${COLORS.navy} 0%, ${COLORS.night} 100%)`,
+    backgroundImage: `radial-gradient(760px 420px at 12% 0%, rgba(253,212,141,0.14), transparent 66%), radial-gradient(820px 520px at 88% 72%, rgba(34,115,171,0.26), transparent 70%), linear-gradient(145deg, ${COLORS.night} 0%, ${COLORS.navy} 50%, #063b5c 76%, ${COLORS.night} 100%)`,
   },
   patternLayer: {
     position: "absolute",
@@ -2767,10 +2777,9 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     left: 0,
-    opacity: 0.12,
+    opacity: 1,
     backgroundImage:
-      "linear-gradient(135deg, transparent 0 46%, rgba(255,255,255,0.8) 46% 48%, transparent 48% 100%), linear-gradient(45deg, transparent 0 46%, rgba(255,255,255,0.7) 46% 48%, transparent 48% 100%)",
-    backgroundSize: "92px 92px",
+      "radial-gradient(420px 240px at 74% 24%, rgba(255,255,255,0.05), transparent 72%), radial-gradient(340px 260px at 18% 84%, rgba(253,212,141,0.06), transparent 74%)",
   },
   newCenterLayout: {
     flexDirection: "row",
@@ -2795,10 +2804,10 @@ const styles = StyleSheet.create({
     width: 420,
     maxWidth: "100%",
     padding: 24,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.2)",
     borderRadius: 12,
     backgroundColor: "rgba(255,255,255,0.08)",
+    backgroundImage: "linear-gradient(145deg, rgba(255,255,255,0.13), rgba(34,115,171,0.1))",
+    boxShadow: "0 22px 54px rgba(0,8,20,0.32), 0 0 30px rgba(253,212,141,0.14)",
   },
   pledgeLabel: {
     color: COLORS.goldLight,
@@ -2810,16 +2819,15 @@ const styles = StyleSheet.create({
   pledgeTitle: {
     marginTop: 6,
     color: COLORS.white,
-    fontSize: 44,
+    fontSize: 38,
     fontWeight: "900",
-    lineHeight: 46,
-    textShadowColor: "rgba(253,212,141,0.28)",
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 18,
+    lineHeight: 42,
+    textShadow: "0 0 18px rgba(253,212,141,0.28)",
   },
   footer: {
     paddingVertical: 48,
     backgroundColor: COLORS.night,
+    backgroundImage: `linear-gradient(120deg, ${COLORS.night} 0%, ${COLORS.navy} 58%, #063b5c 100%)`,
   },
   footerLayout: {
     flexDirection: "row",

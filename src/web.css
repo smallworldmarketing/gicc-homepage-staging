@@ -6,7 +6,7 @@ body,
 }
 
 body {
-  background: #ffffff;
+  background: #00182e;
   font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -20,6 +20,11 @@ body {
 
 a {
   color: inherit;
+}
+
+::selection {
+  color: #00182e;
+  background: #fdd48d;
 }
 
 /* Keyboard focus ring for the program coverflow stage (a focusable div). */
