@@ -1,5 +1,13 @@
 # Decisions Log
 
+## 2026-07-15 — Revalidate Next.js static chunks instead of treating them as immutable
+
+**Context:** Next.js 16/Turbopack reused the same generated CSS chunk URL after a stylesheet-only production build. The previous one-year `immutable` browser policy therefore allowed returning visitors to keep stale styles after a deployment.
+
+**Choice:** Serve `/_next/static/*` with `max-age=0, must-revalidate`. Keep Cloudflare at the edge, but require browsers to validate cached chunks before reuse. A separate global heading-case stylesheet also gives this rollout a new asset URL so clients that already cached the old immutable stylesheet receive the uppercase H1 treatment immediately.
+
+**Consequences:** CSS and JavaScript changes propagate reliably across direct-upload deployments. Repeat visits may perform lightweight conditional requests instead of blindly reusing year-old chunks.
+
 ## 2026-07-14 — Use the published GitHub Pages build as the visual and editorial baseline
 
 **Context:** The client preferred the typography, spacing, copy, icons, flyer coverflow, Awqat prayer experience, and Google Calendar presentation in the last published staging build.
