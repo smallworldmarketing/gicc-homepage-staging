@@ -143,7 +143,7 @@ const sendNotification = async ({
   cf: Record<string, unknown>;
 }) => {
   if (!env.MAILERSEND_API_TOKEN) return { status: "skipped" as const, error: "MAILERSEND_API_TOKEN is not configured" };
-  const recipient = env.LEAD_RECIPIENT ?? "info@giccmasjid.org";
+  const recipient = env.LEAD_RECIPIENT ?? "secretary@giccmasjid.org";
   const from = env.MAIL_FROM ?? "notify@smallworld.ca";
   const fromName = env.MAIL_FROM_NAME ?? "GICC Website";
   const leadSource = classifyLeadSource(fields.attribution);

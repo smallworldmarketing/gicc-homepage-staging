@@ -9,7 +9,7 @@ Production website for the Guildford Islamic Cultural Center in Surrey, BC.
 - Tailwind CSS v4 plus GICC semantic design tokens
 - Cloudflare Pages Function for public space requests
 - Cloudflare D1 for request tracking and private R2 for certification files
-- MailerSend notification to `info@giccmasjid.org`
+- MailerSend booking notification to `secretary@giccmasjid.org`
 - Awqat prayer-time feed and Google Calendar events
 
 ## Local development

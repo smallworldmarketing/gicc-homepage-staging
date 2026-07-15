@@ -38,7 +38,7 @@ the approval workflow, naming conventions, and protected request-queue setup.
 - Awqat public prayer-time API
 - Google Calendar `ammar@giccmasjid.org`
 - Cloudflare Pages, D1, R2, and Turnstile
-- MailerSend notification to `info@giccmasjid.org`
+- MailerSend booking notification to `secretary@giccmasjid.org`
 
 Never commit runtime secrets. Public browser identifiers belong in Pages vars;
 MailerSend and Turnstile secrets belong in Pages secrets.

@@ -18,7 +18,7 @@
     }
   ],
   "vars": {
-    "LEAD_RECIPIENT": "info@giccmasjid.org",
+    "LEAD_RECIPIENT": "secretary@giccmasjid.org",
     "MAIL_FROM_NAME": "GICC Website"
   },
   "env": {
@@ -38,7 +38,7 @@
         }
       ],
       "vars": {
-        "LEAD_RECIPIENT": "info@giccmasjid.org",
+        "LEAD_RECIPIENT": "secretary@giccmasjid.org",
         "MAIL_FROM_NAME": "GICC Website"
       }
     }

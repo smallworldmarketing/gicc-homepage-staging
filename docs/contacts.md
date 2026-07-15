@@ -6,7 +6,7 @@
 | Cloudflare Pages | Static site and Functions | `gicc-website` in SWM `admin@smallworld.ca` account |
 | Cloudflare D1 | Space request records | `gicc-event-requests-prod` / `gicc-event-requests-preview`; binding: `BOOKINGS_DB` |
 | Cloudflare R2 | Private certification files | `gicc-event-request-files-prod` / `gicc-event-request-files-preview`; binding: `BOOKING_FILES` |
-| MailerSend | Request notification | `LEAD_RECIPIENT=info@giccmasjid.org` |
+| MailerSend | Booking request notification | `LEAD_RECIPIENT=secretary@giccmasjid.org` |
 | Google Calendar | Public event schedule | `ammar@giccmasjid.org` |
 | Awqat | Prayer times | Masjid Guildford organization ID in `.env.example` |
 | GICC general contact | Client inbox | `info@giccmasjid.org` |
@@ -16,7 +16,7 @@
 | Name | Kind | Notes |
 |---|---|---|
 | `MAILERSEND_API_TOKEN` | Secret | Per-site token, never public |
-| `LEAD_RECIPIENT` | Variable | `info@giccmasjid.org` |
+| `LEAD_RECIPIENT` | Variable | `secretary@giccmasjid.org` |
 | `MAIL_FROM` | Variable | `notify@smallworld.ca` |
 | `MAIL_FROM_NAME` | Variable | `GICC Website` |
 | `TURNSTILE_SECRET_KEY` | Secret | Optional until Turnstile widget is provisioned |
