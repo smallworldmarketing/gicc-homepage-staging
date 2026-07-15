@@ -62,7 +62,7 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
-            <Link className="nav-donate" href={SITE.donationUrl} target="_blank" rel="noreferrer" onClick={() => setOpen(false)}>
+            <Link className="nav-donate" href="/donate/" onClick={() => setOpen(false)}>
               <HeartHandshake aria-hidden="true" /> Donate
             </Link>
           </nav>

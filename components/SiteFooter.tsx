@@ -19,11 +19,30 @@ export function SiteFooter() {
           </div>
         </div>
         <div>
-          <h2>Site</h2>
+          <h2>Explore</h2>
           <nav className="footer-links" aria-label="Footer navigation">
-            <Link href="/#welcome">About Us</Link>
-            <Link href="/#prayer-times">Iqama Times</Link>
+            <Link href="/prayer-times/">Prayer &amp; Iqama Times</Link>
+            <Link href="/programs/">Programs &amp; Registrations</Link>
+            <Link href="/programs/#calendar">Community Calendar</Link>
+            <Link href="/event-request/">Request GICC Space</Link>
+          </nav>
+        </div>
+        <div>
+          <h2>Community</h2>
+          <nav className="footer-links" aria-label="Community pages">
+            <Link href="/about/">About GICC</Link>
+            <Link href="/new-masjid/">New Masjid Project</Link>
+            <Link href="/youth-mental-health-support/">Youth Mental Health Support</Link>
+            <Link href="/mfas-terms/">MFAS</Link>
+            <Link href="/donate/">Donate</Link>
             <Link href="/contact/">Contact Us</Link>
+          </nav>
+        </div>
+        <div>
+          <h2>Legal</h2>
+          <nav className="footer-links" aria-label="Legal pages">
+            <Link href="/privacy/">Privacy Policy</Link>
+            <Link href="/terms/">Website Terms</Link>
           </nav>
         </div>
       </div>

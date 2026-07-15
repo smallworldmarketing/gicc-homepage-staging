@@ -234,7 +234,7 @@ function MonthlyPrayerTimesModal({
   );
 }
 
-export function HomePrayerExperience() {
+function PrayerTimesExperience({ showHero }: { showHero: boolean }) {
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimesRecord | null>(null);
   const [status, setStatus] = useState<PrayerStatus>(AWQAT_KEY ? "loading" : "unconfigured");
   const [showMonthly, setShowMonthly] = useState(false);
@@ -292,24 +292,26 @@ export function HomePrayerExperience() {
 
   return (
     <>
-      <section className="hero" aria-labelledby="home-heading">
-        <MasjidBuildingPicture className="hero__media" alt="The Guildford neighbourhood that GICC serves in Surrey, BC" priority />
-        <div className="hero__veil" aria-hidden="true" />
-        <div className="hero__content">
-          <p className="hero__kicker">Assalamu alaikum, welcome.</p>
-          <h1 id="home-heading">Guildford Islamic Cultural Center</h1>
-          <p className="hero__lede">A spiritual home for daily prayer, Islamic learning, family programs, and community service in Guildford.</p>
-          <div className="hero__actions">
-            <a className="button button--gold" href="#calendar"><CalendarDays aria-hidden="true" /> View weekly events</a>
-            <a className="button button--blue" href="https://surreyislamiccenter.com/" target="_blank" rel="noreferrer"><Building2 aria-hidden="true" /> New Islamic Center</a>
+      {showHero ? (
+        <section className="hero" aria-labelledby="home-heading">
+          <MasjidBuildingPicture className="hero__media" alt="The Guildford neighbourhood that GICC serves in Surrey, BC" priority />
+          <div className="hero__veil" aria-hidden="true" />
+          <div className="hero__content">
+            <p className="hero__kicker">Assalamu alaikum, welcome.</p>
+            <h1 id="home-heading">Guildford Islamic Cultural Center</h1>
+            <p className="hero__lede">A spiritual home for daily prayer, Islamic learning, family programs, and community service in Guildford.</p>
+            <div className="hero__actions">
+              <a className="button button--gold" href="#calendar"><CalendarDays aria-hidden="true" /> View weekly events</a>
+              <a className="button button--blue" href="https://surreyislamiccenter.com/" target="_blank" rel="noreferrer"><Building2 aria-hidden="true" /> New Islamic Center</a>
+            </div>
           </div>
-        </div>
-        <dl className="hero__status">
-          <div><dt>Next Iqama</dt><dd>{nextIqama(prayerTimes, status)}</dd></div>
-          <div><dt>Jumuah</dt><dd>{formatPrayerTime(prayerTimes?.jumah_time_1)}</dd></div>
-          <div><dt>Calendar</dt><dd>Live</dd></div>
-        </dl>
-      </section>
+          <dl className="hero__status">
+            <div><dt>Next Iqama</dt><dd>{nextIqama(prayerTimes, status)}</dd></div>
+            <div><dt>Jumuah</dt><dd>{formatPrayerTime(prayerTimes?.jumah_time_1)}</dd></div>
+            <div><dt>Calendar</dt><dd>Live</dd></div>
+          </dl>
+        </section>
+      ) : null}
 
       <section id="prayer-times" className="prayer-section" aria-labelledby="prayer-heading">
         <div className="prayer-pattern" aria-hidden="true" />
@@ -366,4 +368,12 @@ export function HomePrayerExperience() {
       <MonthlyPrayerTimesModal open={showMonthly} onClose={closeMonthly} returnFocusRef={monthlyButtonRef} />
     </>
   );
+}
+
+export function HomePrayerExperience() {
+  return <PrayerTimesExperience showHero />;
+}
+
+export function PrayerTimesPageExperience() {
+  return <PrayerTimesExperience showHero={false} />;
 }

@@ -19,13 +19,13 @@ export const SITE = {
 } as const;
 
 export const PRIMARY_NAV = [
-  { label: "About", href: "/#welcome" },
-  { label: "Programs", href: "/#programs" },
-  { label: "Registrations", href: "/#registrations" },
-  { label: "Calendar", href: "/#calendar" },
+  { label: "About", href: "/about/" },
+  { label: "Programs", href: "/programs/" },
+  { label: "Registrations", href: "/programs/#registrations" },
+  { label: "Calendar", href: "/programs/#calendar" },
   { label: "Book", href: "/event-request/" },
-  { label: "New Masjid", href: "/#new-center" },
-  { label: "Contact", href: "/#contact" },
+  { label: "New Masjid", href: "/new-masjid/" },
+  { label: "Contact", href: "/contact/" },
 ] as const;
 
 export const WEEKLY_PROGRAMS = [
@@ -117,14 +117,23 @@ export const REGISTRATIONS = [
 export const LEGACY_ROUTES = [
   "/",
   "/about-us/",
+  "/classic-1/",
   "/contact-us/",
   "/donate/",
-  "/new-masjid/",
-  "/youth-mental-health-support/",
-  "/privacy-policy/",
+  "/donation/",
+  "/iqama-times/",
   "/mfas-terms/",
   "/monthly-prayer-times/",
-  "/iqama-times/",
+  "/new-masjid/",
+  "/privacy-policy/",
+  "/test-page/",
+  "/youth-mental-health-support/",
+  "/eid-al-fitr-2022-announcement/",
+  "/1st-annual-quran-competition-results/",
+  "/eid-al-adha-salaah-and-festival/",
+  "/category/uncategorized/",
+  "/author/giccadmin/",
+  "/author/partopia/",
 ] as const;
 
 export const STATIC_ROUTES = [
@@ -138,6 +147,8 @@ export const STATIC_ROUTES = [
   "/privacy/",
   "/terms/",
   "/mfas-terms/",
+  "/prayer-times/",
+  "/programs/",
 ] as const;
 
 export const ORGANIZATION_JSON_LD = {

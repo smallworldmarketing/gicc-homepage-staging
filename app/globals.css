@@ -3383,6 +3383,7 @@ html {
     radial-gradient(760px 500px at 50% 38%, rgba(253, 212, 141, 0.16), transparent 64%),
     radial-gradient(900px 520px at 8% 88%, rgba(34, 115, 171, 0.24), transparent 72%),
     linear-gradient(155deg, #00182e 0%, #002a48 48%, #063b5c 70%, #00182e 100%);
+  overflow: hidden;
   position: relative;
 }
 
@@ -4202,5 +4203,48 @@ html {
 
   .registration-card[data-offset="4"] {
     transform: translate(-50%, -50%) translateX(var(--edge-right)) scale(0.68);
+  }
+}
+
+/* Interior route extensions: retain the approved homepage visual language. */
+.interior-hero {
+  padding-bottom: clamp(4rem, 7vw, 5.5rem);
+}
+
+.footer-grid {
+  align-items: flex-start;
+  gap: clamp(28px, 3vw, 48px);
+  justify-content: space-between;
+}
+
+.footer-grid > div:not(:first-child) {
+  flex: 0 1 180px;
+}
+
+@media (max-width: 1039px) {
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .footer-grid > div:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 639px) {
+  .content-hero h1,
+  .form-page__header h1 {
+    font-size: clamp(2.25rem, 11.5vw, 2.8125rem);
+    line-height: 0.98;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-grid > div:first-child {
+    grid-column: auto;
+    min-width: 0;
   }
 }

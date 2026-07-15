@@ -9,6 +9,8 @@
 - Per-route titles, descriptions, canonicals, Open Graph metadata, Organization/Mosque JSON-LD, sitemap, robots, and `llms.txt`.
 - Explicit AI crawler allow-list for production; previews are blocked through the `NEXT_PUBLIC_SITE_URL` gate.
 - WordPress URL inventory and keep/redirect/retire decisions.
+- Live WordPress inventory reverified on 2026-07-15: 13 pages, 3 posts, 1 category archive, and 2 author archives. See [`content-inventory.md`](content-inventory.md).
+- Standalone `/prayer-times/` and `/programs/` hubs, with retained editorial, project, support, donation, and contact pages exposed through site navigation.
 - Updated privacy and website terms aligned with the actual form pipeline.
 - Secure server-side form validation, honeypot, optional Turnstile, D1 rate limiting, private file storage, MailerSend notification, and first-touch attribution.
 - Existing-program booking removed; new program/one-time space requests moved to a dedicated page.
@@ -25,6 +27,7 @@
 - Optionally provision `GOOGLE_CALENDAR_API_KEY` as a Cloudflare runtime variable restricted to the Google Calendar API. The same-origin calendar function remains live through its verified, cached public ICS feed when the key is absent.
 - Create the Cloudflare Access `/staff/*` application and set `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, and `STAFF_EMAIL_ALLOWLIST` so the implemented staff request queue can be enabled. Google Calendar remains the booking source of truth.
 - Provision GICC in the SWM Payload CMS, import retained content/media, test publish→rebuild, and invite the tenant-scoped client admin.
+- Confirm the youth mental-health intake owner, minimum data set, consent copy, response SLA, retention period, and staff access list before replacing the sensitive WordPress intake form.
 - Make the GitHub repo private, rename it to `gicc-website`, add branch protection, and connect Cloudflare preview checks.
 - Run production Lighthouse, axe, Rich Results, HTML validation, crawl/link checks, multi-browser/mobile tests, redirect sampling, AI-bot user-agent tests, and tag/attribution QA.
 - Complete stakeholder sign-off, DNS cutover, SSL/HSTS, GSC/Bing sitemap submission, email/subdomain smoke tests, DNSSEC re-enable, and 30-day WordPress fallback window.

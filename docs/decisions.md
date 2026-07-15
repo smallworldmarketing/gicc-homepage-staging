@@ -1,5 +1,13 @@
 # Decisions Log
 
+## 2026-07-15 — Consolidate utility content into permanent public routes
+
+**Context:** A fresh crawl of the live WordPress site confirmed that every retained editorial route had already been represented in Next.js, but prayer times, program registrations, and the calendar were only discoverable as homepage anchors. The existing youth-support page also contains a sensitive intake form whose operational owner and data-handling rules are not documented.
+
+**Choice:** Add `/prayer-times/` as the canonical replacement for both legacy prayer pages and `/programs/` as a permanent hub for weekly programs, registrations, and the community calendar. Expose retained pages through the primary and footer navigation. Keep the youth-support resource page public, but do not recreate its intake form until GICC approves the recipient, consent, retention, and access model.
+
+**Consequences:** High-intent utility content now has crawlable, shareable URLs without duplicating its live data sources. The homepage preserves the approved sections. The youth intake remains an explicit production gate instead of silently sending sensitive data through the general booking workflow.
+
 ## 2026-07-15 — Revalidate Next.js static chunks instead of treating them as immutable
 
 **Context:** Next.js 16/Turbopack reused the same generated CSS chunk URL after a stylesheet-only production build. The previous one-year `immutable` browser policy therefore allowed returning visitors to keep stale styles after a deployment.

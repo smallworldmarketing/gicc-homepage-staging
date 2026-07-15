@@ -1,23 +1,17 @@
 import type { Metadata } from "next";
 import {
-  ArrowDown,
-  BookMarked,
   BookOpen,
-  Clock,
-  Coffee,
   ExternalLink,
-  GraduationCap,
   HandHeart,
   MapPin,
   MoonStar,
-  Sparkles,
   UsersRound,
 } from "lucide-react";
 import Link from "next/link";
 import { CommunityCalendar } from "@/components/CommunityCalendar";
 import { HomePrayerExperience } from "@/components/PrayerTimes";
 import { RegistrationsCarousel } from "@/components/RegistrationsCarousel";
-import { WEEKLY_PROGRAMS } from "@/lib/site";
+import { WeeklyProgramsSection } from "@/components/WeeklyProgramsSection";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/" },
@@ -33,8 +27,6 @@ export default function HomePage() {
     { icon: UsersRound, label: "Youth and family support" },
     { icon: HandHeart, label: "New Islamic Center project" },
   ] as const;
-  const programIcons = [GraduationCap, Sparkles, BookMarked, Coffee] as const;
-
   return (
     <>
       <HomePrayerExperience />
@@ -60,29 +52,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="programs" className="programs-section" aria-labelledby="programs-heading">
-        <div className="shell section-space">
-          <div className="section-heading-row">
-            <h2 id="programs-heading">A weekly rhythm for every stage of family life.</h2>
-            <a className="text-link" href="#calendar">See all events <ArrowDown aria-hidden="true" /></a>
-          </div>
-          <div className="program-list">
-            {WEEKLY_PROGRAMS.map((program, index) => {
-              const Icon = programIcons[index];
-              return (
-                <article key={program.title}>
-                  <span className="program-list__icon" aria-hidden="true"><Icon /></span>
-                  <div><h3>{program.title}</h3><p>{program.description}</p></div>
-                  <div className="program-list__schedule">
-                    <strong>{program.day}</strong>
-                    <span><Clock aria-hidden="true" /> {program.time}</span>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      <WeeklyProgramsSection />
 
       <RegistrationsCarousel />
       <CommunityCalendar />
