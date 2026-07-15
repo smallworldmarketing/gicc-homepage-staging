@@ -34,7 +34,7 @@
 
 ## Preview infrastructure
 
-- Preview: <https://codex-wordpress-migration.gicc-website.pages.dev/>
+- Preview: <https://codex-wordpress-migration-l86b.gicc-website.pages.dev/>
 - Pages project: `gicc-website`; production branch: `main`
 - Preview D1: `gicc-event-requests-preview`
 - Production D1: `gicc-event-requests-prod`
