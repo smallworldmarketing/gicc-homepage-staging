@@ -1,9 +1,19 @@
 node_modules/
+.next/
+out/
 dist/
+*.tsbuildinfo
+.env*
+!.env.example
+.payload-build/
+.wrangler/
 exports/
 .DS_Store
 npm-debug.log*
+*.pem
+*.key
+.playwright-mcp/
 
-# impeccable live-mode runtime journals (keep the committed config.json)
+# Impeccable live-mode runtime journals (keep committed config.json)
 .impeccable/live/sessions/
 config.bat

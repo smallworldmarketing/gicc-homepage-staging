@@ -15,7 +15,7 @@ The job to be done: "Tell me what I need to know about this masjid right now, an
 
 ## Product Purpose
 
-The public homepage for the Guildford Islamic Cultural Center (GICC) — a masjid and community center. It exists to be a welcoming, trustworthy front door: surface daily prayer/iqama times, weekly programs, community flyers and registrations, the live events calendar, and the New Islamic Center project. Success looks like a newcomer leaving oriented and inclined to visit, while a regular gets their answer in seconds. It is a single-page brand surface, currently staging, headed to production on Cloudflare Pages.
+The public website for the Guildford Islamic Cultural Center (GICC) — a masjid and community center. It exists to be a welcoming, trustworthy front door: surface daily prayer/iqama times, weekly programs, community flyers and registrations, the live events calendar, the New Islamic Center project, and a clear public request path for new programs or one-time space rentals. Success looks like a newcomer leaving oriented and inclined to visit, while a regular gets their answer in seconds. The production target is a static multi-route Next.js site on Cloudflare Pages.
 
 ## Brand Personality
 

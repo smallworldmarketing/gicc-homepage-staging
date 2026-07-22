@@ -1,44 +1,59 @@
-# GICC Homepage Staging
+# GICC Website
 
-React Native Web implementation of the approved Guildford Islamic Cultural Center homepage mockup.
+Production website for the Guildford Islamic Cultural Center in Surrey, BC.
 
-## Links
+## Stack
 
-- Staging: https://smallworldmarketing.github.io/gicc-homepage-staging/
-- Repository: https://github.com/smallworldmarketing/gicc-homepage-staging
-- Events calendar: Google Calendar `ammar@giccmasjid.org`
-- Prayer times: https://www.awqat.net/masjid/masjid-guildford
-- Community flyers: copied from the current `giccmasjid.org` homepage carousel assets
+- Next.js 16 App Router, TypeScript strict, React 19
+- Static export for Cloudflare Pages
+- Tailwind CSS v4 plus GICC semantic design tokens
+- Cloudflare Pages Function for public space requests
+- Cloudflare D1 for request tracking and private R2 for certification files
+- MailerSend booking notification to `secretary@giccmasjid.org`
+- Awqat prayer-time feed and Google Calendar events
 
-## Local Development
+## Local development
 
-```sh
+```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
-## Production Build
+## Validation
 
-```sh
-npm run build
+```bash
+npm run check
 ```
 
-The static production build is emitted to `dist/`.
+The static site is emitted to `out/`.
 
-## Staging
-
-This repo is set up for GitHub Pages staging. The staging build uses the same static output that Cloudflare Pages will use later.
-
-## Cloudflare Pages Plan
-
-When the client approves staging, connect this GitHub repository to Cloudflare Pages with:
+## Cloudflare Pages
 
 - Build command: `npm run build`
-- Build output directory: `dist`
+- Output directory: `out`
 - Node version: `22`
+- Production branch: `main`
 
-Community events are embedded from the Google Calendar shared by `ammar@giccmasjid.org`.
+Cloudflare configuration, including isolated preview/production D1 and R2 bindings,
+lives in `wrangler.jsonc`. Regenerate binding types after configuration changes:
 
-Prayer times are fetched from Awqat's public data source for Masjid Guildford.
+```bash
+npm run cf:types
+```
 
-Community flyer images are stored in `assets/community-flyers/` and rendered as a dedicated homepage section outside the hero.
+Required Pages bindings and runtime values are documented in
+[`docs/contacts.md`](docs/contacts.md) and [`docs/decisions.md`](docs/decisions.md).
+
+## Content updates
+
+Prayer times and calendar events are external feeds. Editorial pages and program
+registrations currently live in the repo; see [`docs/content-edits.md`](docs/content-edits.md).
+The SWM Payload CMS migration remains a production handoff item so client editors
+can publish without a code change.
+
+## Staff space management
+
+Public submissions are unconfirmed requests stored in D1. Staff check and reserve
+space in the existing GICC Google Calendar; see
+[`docs/internal-booking-workflow.md`](docs/internal-booking-workflow.md).

@@ -1,31 +1,39 @@
 {
-  "name": "gicc-homepage-staging",
+  "name": "gicc-website",
   "version": "1.0.0",
   "private": true,
-  "description": "React Native Web staging build for the GICC homepage mockup.",
-  "type": "module",
+  "description": "Guildford Islamic Cultural Center website.",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0",
-    "check": "npm run build"
+    "dev": "next dev",
+    "build": "next build",
+    "cf:dev": "wrangler pages dev out",
+    "cf:types": "wrangler types cloudflare-env.d.ts --include-runtime=false",
+    "check": "npm run lint && npm run typecheck && npm run build",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit && tsc -p functions/tsconfig.json --noEmit"
   },
-  "keywords": [
-    "react-native-web",
-    "cloudflare-pages",
-    "staging"
-  ],
-  "author": "",
-  "license": "UNLICENSED",
   "dependencies": {
-    "lucide-react": "^1.17.0",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "react-native-web": "^0.21.2"
+    "ical.js": "^2.2.1",
+    "lucide-react": "1.17.0",
+    "next": "16.2.9",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^6.0.2",
-    "vite": "^8.0.16",
-    "vite-imagetools": "^10.0.1"
+    "@tailwindcss/postcss": "^4.1.18",
+    "@types/node": "^22.19.9",
+    "@types/react": "^19.2.9",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "16.2.9",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.110.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "overrides": {
+    "postcss": "8.5.10"
   }
 }
