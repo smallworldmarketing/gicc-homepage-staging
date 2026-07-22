@@ -63,7 +63,7 @@ function occurrenceLabels(event: CalendarEvent | undefined) {
   const displayTimeZone = isAllDay ? "UTC" : VANCOUVER_TIME_ZONE;
   const day = new Intl.DateTimeFormat("en-CA", {
     timeZone: displayTimeZone,
-    weekday: "long",
+    weekday: "short",
   }).format(start);
 
   if (isAllDay) return { day: `Next ${day}`, time: "All day" };
@@ -75,10 +75,15 @@ function occurrenceLabels(event: CalendarEvent | undefined) {
   });
   const endRaw = event?.end?.dateTime;
   const end = endRaw ? new Date(endRaw) : null;
+  const formatTime = (date: Date) =>
+    time
+      .format(date)
+      .replace(/a\.m\./i, "AM")
+      .replace(/p\.m\./i, "PM");
   const timeLabel =
     end && !Number.isNaN(end.getTime())
-      ? `${time.format(start)} – ${time.format(end)}`
-      : time.format(start);
+      ? `${formatTime(start)} – ${formatTime(end)}`
+      : formatTime(start);
 
   return { day: `Next ${day}`, time: timeLabel };
 }
