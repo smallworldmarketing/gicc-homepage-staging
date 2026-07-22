@@ -1,5 +1,21 @@
 # Decisions Log
 
+## 2026-07-22 — Stage the production hostname without moving authoritative DNS
+
+**Context:** GICC's authoritative DNS and mail remain on the current hosting provider. Moving nameservers without a complete zone export would risk the website, MX records, and other services during launch.
+
+**Choice:** Associate `www.giccmasjid.org` with the Cloudflare Pages project first, then cut over only the existing `www` record to `gicc-website.pages.dev`. Keep the apex and mail-related DNS unchanged until a separately verified zone migration is approved.
+
+**Consequences:** The new site can launch with one reversible DNS edit while the WordPress origin and email service remain available during the fallback window.
+
+## 2026-07-22 — Keep the public Turnstile site key build-safe
+
+**Context:** The Pages project is deployed by direct upload and does not inject public build variables. A runtime-only secret validates Turnstile responses, but the browser also needs the widget's non-secret site key at build time.
+
+**Choice:** Keep `NEXT_PUBLIC_TURNSTILE_SITE_KEY` as an override and embed the provisioned GICC widget site key as the production-safe fallback. Store `TURNSTILE_SECRET_KEY` only as a Cloudflare Pages secret.
+
+**Consequences:** The booking form consistently renders anti-spam verification in manual and Git-connected builds without exposing the Turnstile secret.
+
 ## 2026-07-22 — Keep the public Awqat client key as a build-safe fallback
 
 **Context:** The approved staging site loaded prayer times with Awqat's public Supabase anonymous key. The migration changed that value to an optional build variable, but the manually managed Cloudflare Pages project has no build environment and would therefore render empty prayer-time cards after production deployment.

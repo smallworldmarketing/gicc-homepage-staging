@@ -23,7 +23,7 @@
 - Export GSC/GA4/Ahrefs baseline and build the full URL metrics spreadsheet.
 - Audit the complete DNS zone, all subdomains, email records, registrar lock, DNSSEC, CAA, third-party webhooks, and domain verifications.
 - Connect the `gicc-website` Pages project to the renamed private GitHub repo and add the production deploy hook.
-- Provision MailerSend and Turnstile values; perform success, upload, honeypot, rate-limit, and failure-path submissions.
+- Perform production success, upload, honeypot, rate-limit, and failure-path submissions. The dedicated MailerSend sending token and the Turnstile widget/secret were provisioned on 2026-07-22.
 - Optionally provision `GOOGLE_CALENDAR_API_KEY` as a Cloudflare runtime variable restricted to the Google Calendar API. The same-origin calendar function remains live through its verified, cached public ICS feed when the key is absent.
 - Create the Cloudflare Access `/staff/*` application and set `CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, and `STAFF_EMAIL_ALLOWLIST` so the implemented staff request queue can be enabled. Google Calendar remains the booking source of truth.
 - Provision GICC in the SWM Payload CMS, import retained content/media, test publish→rebuild, and invite the tenant-scoped client admin.
@@ -41,7 +41,8 @@
 - Preview R2: `gicc-event-request-files-preview` (private)
 - Production R2: `gicc-event-request-files-prod` (private)
 - Migration `0001_event_requests.sql` applied to both databases on 2026-07-14.
-- Synthetic preview submission verified with HTTP 201 and a persisted D1 record. Notification was correctly marked `skipped` because the MailerSend secret is not provisioned yet.
+- Synthetic preview submission verified with HTTP 201 and a persisted D1 record. Notification was correctly marked `skipped` because preview secrets are intentionally separate from production.
+- `www.giccmasjid.org` is associated with the Pages project. Final cutover is limited to changing the existing `www` DNS record to `gicc-website.pages.dev`; apex and mail DNS remain on the current host.
 
 ## Internal booking verification
 
