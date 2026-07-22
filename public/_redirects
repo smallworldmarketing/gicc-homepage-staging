@@ -1,7 +1,14 @@
+/about-us                   /about/                  301
 /about-us/                  /about/                  301
+/contact-us                 /contact/                301
 /contact-us/                /contact/                301
+/privacy-policy             /privacy/                301
 /privacy-policy/            /privacy/                301
+/donation                   /donate/                 301
 /donation/                  /donate/                 301
+/monthly-prayer-times       /prayer-times/           301
 /monthly-prayer-times/      /prayer-times/            301
+/iqama-times                /prayer-times/           301
 /iqama-times/               /prayer-times/            301
+/mfas                       https://www.jotform.com/muslimfas.ca/enroll 302
 /mfas/                      https://www.jotform.com/muslimfas.ca/enroll 302
