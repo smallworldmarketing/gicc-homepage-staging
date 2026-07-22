@@ -9,6 +9,7 @@ import { SITE } from "@/lib/site";
 
 const MAX_FILE_BYTES = 5 * 1024 * 1024;
 const ALLOWED_FILE_TYPES = ["application/pdf", "image/jpeg", "image/png"];
+const DEFAULT_TURNSTILE_SITE_KEY = "0x4AAAAAAD7DLiPQSJ1L7cRS";
 
 type SubmitState =
   | { status: "idle" }
@@ -39,7 +40,7 @@ export function EventRequestForm() {
   const [fileError, setFileError] = useState("");
   const [submitState, setSubmitState] = useState<SubmitState>({ status: "idle" });
   const [minDate] = useState(vancouverToday);
-  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? DEFAULT_TURNSTILE_SITE_KEY;
 
   useEffect(() => {
     if (!hasNavigatedRef.current) return;
