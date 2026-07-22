@@ -6,7 +6,7 @@ const CALENDAR_ICS_URL =
 const CALENDAR_OPEN_URL =
   "https://calendar.google.com/calendar/u/0/r?cid=ammar%40giccmasjid.org";
 const CALENDAR_TIME_ZONE = "America/Vancouver";
-const MAX_RESULTS_LIMIT = 24;
+const MAX_RESULTS_LIMIT = 48;
 const MAX_EXPANSIONS_PER_EVENT = 5000;
 const REQUEST_TIME_TOLERANCE_MS = 60 * 60 * 1000;
 

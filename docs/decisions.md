@@ -1,5 +1,13 @@
 # Decisions Log
 
+## 2026-07-22 — Derive program highlights from the shared calendar
+
+**Context:** The homepage listed four manually authored program names and times that did not match the current GICC calendar. Several of the names were not present in the active calendar, and Ibn Mas'ood Madrasah was shown as a weekday-afternoon program even though its current occurrences are on weekends.
+
+**Choice:** Keep the descriptive program highlights, but derive each displayed next date and time from the public `ammar@giccmasjid.org` calendar through the existing same-origin calendar proxy. Highlight only current calendar programs, and show a calendar link rather than a guessed time when a matching occurrence is unavailable.
+
+**Consequences:** Program cards remain useful editorial highlights while schedule changes made by staff propagate to the public website automatically. The shared Google Calendar is now the schedule source of truth for both the event list and program-highlight times.
+
 ## 2026-07-15 — Consolidate utility content into permanent public routes
 
 **Context:** A fresh crawl of the live WordPress site confirmed that every retained editorial route had already been represented in Next.js, but prayer times, program registrations, and the calendar were only discoverable as homepage anchors. The existing youth-support page also contains a sensitive intake form whose operational owner and data-handling rules are not documented.

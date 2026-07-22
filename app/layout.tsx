@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { Cormorant, Poppins } from "next/font/google";
 import { AttributionTracker } from "@/components/AttributionTracker";
 import { JsonLd } from "@/components/JsonLd";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { ORGANIZATION_JSON_LD, SITE } from "@/lib/site";
@@ -71,6 +72,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <SiteHeader />
         <main id="main-content">{children}</main>
         <SiteFooter />
+        <ScrollToTop />
       </body>
     </html>
   );

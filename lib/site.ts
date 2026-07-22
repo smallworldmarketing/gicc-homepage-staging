@@ -28,33 +28,6 @@ export const PRIMARY_NAV = [
   { label: "Contact", href: "/contact/" },
 ] as const;
 
-export const WEEKLY_PROGRAMS = [
-  {
-    title: "Ibn Masood Madrasah",
-    description: "Weekday Islamic education with Quran, Arabic, and foundational studies for young students.",
-    day: "Mon to Fri",
-    time: "4:30 PM",
-  },
-  {
-    title: "Youth Night",
-    description: "Guided discussions, brotherhood, sisterhood, and practical reminders for high-school students.",
-    day: "Friday",
-    time: "7:30 PM",
-  },
-  {
-    title: "Quran Circle",
-    description: "Recitation, reflection, and steady learning in a welcoming community setting.",
-    day: "Saturday",
-    time: "11:00 AM",
-  },
-  {
-    title: "Community Halaqa",
-    description: "Sunday morning breakfast, reminders, and connection for families and newcomers.",
-    day: "Sunday",
-    time: "9:30 AM",
-  },
-] as const;
-
 export const REGISTRATIONS = [
   {
     title: "Girls Who Lead",

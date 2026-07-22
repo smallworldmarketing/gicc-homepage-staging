@@ -23,6 +23,7 @@
   --scrim: color-mix(in oklch, var(--night) 78%, transparent);
   --radius-sm: 8px;
   --radius-md: 14px;
+  --z-sticky: 20;
   --z-nav: 30;
   --z-menu: 40;
   --z-modal: 60;
@@ -155,6 +156,49 @@ li {
 
 .skip-link:focus {
   transform: translateY(0);
+}
+
+.scroll-to-top {
+  align-items: center;
+  animation: scroll-to-top-enter 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  background: var(--navy);
+  border: 2px solid color-mix(in oklch, var(--gold) 72%, transparent);
+  border-radius: 50%;
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  color: var(--gold);
+  cursor: pointer;
+  display: inline-flex;
+  height: 52px;
+  justify-content: center;
+  left: max(1rem, env(safe-area-inset-left));
+  position: fixed;
+  transition: background-color 180ms ease-out, color 180ms ease-out, transform 180ms ease-out;
+  width: 52px;
+  z-index: var(--z-sticky);
+}
+
+.scroll-to-top:hover {
+  background: var(--gold);
+  color: var(--night);
+  transform: translateY(-2px);
+}
+
+.scroll-to-top svg {
+  height: 22px;
+  stroke-width: 2.25;
+  width: 22px;
+}
+
+@keyframes scroll-to-top-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .site-header {
@@ -850,7 +894,8 @@ li {
   font-size: 0.8125rem;
 }
 
-.program-list__schedule span {
+.program-list__schedule span,
+.program-list__schedule a {
   align-items: center;
   color: var(--gold-ink);
   display: inline-flex;
@@ -860,7 +905,13 @@ li {
   margin-top: 0.25rem;
 }
 
-.program-list__schedule svg {
+.program-list__schedule a {
+  min-height: 44px;
+  text-underline-offset: 3px;
+}
+
+.program-list__schedule span svg,
+.program-list__schedule a svg {
   height: 13px;
   width: 13px;
 }
@@ -2342,6 +2393,11 @@ li {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .scroll-to-top {
+    animation: none;
+    transition: none;
+  }
+
   html {
     scroll-behavior: auto;
   }
