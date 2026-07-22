@@ -1,5 +1,13 @@
 # Decisions Log
 
+## 2026-07-22 — Keep the public Awqat client key as a build-safe fallback
+
+**Context:** The approved staging site loaded prayer times with Awqat's public Supabase anonymous key. The migration changed that value to an optional build variable, but the manually managed Cloudflare Pages project has no build environment and would therefore render empty prayer-time cards after production deployment.
+
+**Choice:** Preserve the environment-variable override while embedding the same public anonymous client key already shipped by the prior public site. This value is a browser credential governed by Awqat's row-level access policy, not a privileged server secret.
+
+**Consequences:** Prayer and Jumu'ah times load in manual and Git-connected builds without an undocumented environment prerequisite. Awqat can still rotate the client key through `NEXT_PUBLIC_AWQAT_SUPABASE_ANON_KEY` before a rebuild.
+
 ## 2026-07-22 — Derive program highlights from the shared calendar
 
 **Context:** The homepage listed four manually authored program names and times that did not match the current GICC calendar. Several of the names were not present in the active calendar, and Ibn Mas'ood Madrasah was shown as a weekday-afternoon program even though its current occurrences are on weekends.

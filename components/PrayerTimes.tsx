@@ -39,7 +39,9 @@ export type PrayerTimesRecord = {
 type PrayerStatus = "loading" | "ready" | "empty" | "error" | "unconfigured";
 
 const AWQAT_URL = process.env.NEXT_PUBLIC_AWQAT_SUPABASE_URL ?? "https://kjbutgbpddsadvnbgblg.supabase.co";
-const AWQAT_KEY = process.env.NEXT_PUBLIC_AWQAT_SUPABASE_ANON_KEY;
+const AWQAT_KEY =
+  process.env.NEXT_PUBLIC_AWQAT_SUPABASE_ANON_KEY ??
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtqYnV0Z2JwZGRzYWR2bmJnYmxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc3NjQ1NjMsImV4cCI6MjA1MzM0MDU2M30.giaKfNM-hUj2UCrC_ZBUjamv9vFkhP7TORF5xkzyL4Y";
 const AWQAT_MASJID_ID =
   process.env.NEXT_PUBLIC_AWQAT_MASJID_ID ?? "96ac3382-aef7-4710-a187-7002ba7f4323";
 

@@ -23,7 +23,7 @@
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Build variable | Public widget key |
 | `NEXT_PUBLIC_SITE_URL` | Build variable | Production origin; preview must use preview origin |
 | `GOOGLE_CALENDAR_API_KEY` | Runtime variable | Calendar API key restricted to the Google Calendar API; the cached public ICS feed is the fallback |
-| `NEXT_PUBLIC_AWQAT_SUPABASE_ANON_KEY` | Build variable | Public Awqat key |
+| `NEXT_PUBLIC_AWQAT_SUPABASE_ANON_KEY` | Optional build variable | Overrides the public Awqat client key embedded in the site |
 
 Do not place secrets in `NEXT_PUBLIC_*` variables or commit `.env.local`.
 
