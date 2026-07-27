@@ -18,7 +18,9 @@ export function ContentPage({ eyebrow, title, lede, children, tone = "light" }: 
           <p>{lede}</p>
         </div>
       </header>
-      <div className="shell narrow prose section-space">{children}</div>
+      <div className="content-page__body">
+        <div className="shell narrow prose section-space">{children}</div>
+      </div>
     </>
   );
 }

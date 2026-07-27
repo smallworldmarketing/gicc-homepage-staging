@@ -83,11 +83,11 @@ export function RegistrationsCarousel() {
                 style={{ zIndex: 20 - distance }}
               >
                 <Image
-                  src={item.image}
+                  src={item.thumbnail}
                   alt={isActive ? `${item.title} — ${item.meta}` : ""}
                   fill
                   sizes="(max-width: 639px) 224px, (max-width: 1039px) 296px, 336px"
-                  loading={index <= 2 ? "eager" : "lazy"}
+                  loading={index === 0 ? "eager" : "lazy"}
                   draggable={false}
                 />
               </button>

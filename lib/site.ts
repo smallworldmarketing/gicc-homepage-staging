@@ -41,7 +41,7 @@ export const REGISTRATIONS = [
     meta: "Ibn Masood Madrasah",
     image: "/images/programs/optimized/madrasah-grades-8-12.webp",
     thumbnail: "/images/programs/optimized/madrasah-grades-8-12-thumb.webp",
-    href: "https://giccmasjid.org/mfas/",
+    href: "https://bit.ly/gicc-madrasah",
   },
   {
     title: "Madrasah Grades 1-7",
