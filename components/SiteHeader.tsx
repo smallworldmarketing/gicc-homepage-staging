@@ -35,10 +35,10 @@ export function SiteHeader() {
         <div className="shell nav-bar__inner">
           <Link className="brand" href="/" aria-label={`${SITE.name} home`}>
             <Image
-              src="/images/gicc-logo-white.png"
+              src="/images/gicc-logo-white.webp"
               alt=""
-              width={1920}
-              height={1080}
+              width={320}
+              height={180}
               priority
             />
           </Link>

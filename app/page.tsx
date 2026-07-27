@@ -85,9 +85,8 @@ export default function HomePage() {
           <div>
             <h2 id="new-center-heading">Building a permanent house of worship in Guildford.</h2>
             <p>
-              The new center project gives the community more space for prayer,
-              education, youth programs, and service. This homepage keeps the
-              project visible without crowding the weekly worship experience.
+              The new center project will create more room for prayer, education,
+              youth programs, and community service as Guildford continues to grow.
             </p>
           </div>
           <div className="donation-panel">

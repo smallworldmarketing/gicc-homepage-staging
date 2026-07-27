@@ -145,7 +145,6 @@ export function CommunityCalendar() {
                     target="_blank"
                     rel="noreferrer"
                     key={`${event.summary}-${event.timeLabel}-${index}`}
-                    aria-label={`${event.summary}${event.location ? `, ${event.location}` : ""}, ${event.timeLabel}`}
                   >
                     <div className="calendar-event__main">
                       <h3>{event.summary}</h3>

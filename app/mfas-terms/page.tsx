@@ -15,7 +15,7 @@ export default function MfasTermsPage() {
       lede="Guildford Islamic Cultural Center is a community partner of MFAS—Muslim Funeral Aid Services."
       tone="dark"
     >
-      <a className="button button--navy" href="https://www.jotform.com/muslimfas.ca/enroll" target="_blank" rel="noreferrer">Register with MFAS</a>
+      <a className="button button--navy" href="https://muslimfas.ca/forms/" target="_blank" rel="noreferrer">Register with MFAS</a>
 
       <h2>1. Definitions</h2>
       <p><strong>1.1 “Burial Location”</strong> means Vedder View Gardens Cemetery located at 44675 Watson Rd, Chilliwack, British Columbia V2R 2Y6, Canada.</p>
@@ -65,7 +65,7 @@ export default function MfasTermsPage() {
       <p><strong>6.5</strong> The Participant authorizes the use, release, and exchange of information in the Enrollment Form and schedules between the organization, third-party service providers, and financial institutions solely to administer the funeral aid program.</p>
 
       <p><em>Guildford Islamic Cultural Center is a community partner of MFAS—Muslim Funeral Aid Services.</em></p>
-      <a className="button button--navy" href="https://www.jotform.com/muslimfas.ca/enroll" target="_blank" rel="noreferrer">Register with MFAS</a>
+      <a className="button button--navy" href="https://muslimfas.ca/forms/" target="_blank" rel="noreferrer">Register with MFAS</a>
     </ContentPage>
   );
 }

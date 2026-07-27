@@ -7,7 +7,7 @@ export function SiteFooter() {
     <footer id="contact" className="site-footer">
       <div className="shell footer-grid">
         <div className="footer-brand">
-          <Image src="/images/gicc-logo-white.png" alt={SITE.name} width={1920} height={1080} />
+          <Image src="/images/gicc-logo-white.webp" alt={SITE.name} width={320} height={180} />
           <p>Serving the Muslim community in Guildford, Surrey, British Columbia.</p>
         </div>
         <div>
@@ -33,7 +33,7 @@ export function SiteFooter() {
             <Link href="/about/">About GICC</Link>
             <Link href="/new-masjid/">New Masjid Project</Link>
             <Link href="/youth-mental-health-support/">Youth Mental Health Support</Link>
-            <Link href="/mfas-terms/">MFAS</Link>
+            <Link href="/programs/#mfas">Muslim Funeral Aid (MFAS)</Link>
             <Link href="/donate/">Donate</Link>
             <Link href="/contact/">Contact Us</Link>
           </nav>
@@ -43,6 +43,7 @@ export function SiteFooter() {
           <nav className="footer-links" aria-label="Legal pages">
             <Link href="/privacy/">Privacy Policy</Link>
             <Link href="/terms/">Website Terms</Link>
+            <Link href="/mfas-terms/">MFAS Terms</Link>
           </nav>
         </div>
       </div>

@@ -1439,6 +1439,11 @@ li {
   padding-top: 12rem;
 }
 
+.content-page__body {
+  background: var(--bg);
+  color: var(--body);
+}
+
 .prose {
   color: var(--body);
 }
@@ -3586,25 +3591,6 @@ html {
 
 .carousel-dots {
   gap: 3px;
-}
-
-.carousel-dots button {
-  min-height: 44px;
-  min-width: 20px;
-  padding-inline: 5px;
-  width: auto;
-}
-
-.carousel-dots button span {
-  height: 8px;
-  transform: none;
-  transition: background-color 200ms cubic-bezier(0.22, 1, 0.36, 1), width 200ms cubic-bezier(0.22, 1, 0.36, 1);
-  width: 8px;
-}
-
-.carousel-dots button[aria-pressed="true"] span {
-  transform: none;
-  width: 22px;
 }
 
 .registration-caption {

@@ -127,3 +127,11 @@
 **Choice:** Return `410 Gone` with `noindex` for those URLs instead of copying outdated or privacy-sensitive content or blanket-redirecting it to the homepage.
 
 **Consequences:** Search engines can remove retired URLs cleanly while retained pages preserve semantic redirects or equivalent content.
+
+## 2026-07-27 — Keep MFAS enrollment and program information on the official MFAS site
+
+**Context:** The Programs page did not explain GICC's relationship with Muslim Funeral Aid Services. The Grades 8–12 Madrasah flyer also linked to `/mfas/`, a legacy path reserved for MFAS funeral-aid enrollment rather than the Madrasah application shown by the flyer.
+
+**Choice:** Add a dedicated MFAS section to `/programs/` using `muslimfas.ca` as the source of truth for program information and enrollment. Link the primary action to the official MFAS enrollment page and retain GICC's local copy of the terms as supporting information. Restore the Grades 8–12 registration link to `https://bit.ly/gicc-madrasah`, decoded from the flyer QR code and verified to resolve to its published Google Form.
+
+**Consequences:** Visitors can understand GICC's MFAS community partnership and enroll through the program's maintained website. The Madrasah flyer no longer sends families to the unrelated funeral-aid path.

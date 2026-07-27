@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { CommunityCalendar } from "@/components/CommunityCalendar";
+import { MfasProgramSection } from "@/components/MfasProgramSection";
 import { RegistrationsCarousel } from "@/components/RegistrationsCarousel";
 import { WeeklyProgramsSection } from "@/components/WeeklyProgramsSection";
 
 export const metadata: Metadata = {
   title: "Programs and Registrations",
   description:
-    "Explore GICC weekly programs, current registrations, and upcoming community events in Guildford, Surrey.",
+    "Explore GICC weekly programs, current registrations, Muslim Funeral Aid Services, and upcoming community events in Guildford, Surrey.",
   alternates: { canonical: "/programs/" },
 };
 
@@ -25,6 +26,7 @@ export default function ProgramsPage() {
       </header>
       <WeeklyProgramsSection />
       <RegistrationsCarousel />
+      <MfasProgramSection />
       <CommunityCalendar />
     </>
   );
