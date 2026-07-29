@@ -23,6 +23,7 @@ export const PRIMARY_NAV = [
   { label: "Programs", href: "/programs/" },
   { label: "Registrations", href: "/programs/#registrations" },
   { label: "Calendar", href: "/programs/#calendar" },
+  { label: "Events", href: "/events/" },
   { label: "Book", href: "/event-request/" },
   { label: "New Masjid", href: "/new-masjid/" },
   { label: "Contact", href: "/contact/" },
@@ -122,6 +123,7 @@ export const STATIC_ROUTES = [
   "/mfas-terms/",
   "/prayer-times/",
   "/programs/",
+  "/events/",
 ] as const;
 
 export const ORGANIZATION_JSON_LD = {
