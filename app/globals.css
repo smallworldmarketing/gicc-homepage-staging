@@ -2106,10 +2106,13 @@ li {
 
 .condolence-thanks__actions {
   align-items: center;
+  border-top: 1px solid var(--line);
   display: flex;
   flex-wrap: wrap;
   gap: 1rem 1.4rem;
-  margin-top: 1.3rem;
+  justify-content: flex-end;
+  margin-top: clamp(2rem, 5vw, 3rem);
+  padding-top: clamp(1.5rem, 3vw, 2.25rem);
 }
 
 .condolence-thanks__contact {

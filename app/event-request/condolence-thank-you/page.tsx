@@ -34,40 +34,43 @@ export default function CondolenceThankYouPage() {
       </header>
 
       <section className="condolence-thanks__body" aria-labelledby="condolence-next-heading">
-        <div className="shell condolence-thanks__layout">
-          <div className="condolence-thanks__next">
-            <h2 id="condolence-next-heading">What happens next</h2>
-            <ol>
-              <li>The GICC secretary will review the requested time and location.</li>
-              <li>You will receive an email if more information is needed or once a decision is made.</li>
-              <li>The space is not reserved until GICC sends written confirmation.</li>
-            </ol>
-            <div className="condolence-thanks__actions">
-              <Link className="button button--navy" href="/">
-                Return to GICC home
-              </Link>
-              <a className="condolence-thanks__contact" href="mailto:secretary@giccmasjid.org">
-                <Mail aria-hidden="true" />
-                Contact the secretary
-              </a>
+        <div className="shell">
+          <div className="condolence-thanks__layout">
+            <div className="condolence-thanks__next">
+              <h2 id="condolence-next-heading">What happens next</h2>
+              <ol>
+                <li>The GICC secretary will review the requested time and location.</li>
+                <li>You will receive an email if more information is needed or once a decision is made.</li>
+                <li>The space is not reserved until GICC sends written confirmation.</li>
+              </ol>
             </div>
+
+            <aside className="condolence-thanks__mfas" aria-labelledby="condolence-mfas-heading">
+              <HeartHandshake className="condolence-thanks__mfas-icon" aria-hidden="true" />
+              <h2 id="condolence-mfas-heading">Muslim Funeral Aid Services</h2>
+              <p>
+                MFAS is a non-profit program founded through GICC that helps Sunni
+                Muslim families in British Columbia share eligible funeral and burial
+                costs through a community membership model.
+              </p>
+              <div className="condolence-thanks__mfas-links">
+                <a href={MFAS_WEBSITE_URL} target="_blank" rel="noreferrer">
+                  Learn about MFAS <ArrowUpRight aria-hidden="true" />
+                </a>
+                <Link href="/mfas-terms/">Read GICC&apos;s MFAS terms</Link>
+              </div>
+            </aside>
           </div>
 
-          <aside className="condolence-thanks__mfas" aria-labelledby="condolence-mfas-heading">
-            <HeartHandshake className="condolence-thanks__mfas-icon" aria-hidden="true" />
-            <h2 id="condolence-mfas-heading">Muslim Funeral Aid Services</h2>
-            <p>
-              MFAS is a non-profit program founded through GICC that helps Sunni
-              Muslim families in British Columbia share eligible funeral and burial
-              costs through a community membership model.
-            </p>
-            <div className="condolence-thanks__mfas-links">
-              <a href={MFAS_WEBSITE_URL} target="_blank" rel="noreferrer">
-                Learn about MFAS <ArrowUpRight aria-hidden="true" />
-              </a>
-              <Link href="/mfas-terms/">Read GICC&apos;s MFAS terms</Link>
-            </div>
-          </aside>
+          <div className="condolence-thanks__actions">
+            <Link className="button button--navy" href="/">
+              Return to GICC home
+            </Link>
+            <a className="condolence-thanks__contact" href="mailto:secretary@giccmasjid.org">
+              <Mail aria-hidden="true" />
+              Contact the secretary
+            </a>
+          </div>
         </div>
       </section>
     </div>
