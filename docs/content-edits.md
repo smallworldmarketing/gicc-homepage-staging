@@ -2,7 +2,7 @@
 
 ## Current content homes
 
-- Prayer and Jumu’ah times: Awqat public feed, surfaced on `/prayer-times/` and the homepage.
+- Prayer and Jumu'ah times: Awqat public feed, surfaced on `/prayer-times/` and the homepage.
 - Community calendar: Google Calendar `ammar@giccmasjid.org`, surfaced on `/programs/` and the homepage.
 - Program registrations: `lib/site.ts` in this repo.
 - Editorial and legal pages: route files under `app/`.
