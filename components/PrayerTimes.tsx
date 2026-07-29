@@ -299,7 +299,7 @@ function PrayerTimesExperience({ showHero }: { showHero: boolean }) {
           <MasjidBuildingPicture className="hero__media" alt="The Guildford neighbourhood that GICC serves in Surrey, BC" priority />
           <div className="hero__veil" aria-hidden="true" />
           <div className="hero__content">
-            <p className="hero__kicker">Assalamu alaikum, welcome.</p>
+            <p className="hero__kicker">As-Salaamu Alaykum, welcome.</p>
             <h1 id="home-heading">Guildford Islamic Cultural Center</h1>
             <p className="hero__lede">A spiritual home for daily prayer, Islamic learning, family programs, and community service in Guildford.</p>
             <div className="hero__actions">
